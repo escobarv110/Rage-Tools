@@ -45,13 +45,22 @@ More tools, features, improvements, and optimizations are currently in developme
 
 ## Credits & References
 
-RAGE Tools is developed with reference to existing GTA V modding research and tools, including:
+RAGE Tools builds on the work of the GTA V modding community. It incorporates or derives
+from:
 
-* [CodeWalker](https://github.com/dexyfex/CodeWalker)
-* [Sollumz](https://github.com/Sollumz/Sollumz)
-* GTA V RAGE engine research and publicly available technical information
+- **[CodeWalker](https://github.com/dexyfex/CodeWalker)** — dexyfex and contributors.
+  Resource formats and lighting math.
+- **[FbxWriter](https://github.com/hamish-milne/FbxWriter)** — Hamish Milne. FBX reading
+  and writing, reaching RAGE Tools via CodeWalker.
+- **[Sollumz](https://github.com/Sollumz/Sollumz)** — the Sollumz contributors.
+- **[GIMS Evo](https://github.com/3Doomer/GIMS-Evo)** — 3Doomer.
+- GTA V RAGE engine research and publicly available technical information.
 
-RAGE Tools is an independent project and is **not affiliated with Rockstar Games, CodeWalker, or Sollumz**.
+Full copyright and license notices for each are in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+RAGE Tools is an independent project and is not affiliated with Rockstar Games, CodeWalker,
+Sollumz, or GIMS Evo.
 
 <img width="512" height="512" alt="Rage_R_logo" src="https://github.com/user-attachments/assets/7b30646d-39fb-4680-9e54-3a5a5169b699" />
 
@@ -83,15 +92,24 @@ The exe lands in `RageLightEditor/bin/Release/net8.0-windows/`. No game data shi
 
 ## License
 
-This project is provided as an open-source development tool for the FiveM / Cfx.re community.
+RAGE Tools is free software, licensed under the **GNU General Public License, version 3**.
 
-* Personal and commercial use is allowed.
-* You are free to modify, edit, and adapt the source code.
-* You may use the tool in personal or commercial development projects.
-* You may not redistribute, rebrand, or resell a modified or unmodified version of this project as your own product.
-* You may not sell access to, sublicense, or commercially redistribute modified versions of this project.
-* The original project and its source code must remain properly credited when redistributed for permitted purposes.
+RAGE Tools is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the [LICENSE](LICENSE) file for the full terms.
 
-In short: use it, modify it, and build with it - but don't take a modified version, rebrand it, and sell it as your own.
+In practice this means:
 
-The full text is in [`LICENSE`](LICENSE).
+- You may use RAGE Tools for anything, personal or commercial, with no fee and no
+  permission required.
+- You may study and modify the source code.
+- You may redistribute copies, modified or not, including for a fee.
+- **If you distribute RAGE Tools or a modified version, you must release the complete
+  corresponding source code of what you distribute under the GPL version 3 as well**, and
+  preserve the copyright and license notices. Recipients get the same freedoms you did.
+
+This applies to distributing the program itself. Assets, maps, and files that you *author
+with* RAGE Tools are your own work and are not covered by this license.
+
+The project is licensed this way because it builds on GPL-licensed work — see
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
