@@ -1,4 +1,4 @@
-# Builds the portable, obfuscated single-file release.
+﻿# Builds the portable, obfuscated single-file release.
 #
 #   .\build-release.ps1              -> _release\ + the zip + a refreshed Download\
 #   .\build-release.ps1 -Publish     -> ...and commits and pushes Download\ to GitHub
@@ -125,7 +125,17 @@ if (-not $buildNumber) { $buildNumber = "0" }
 $versionName = "RAGE_Tools_Portable_v" + $buildNumber.Trim() + "_" + (Get-Date -Format 'yyyy-MM-dd')
 $zip = Join-Path $root "RAGE_Tools_Portable.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
-Compress-Archive -Path $out -DestinationPath $zip -CompressionLevel Optimal
+$zipTries = 0
+while ($true) {
+    try { Compress-Archive -Path $out -DestinationPath $zip -CompressionLevel Optimal -ErrorAction Stop; break }
+    catch {
+        $zipTries++
+        if ($zipTries -ge 6) { throw }
+        Write-Host "  zip: $($_.Exception.Message.Trim()) - retrying in 5 s" -ForegroundColor Yellow
+        Start-Sleep -Seconds 5
+        if (Test-Path $zip) { Remove-Item $zip -Force }
+    }
+}
 
 $mb = [math]::Round((Get-Item $zip).Length / 1MB, 1)
 Write-Host "`nDone: $zip ($mb MB)" -ForegroundColor Green

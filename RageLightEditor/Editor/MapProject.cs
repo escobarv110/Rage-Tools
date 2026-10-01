@@ -204,14 +204,22 @@ namespace RageLightEditor.Editor
                 var name = NameOfYtyp(e);
                 if (string.IsNullOrEmpty(name)) name = "edited";
                 var p = System.IO.Path.Combine(folder, name + ".ytyp");
+                foreach (var a in e.Ytyp.AllArchetypes ?? System.Array.Empty<CodeWalker.GameFiles.Archetype>())
+                    if (a is CodeWalker.GameFiles.MloArchetype m)
+                    {
+                        var v = MloEditor.Validate(m);
+                        if (!string.IsNullOrEmpty(v)) AppLog_U21.Warn($"{name}.ytyp: interior {a.Name} has problems the game may not like:\n{v}");
+                    }
                 var data = e.Ytyp.Save();
-                if (data == null || data.Length == 0) { LastStatus = name + ": nothing written"; return null; }
+                if (data == null || data.Length == 0) { LastStatus = name + ": nothing written"; AppLog_U21.Error(name + ".ytyp: the save produced no data"); return null; }
+                if (e.Ytyp.SaveWarnings != null && e.Ytyp.SaveWarnings.Count > 0)
+                    AppLog_U21.Warn(name + ".ytyp saved with warnings:\n" + string.Join("\n", e.Ytyp.SaveWarnings));
                 File.WriteAllBytes(p, data);
                 e.Dirty = false;
                 LastStatus = $"wrote {name}.ytyp ({data.Length / 1024} KB)";
                 return p;
             }
-            catch (Exception ex) { LastStatus = "ytyp save failed: " + ex.Message; return null; }
+            catch (Exception ex) { LastStatus = "ytyp save failed: " + ex.Message + " - details in Help > Show log"; AppLog_U21.Error("saving " + NameOfYtyp(e) + ".ytyp", ex); return null; }
         }
 
         public static string DescribeArchetype(Archetype a)

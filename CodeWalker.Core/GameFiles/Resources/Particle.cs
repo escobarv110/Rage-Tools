@@ -1,4 +1,4 @@
-﻿using SharpDX;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -391,6 +391,11 @@ namespace CodeWalker.GameFiles
             Unknown_18h = reader.ReadUInt64();
             ParticleRuleNameHashes = reader.ReadBlock<ResourceSimpleList64_s<MetaHash>>();
             ParticleRules = reader.ReadBlock<ResourcePointerList64<ParticleRule>>();
+            var prItems = ParticleRules?.data_items;
+            var prHashes = ParticleRuleNameHashes?.data_items;
+            if (prItems != null && prHashes != null)
+                for (int i = 0; i < prItems.Length && i < prHashes.Length; i++)
+                    if (prItems[i] != null && prHashes[i].Hash != 0) prItems[i].NameHash = prHashes[i];
 
             //if (Unknown_4h != 1)
             //{ }//no hit
@@ -589,6 +594,11 @@ namespace CodeWalker.GameFiles
             Unknown_18h = reader.ReadUInt64();
             EmitterRuleNameHashes = reader.ReadBlock<ResourceSimpleList64_s<MetaHash>>();
             EmitterRules = reader.ReadBlock<ResourcePointerList64<ParticleEmitterRule>>();
+            var emItems = EmitterRules?.data_items;
+            var emHashes = EmitterRuleNameHashes?.data_items;
+            if (emItems != null && emHashes != null)
+                for (int i = 0; i < emItems.Length && i < emHashes.Length; i++)
+                    if (emItems[i] != null && emHashes[i].Hash != 0) emItems[i].NameHash = emHashes[i];
 
 
             //if (Unknown_4h != 1)
@@ -854,6 +864,7 @@ namespace CodeWalker.GameFiles
             if (!string.IsNullOrEmpty(Name?.Value))
             {
                 JenkIndex.Ensure(Name.Value);
+                NameHash = JenkHash.GenHash(Name.Value);
             }
         }
         public override void Write(ResourceDataWriter writer, params object[] parameters)
@@ -2538,6 +2549,7 @@ namespace CodeWalker.GameFiles
             if (!string.IsNullOrEmpty(Name?.Value))
             {
                 JenkIndex.Ensure(Name.Value);
+                NameHash = JenkHash.GenHash(Name.Value);
             }
         }
         public override void Write(ResourceDataWriter writer, params object[] parameters)

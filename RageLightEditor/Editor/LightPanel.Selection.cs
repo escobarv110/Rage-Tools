@@ -103,11 +103,6 @@ namespace RageLightEditor.Editor
 
         partial void DrawHelpersExtras_SelectionAdvanced()
         {
-            OptCheck("Show pick", ref ShowPickDebug,
-                     "Debug: the last click's ray (dashed), its hit point (cross), the surface the\n" +
-                     "ray struck, and every entity box in front of it (faint) with the one that won\n" +
-                     "(bright). Entity = the smallest box in front of the surface; Entity Precision =\n" +
-                     "the triangle the ray strikes first.");
         }
 
         public WorldSelection CollisionUnderCursor = WorldSelection.Empty;

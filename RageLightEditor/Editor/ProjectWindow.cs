@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -173,8 +173,6 @@ namespace RageLightEditor.Editor
             {
                 bool hasYmap = CurrentYmap != null;
                 if (ImGui.MenuItem("New Entity", null, false, hasYmap)) RequestNewEntity = true;
-                if (ImGui.MenuItem("New Car Generator", null, false, false)) { }
-                if (ImGui.MenuItem("New Grass Batch", null, false, false)) { }
                 if (ImGui.MenuItem("Delete Entity", null, false, CurrentEntity != null)) RequestDeleteEntity = true;
                 ImGui.Separator();
                 if (ImGui.MenuItem("Go to Ymap", null, false, hasYmap)) RequestGoToSelected = true;
@@ -200,9 +198,7 @@ namespace RageLightEditor.Editor
                 bool isMlo = CurrentArchetype is MloArchetype;
                 if (ImGui.BeginMenu("Mlo", isMlo))
                 {
-                    if (ImGui.MenuItem("New Entity", null, false, CurrentEntitySet != null)) RequestNewMloEntity = true;
-                    if (ImGui.MenuItem("New Room", null, false, false)) { }
-                    if (ImGui.MenuItem("New Portal", null, false, false)) { }
+                    if (ImGui.MenuItem("New Entity", null, false, CurrentEntitySet != null || CurrentRoom != null || CurrentPortal != null)) RequestNewMloEntity = true;
                     if (ImGui.MenuItem("New Entity Set", null, false, isMlo)) RequestNewEntitySet = true;
                     if (ImGui.MenuItem("Delete Entity Set", null, false, CurrentEntitySet != null)) RequestDeleteEntitySet = true;
                     ImGui.EndMenu();
@@ -217,11 +213,7 @@ namespace RageLightEditor.Editor
             if (ImGui.BeginMenu("Tools"))
             {
                 if (ImGui.MenuItem("Props Panel...")) RequestPropsPanel = true;
-                if (ImGui.MenuItem("Edit 3D Mesh...", null, false, false)) { }
-                if (ImGui.MenuItem("Edit Vertex Colors...", null, false, false)) { }
                 if (ImGui.MenuItem("Manifest Generator...")) RequestManifestGenerator = true;
-                if (ImGui.MenuItem("LOD Lights Generator...", null, false, false)) { }
-                if (ImGui.MenuItem("Nav Mesh Generator...", null, false, false)) { }
                 ImGui.Separator();
                 if (ImGui.MenuItem("Import Menyoo XML...")) RequestImportMenyoo = true;
                 ImGui.Separator();

@@ -7,7 +7,7 @@ using SDX = SharpDX;
 
 namespace RageLightEditor.Editor
 {
-    public static class PtfxAuthor
+    public static partial class PtfxAuthor
     {
         private const uint VftEffectRule = 0x4060BD18, VftTimeline = 0x40610408, VftEvent = 0x40610858;
         private const uint VftEmitterRule = 0x4060C498, VftDomain = 0x4060D968;
@@ -179,6 +179,7 @@ namespace RageLightEditor.Editor
                 pr.ShaderVars = new ResourcePointerList64<ParticleShaderVar> { data_items = l.ToArray() };
             }
             slot.Texture = mine;
+            slot.ExternalReference = 0;
             slot.TextureName = (string_r)mine.Name;
             slot.TextureNameHash = JenkHash.GenHash(mine.Name?.ToLowerInvariant() ?? "");
             doc.Dirty = true;
@@ -353,9 +354,9 @@ namespace RageLightEditor.Editor
                 SetEvents(er, live);
                 foreach (var ev in live)
                 {
-                    if (ev.EmitterRule != null) emrs[ev.EmitterRule.NameHash] = ev.EmitterRule;
+                    if (ev.EmitterRule != null) emrs[RuleHash_U21(ev.EmitterRule)] = ev.EmitterRule;
                     if (ev.ParticleRule == null) continue;
-                    prs[ev.ParticleRule.NameHash] = ev.ParticleRule;
+                    prs[RuleHash_U21(ev.ParticleRule)] = ev.ParticleRule;
                     foreach (var sv in ev.ParticleRule.ShaderVars?.data_items ?? Array.Empty<ParticleShaderVar>())
                     {
                         if (!(sv is ParticleShaderVarTexture t) || t.Texture == null) continue;
@@ -364,6 +365,8 @@ namespace RageLightEditor.Editor
                     }
                 }
             }
+
+            KeepExistingRules_U21(list, emrs, prs, texs, texSeen);
 
             var emrList = emrs.Values.OrderBy(r => r.NameHash.Hash).ToArray();
             list.EmitterRuleDictionary ??= new ParticleEmitterRuleDictionary();

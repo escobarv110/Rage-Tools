@@ -624,7 +624,10 @@ namespace RageLightEditor
                 path = dlg.FileName;
                 extLastDir_V68 = Path.GetDirectoryName(path);
             }
-            var err = ws.SaveCurrentYtyp(path);
+            string err;
+            try { err = ws.SaveCurrentYtyp(path); }
+            catch (Exception ex) { err = ex.Message + " - details in Help > Show log"; AppLog_U21.Error("Extensions .ytyp save", ex); }
+            if (err != null && !err.Contains("Help > Show log")) AppLog_U21.Error(Path.GetFileName(path) + " was not saved: " + err);
             ws.Say(err ?? ("saved " + Path.GetFileName(path)), err != null);
         }
 

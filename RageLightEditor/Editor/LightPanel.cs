@@ -342,6 +342,7 @@ namespace RageLightEditor.Editor
             if (MloMode) { MloCreator.RightPanelWidth_S1 = ShowRightPanel ? RightWidth : 0.0f; MloCreator.DrawWindow(scene, Timecycle, displayWidth, displayHeight); }
             DrawFiveMWindow_U12(displayWidth, displayHeight);
             DrawGameView_U13(displayWidth, displayHeight);
+            DrawLogWindow_U21(displayWidth, displayHeight);
             DrawConfirmations();
             DrawTutorial();
             DrawTimecycleEditor();
@@ -2509,11 +2510,8 @@ namespace RageLightEditor.Editor
             {
                 for (int i = 0; i < SelectionModeNames.Length; i++)
                 {
-                    if (!SelectionModeAvailable[i]) ImGui.BeginDisabled();
+                    if (!SelectionModeAvailable[i]) continue;
                     if (ImGui.Selectable(SelectionModeNames[i], SelectionMode == i)) SelectionMode = i;
-                    if (!SelectionModeAvailable[i]) ImGui.EndDisabled();
-                    if (!SelectionModeAvailable[i] && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-                        ImGui.SetTooltip("not available in this build");
                 }
                 ImGui.EndCombo();
             }
@@ -2551,11 +2549,6 @@ namespace RageLightEditor.Editor
                 ImGui.SameLine(0, 4);
             }
             DrawEditLightButton_J2();
-
-            var stats = StatsText ?? "";
-            float sw = ImGui.CalcTextSize(stats).X;
-            ImGui.SameLine(Math.Max(ImGui.GetWindowWidth() - sw - 12, ImGui.GetCursorPosX()));
-            ImGui.TextDisabled(stats);
 
             ImGui.End();
             ImGui.PopStyleVar();
@@ -2601,32 +2594,30 @@ namespace RageLightEditor.Editor
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(8, 3));
             ImGui.Begin("##worldstatus", flags);
 
-            ImGui.TextDisabled($"{WorldYmapsOpen:N0}/{WorldYmapsWanted:N0} ymaps");
-            ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
-            ImGui.TextDisabled($"{WorldEntities:N0} entities, {WorldMeshes:N0} meshes");
-            ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
-            ImGui.TextDisabled($"cam {WorldCameraPos.X:0}, {WorldCameraPos.Y:0}, {WorldCameraPos.Z:0}");
+            bool first = true;
+            void Dot() { if (!first) { ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine(); } first = false; }
             if (WorldSel != null)
             {
-                ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
-                ImGui.TextDisabled("sel " + (WorldSel.Archetype?.Name ?? "?") + DirtyMark_V19(WorldSel));
+                Dot();
+                ImGui.TextDisabled((WorldSel.Archetype?.Name ?? "?") + DirtyMark_V19(WorldSel));
             }
             if (WorldDirtyCount > 0)
             {
-                ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
+                Dot();
                 ImGui.TextColored(UiTheme.Warn,
                     $"{WorldDirtyCount} unsaved ymap{(WorldDirtyCount == 1 ? "" : "s")}");
             }
             if (!string.IsNullOrEmpty(WorldClipboardSummary))
             {
-                ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
-                ImGui.TextDisabled("clip: " + WorldClipboardSummary);
+                Dot();
+                ImGui.TextDisabled("copied: " + WorldClipboardSummary);
             }
             if (WorldTruncated)
             {
-                ImGui.SameLine(); ImGui.Text("·"); ImGui.SameLine();
+                Dot();
                 ImGui.TextColored(UiTheme.Warn, "budget reached");
             }
+            if (first) ImGui.TextDisabled(WorldYmapsOpen < WorldYmapsWanted ? "loading the map..." : "ready");
 
             ImGui.End();
             ImGui.PopStyleVar();
@@ -2701,10 +2692,21 @@ namespace RageLightEditor.Editor
             var e = WorldSel;
             if (e == null) return;
 
-            ImGui.Spacing();
-            ImGui.Separator();
-            ImGui.TextDisabled("ENTITY");
             var d = e._CEntityDef;
+            if (e.Archetype == null)
+            {
+                ImGui.Spacing();
+                ImGui.Separator();
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 0.65f, 0.3f, 1.0f));
+                ImGui.TextWrapped("This prop's archetype is not in the game or the project, so only its " +
+                                  "placement box can be drawn. Open the .ytyp that defines " +
+                                  d.archetypeName.ToString() + " (Project window > Open, or drop it in with the ymap).");
+                ImGui.PopStyleColor();
+            }
+            ImGui.Spacing();
+            if (!ImGui.CollapsingHeader("Details##wseldetails")) return;
+            ImGui.Indent();
+            ImGui.TextDisabled("ENTITY");
             Row("Archetype", d.archetypeName.ToString() + "   # " + d.archetypeName.Hash);
             Row("Position", $"{d.position.X:0.###}, {d.position.Y:0.###}, {d.position.Z:0.###}");
             Row("Rotation", $"{d.rotation.X:0.####}, {d.rotation.Y:0.####}, {d.rotation.Z:0.####}, {d.rotation.W:0.####}");
@@ -2720,19 +2722,11 @@ namespace RageLightEditor.Editor
             Row("Tint", d.tintValue.ToString());
             Row("Distance", $"{e.Distance:0.#} m");
             if (e.MloParent != null) Row("Interior", e.MloParent.Archetype?.Name ?? "(mlo)");
+            ImGui.Unindent();
             if (e.MloInstance != null) Row("MLO instance", $"{e.MloInstance.Entities?.Length ?? 0} entities, {e.MloInstance.EntitySets?.Length ?? 0} sets");
 
+            ImGui.Indent();
             var a = e.Archetype;
-            if (a == null)
-            {
-                ImGui.Spacing();
-                ImGui.Separator();
-                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 0.65f, 0.3f, 1.0f));
-                ImGui.TextWrapped("This prop's archetype is not in the game or the project, so only its " +
-                                  "placement box can be drawn. Open the .ytyp that defines " +
-                                  d.archetypeName.ToString() + " (Project window > Open, or drop it in with the ymap).");
-                ImGui.PopStyleColor();
-            }
             if (a != null)
             {
                 ImGui.Spacing();
@@ -2762,6 +2756,7 @@ namespace RageLightEditor.Editor
             Row("Ymap", e.Ymap?.Name ?? "(interior)");
             Row("Path", e.Ymap?.RpfFileEntry?.Path ?? e.Ymap?.FilePath ?? "");
             Row("Index", e.Index.ToString());
+            ImGui.Unindent();
         }
 
         private static int rowSeq;
@@ -4536,9 +4531,17 @@ namespace RageLightEditor.Editor
 
             if (ImGui.BeginMenu("Edit"))
             {
-                bool canUndo = scene.CanUndo, canRedo = scene.CanRedo;
-                if (ImGui.MenuItem("Undo", "Ctrl+Z", false, canUndo)) scene.Undo();
-                if (ImGui.MenuItem("Redo", "Ctrl+Y", false, canRedo)) scene.Redo();
+                if (WorldMode)
+                {
+                    if (ImGui.MenuItem("Undo", "Ctrl+Z", false, WorldHistory?.CanUndo == true)) RequestWorldUndo = true;
+                    if (ImGui.MenuItem("Redo", "Ctrl+Y", false, WorldHistory?.CanRedo == true)) RequestWorldRedo = true;
+                }
+                else
+                {
+                    bool canUndo = scene.CanUndo, canRedo = scene.CanRedo;
+                    if (ImGui.MenuItem("Undo", "Ctrl+Z", false, canUndo)) scene.Undo();
+                    if (ImGui.MenuItem("Redo", "Ctrl+Y", false, canRedo)) scene.Redo();
+                }
                 if (MaterialMode)
                 {
                     ImGui.Separator();
@@ -4563,8 +4566,10 @@ namespace RageLightEditor.Editor
             {
                 if (ImGui.MenuItem("Tutorial")) openTutorial = true;
                 DrawMirrorJokeMenuItem_S6();
+                DrawHelpLogItems_U21();
                 ImGui.EndMenu();
             }
+            DrawLogBadge_U21();
 
             DrawBridgeMenu_U12();
 
@@ -5282,14 +5287,17 @@ namespace RageLightEditor.Editor
 
         private void DrawCameraKnobs()
         {
-            float snap = settings.RotateSnapDeg;
-            ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Rotate snap", ref snap, 0.0f, 45.0f, snap < 0.01f ? "off" : "%.0f deg"))
+            if (!WorldMode)
             {
-                settings.RotateSnapDeg = snap;
-                gizmo.RotateSnapDeg = snap;
+                float snap = settings.RotateSnapDeg;
+                ImGui.SetNextItemWidth(-140);
+                if (ImGui.SliderFloat("Rotate snap", ref snap, 0.0f, 45.0f, snap < 0.01f ? "off" : "%.0f deg"))
+                {
+                    settings.RotateSnapDeg = snap;
+                    gizmo.RotateSnapDeg = snap;
+                }
+                DrawFovRow(-140);
             }
-            DrawFovRow(-140);
 
             float sens = settings.CameraSensitivity;
             ImGui.SetNextItemWidth(-140);

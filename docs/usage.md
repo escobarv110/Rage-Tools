@@ -205,6 +205,30 @@ the mask variant's mask texture, multiplied by its area diffuse, and dithered aw
 on and draws as such. Every fur texture and parameter is named in the material editor, and with
 FiveM live linking on, dragging them changes the lawn in the game as you drag.
 
+### Log
+
+Help > Show log (Ctrl+L) opens the Log window: everything the tool reports, with errors in red and
+their full details. A red "N errors" item appears on the menu bar when something fails - a .ytyp that
+will not save, for example, lists every problem the interior has there. The log is also written to
+`%LOCALAPPDATA%\RAGE Tools\logs\rage_tools.log` (the previous run is kept beside it); Help > Open log
+folder takes you there.
+
+### Adding props to an interior (World)
+
+A new entity goes into the interior, not the ymap, when an interior room, portal or entity set is
+selected (Project window or viewport), when an interior prop is selected (it joins the same room), or
+when you are standing inside an interior room. This applies to the Project window's + Entity, Mlo > New
+Entity and "Place in the world". The prop is stored in the interior's .ytyp, in interior space, and
+undo/redo keep its room.
+
+### Trying fur on your own models
+
+Switch a material to `grass_fur`, `grass_fur_mask`, `grass_fur_tnt` or `ped_fur` in the Material
+editor and it grows fur straight away. `grass_fur` is pointed at the game's own height maps
+(`fur_grass_rgba4_0..3`); when a texture cannot be found - or `ped_fur` has no noise texture yet - the
+viewport uses a built-in strand pattern so you can still judge the look. For the game, embed real
+textures in your .ytd.
+
 ### Light prop library
 
 The **Library** tab (bottom of the left panel) is a catalogue of every prop that has lights

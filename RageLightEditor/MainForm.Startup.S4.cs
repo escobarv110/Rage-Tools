@@ -9,7 +9,8 @@ namespace RageLightEditor
 
         public static LightPanel.Space StartupWorkspace_S4(AppSettings s)
         {
-            _ = s?.LastWorkspace ?? -1;
+            int last = s?.LastWorkspace ?? -1;
+            if (last >= 0 && Enum.IsDefined(typeof(LightPanel.Space), last)) return (LightPanel.Space)last;
             return LightPanel.Space.World;
         }
 
@@ -33,7 +34,7 @@ namespace RageLightEditor
             if (!named && !startupSpaceScripted_S4)
             {
                 var space = StartupWorkspace_S4(settings);
-                if (panel.Workspace != space) panel.Workspace = space;
+                if (panel.Workspace != space) panel.SwitchWorkspace(space);
             }
             startupSpaceArmed_S4 = !startupSpaceScripted_S4;
             Console.WriteLine($"STARTSPACE {SpaceNames.NameOf(panel.Workspace)} (remembered {(settings == null || settings.LastWorkspace < 0 ? "nothing" : SpaceNames.NameOf((LightPanel.Space)settings.LastWorkspace))}" +
@@ -48,12 +49,12 @@ namespace RageLightEditor
             check("...and so does a settings file written before this build (no key)",
                   fresh.LastWorkspace == -1 && StartupWorkspace_S4(fresh) == LightPanel.Space.World, fresh.LastWorkspace.ToString());
 
-            var used = new AppSettings { LastWorkspace = (int)LightPanel.Space.Terrain };
-            check("a settings file left in Terrain still opens in the World",
-                  StartupWorkspace_S4(used) == LightPanel.Space.World, SpaceNames.NameOf(StartupWorkspace_S4(used)));
+            var used = new AppSettings { LastWorkspace = (int)LightPanel.Space.Archive };
+            check("a settings file left in the RPF explorer opens in the RPF explorer again",
+                  StartupWorkspace_S4(used) == LightPanel.Space.Archive, SpaceNames.NameOf(StartupWorkspace_S4(used)));
             used.LastWorkspace = (int)LightPanel.Space.Material;
-            check("...and so does one left in Materials",
-                  StartupWorkspace_S4(used) == LightPanel.Space.World, SpaceNames.NameOf(StartupWorkspace_S4(used)));
+            check("...and one left in Materials opens in Materials",
+                  StartupWorkspace_S4(used) == LightPanel.Space.Material, SpaceNames.NameOf(StartupWorkspace_S4(used)));
 
             check("a settings file from a newer build lands somewhere real",
                   StartupWorkspace_S4(new AppSettings { LastWorkspace = 99 }) == LightPanel.Space.World, "");

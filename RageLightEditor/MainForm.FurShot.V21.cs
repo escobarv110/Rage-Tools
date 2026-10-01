@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CodeWalker.GameFiles;
 
 namespace RageLightEditor
@@ -20,6 +21,18 @@ namespace RageLightEditor
                 if (scene == null || scene.Files.Count == 0) return;
                 if (++furShotSettle_V21 < 10) return;
                 furShotStage_V21 = 2;
+                var preset = Environment.GetEnvironmentVariable("RLE_FURSHOT_PRESET");
+                if (!string.IsNullOrWhiteSpace(preset))
+                {
+                    var done = new System.Collections.Generic.HashSet<CodeWalker.GameFiles.ShaderFX>();
+                    foreach (var pm in scene.AllMeshes)
+                    {
+                        if (pm?.Shader == null || !done.Add(pm.Shader)) continue;
+                        Editor.ShaderPresets.Apply(pm.Shader, preset.Trim());
+                    }
+                    foreach (var pm in scene.AllMeshes) if (pm?.Shader != null) modelRenderer.RefreshMaterial(pm);
+                    Console.WriteLine($"FURSHOT switched {done.Count} material(s) to {preset.Trim()}; fur on {scene.AllMeshes.Count(x => x.IsFur)} mesh(es), preview textures on {scene.AllMeshes.Count(x => x.FurPreviewTextures_U21)}");
+                }
                 var target = new SharpDX.Vector3(0, 0, 0.3f);
                 foreach (var fm in scene.AllMeshes)
                 {

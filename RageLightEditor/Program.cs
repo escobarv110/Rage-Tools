@@ -13,6 +13,7 @@ namespace RageLightEditor
             System.Windows.Forms.Application.ThreadException += (s, e) =>
                 ReportCrash(e.Exception, "ui thread");
 
+            Editor.AppLog_U21.Install();
             FlightRecorder.Start();
             if (FlightRecorder.PreviousCrashReport != null)
             {
@@ -33,6 +34,7 @@ namespace RageLightEditor
 
         internal static void ReportCrash(Exception ex, string where)
         {
+            Editor.AppLog_U21.Error("crash (" + where + ")", ex);
             string path = null;
             try
             {

@@ -109,9 +109,9 @@ namespace CodeWalker.GameFiles
                                 m._MloArchetypeDef._MloArchetypeDef.entitySets = mb.AddWrapperArray(m.entitySets);
                                 m._MloArchetypeDef._MloArchetypeDef.timeCycleModifiers = mb.AddItemArrayPtr(MetaName.CMloTimeCycleModifier, m.timeCycleModifiers);
                             }
-                            catch/* (Exception e)*/
+                            catch (Exception e)
                             {
-                                //todo: log save error.
+                                throw new InvalidOperationException($"interior {m.Name} could not be written ({e.GetType().Name}: {e.Message}) - usually a missing entity, room, portal or entity set entry", e);
                             }
                             ptrs[i] = mb.AddItemPtr(MetaName.CMloArchetypeDef, m._MloArchetypeDef);
                             break;
@@ -159,7 +159,7 @@ namespace CodeWalker.GameFiles
                 mb.AddStructureInfo(MetaName.CMloTimeCycleModifier);
             }
 
-            if ((AllArchetypes != null) && (AllArchetypes.Any(x => x is MloArchetype m && m.entities.Length > 0)))
+            if ((AllArchetypes != null) && (AllArchetypes.Any(x => x is MloArchetype m && (m.entities?.Length ?? 0) > 0)))
             {
                 mb.AddStructureInfo(MetaName.CEntityDef);
                 mb.AddEnumInfo(MetaName.rage__eLodType); //LODTYPES_

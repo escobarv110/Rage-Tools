@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +20,7 @@ namespace RageLightEditor.Editor
         public event Action<YmapEntityDef> EntityChanged;
         public event Action<YmapEntityDef> GoToEntity;
         public Func<Vector3> SpawnPos = () => Vector3.Zero;
+        public Func<YmapEntityDef, bool> NewEntityInInterior;
         public event Action PropsPanelRequested;
         public event Action EntitySetsChanged;
         public event Action<Vector3, float> GoToPosition;
@@ -516,7 +517,13 @@ namespace RageLightEditor.Editor
                 if (a is MloArchetype m)
                 {
                     var v = MloEditor.Validate(m);
-                    if (!string.IsNullOrEmpty(v)) { win.Status = $"{a.Name}: {v.Split('\n')[0]}"; return; }
+                    if (!string.IsNullOrEmpty(v))
+                    {
+                        AppLog_U21.Error($"{Path.GetFileName(filepath)} was not saved - interior {a.Name} has problems:\n{v}");
+                        win.Status = $"{a.Name}: {v.Split('\n')[0]} - the full list is in Help > Show log";
+                        UiSound.Error();
+                        return;
+                    }
                 }
 
             if (saveas)
@@ -532,10 +539,12 @@ namespace RageLightEditor.Editor
                 t.RpfFileEntry.Name = Path.GetFileName(filepath);
                 t.Name = t.RpfFileEntry.Name;
                 var data = t.Save();
-                if (data == null || data.Length == 0) { win.Status = "save produced no data"; return; }
+                if (data == null || data.Length == 0) { win.Status = "save produced no data"; AppLog_U21.Error(Path.GetFileName(filepath) + ": the save produced no data"); return; }
                 File.WriteAllBytes(filepath, data);
                 UiSound.Success();
                 t.HasChanged = false;
+                if (t.SaveWarnings != null && t.SaveWarnings.Count > 0)
+                    AppLog_U21.Warn(Path.GetFileName(filepath) + " saved with warnings:\n" + string.Join("\n", t.SaveWarnings));
                 if (saveas && p != null)
                 {
                     var origRel = p.GetRelativePath(origfile);
@@ -546,7 +555,7 @@ namespace RageLightEditor.Editor
                 win.Status = "saved " + Path.GetFileName(filepath) +
                              (t.SaveWarnings != null && t.SaveWarnings.Count > 0 ? $"  ({t.SaveWarnings.Count} warning(s))" : "");
             }
-            catch (Exception ex) { win.Status = "ytyp save failed: " + ex.Message; UiSound.Error(); }
+            catch (Exception ex) { win.Status = "ytyp save failed: " + ex.Message + " - details in Help > Show log"; AppLog_U21.Error("saving " + Path.GetFileName(filepath), ex); UiSound.Error(); }
         }
 
         public void RemoveYtyp()
@@ -562,6 +571,7 @@ namespace RageLightEditor.Editor
 
         public void NewEntity()
         {
+            if (NewEntityInInterior?.Invoke(win.CurrentEntity) == true) return;
             var y = win.CurrentYmap;
             if (y == null) { win.Status = "select a ymap first"; return; }
             var e = win.Project.NewEntity(y, SpawnPos(), cache(), win.CurrentEntity, copyPosition: false);
@@ -727,6 +737,7 @@ namespace RageLightEditor.Editor
 
         public void NewMloEntity()
         {
+            if (NewEntityInInterior?.Invoke(win.CurrentEntity) == true) return;
             var set = win.CurrentEntitySet;
             var mlo = set?.OwnerMlo;
             if (set == null || mlo == null) { win.Status = "select an entity set first"; return; }

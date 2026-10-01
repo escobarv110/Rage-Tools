@@ -40,8 +40,8 @@ namespace RageLightEditor
                             var bits = (sh.ParametersList?.Parameters ?? Array.Empty<ShaderParameter>())
                                 .Zip(sh.ParametersList?.Hashes ?? Array.Empty<MetaName>(),
                                      (p, hh) => (Name: ((ShaderParamNames)(uint)hh).ToString(), p.Data))
-                                .Where(x => x.Data is SharpDX.Vector4)
-                                .Select(x => $"{x.Name}={FmtV4_U6((SharpDX.Vector4)x.Data)}");
+                                .Where(x => x.Data is SharpDX.Vector4 || x.Data is TextureBase)
+                                .Select(x => x.Data is TextureBase tb ? $"{x.Name}='{tb.Name}'" : $"{x.Name}={FmtV4_U6((SharpDX.Vector4)x.Data)}");
                             Console.WriteLine($"PEDFURSCAN {name} / {d.Name}: {string.Join("  ", bits)}");
                         }
                     }

@@ -1060,7 +1060,7 @@ float4 PSMain(PS_Input input, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
         diffuse = float4(WaterShallowTint, 1.0);
         alpha = 1.0;
     }
-    else if (AlphaMode == 1 && HasDiffuseTex == 0)
+    else if (AlphaMode == 1 && HasDiffuseTex == 0 && !grassFur)
     {
 
         clip(-1);

@@ -28,15 +28,6 @@ namespace RageLightEditor.Editor
                 return;
             }
 
-            ImGui.TextDisabled($"{WorldYmapsOpen:N0} of {WorldYmapsWanted:N0} ymaps loaded");
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip($"{WorldEntities:N0} entities streamed\n{WorldMeshes:N0} meshes drawn\n" +
-                                 $"{WorldArchetypes:N0} models in memory\n{WorldResident:N0} ymaps resident" +
-                                 (WorldPending > 0 ? $"  ({WorldPending:N0} loading)" : "") +
-                                 (WorldEvicted > 0 ? $"\n{WorldEvicted:N0} models released" : "") +
-                                 (string.IsNullOrEmpty(StatsText) ? "" : "\n" + StatsText) +
-                                 $"\n\nOut of {WorldNodes:N0} ymaps in the game.");
-
             if (WorldTruncated)
             {
                 ImGui.TextColored(UiTheme.Warn, "Budget reached");
@@ -97,7 +88,6 @@ namespace RageLightEditor.Editor
 
                 if (!string.IsNullOrEmpty(WeatherStatus) && WeatherStatus.Contains("->"))
                     ImGui.TextDisabled(WeatherStatus);
-                DrawWorldMapTabExtras_J3();
 
                 if (ImGui.TreeNodeEx("More##v58weather", ImGuiTreeNodeFlags.SpanAvailWidth))
                 {
@@ -135,15 +125,6 @@ namespace RageLightEditor.Editor
                 ImGui.Spacing();
             }
 
-            if (WorldSection_V58("Flying the map##v58", false))
-            {
-                ImGui.TextWrapped("WASD to fly, R and C for up and down. Hold X to go faster, Z to crawl. " +
-                                  "Right-drag looks around; the map fills in as you go, a few models a frame, " +
-                                  "so moving never stalls.");
-                ImGui.TextWrapped("Right-click a prop to select it. F frames the selection, G switches the " +
-                                  "handles between world and local axes.");
-                ImGui.Spacing();
-            }
 
             worldSectionsInit_V58 = true;
         }

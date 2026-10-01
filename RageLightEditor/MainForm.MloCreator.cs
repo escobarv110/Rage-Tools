@@ -550,14 +550,14 @@ namespace RageLightEditor
                     {
                         var r = s.ExportForGame_V31(dlg.SelectedPath);
                         ui.LastExport_V31 = r;
-                        if (!r.Ok) ui.SetStatus("Export failed: " + r.Error, true);
+                        if (!r.Ok) { ui.SetStatus("Export failed: " + r.Error + " - details in Help > Show log", true); AppLog_U21.Error("MLO export failed: " + (r.ErrorDetail_U21 ?? r.Error)); }
                         else ui.SetStatus($"Wrote {r.Written.Count} file(s) to {Path.GetFileName(dlg.SelectedPath)}" +
                                           (r.Missing.Count > 0 ? $" - {r.Missing.Count} still to add: {r.Missing[0]}" : " - ready to pack."));
                         foreach (var w in r.Written) Console.WriteLine("MLOEXPORT wrote  " + w);
                         foreach (var m in r.Missing) Console.WriteLine("MLOEXPORT needs  " + m);
                     }
                 }
-                catch (Exception ex) { ui.SetStatus("Export failed: " + ex.Message, true); }
+                catch (Exception ex) { ui.SetStatus("Export failed: " + ex.Message + " - details in Help > Show log", true); AppLog_U21.Error("MLO export", ex); }
             }
             if (ui.RequestSaveYtyp)
             {
@@ -579,7 +579,7 @@ namespace RageLightEditor
                                      $"{(t.AllArchetypes.OfType<MloArchetype>().FirstOrDefault()?.entities?.Length ?? 0)} entities.");
                     }
                 }
-                catch (Exception ex) { ui.SetStatus("Save failed: " + ex.Message, true); }
+                catch (Exception ex) { ui.SetStatus("Save failed: " + ex.Message + " - details in Help > Show log", true); AppLog_U21.Error("MLO Creator .ytyp save", ex); }
             }
             if (ui.RequestAddToProject)
             {
@@ -622,7 +622,7 @@ namespace RageLightEditor
                         ui.SetStatus($"Saved {Path.GetFileName(dlg.FileName)}: one MLO instance of {s.Name} at {s.YmapPosition.X:0.0}, {s.YmapPosition.Y:0.0}, {s.YmapPosition.Z:0.0}.");
                     }
                 }
-                catch (Exception ex) { ui.SetStatus("Export failed: " + ex.Message, true); }
+                catch (Exception ex) { ui.SetStatus("Export failed: " + ex.Message + " - details in Help > Show log", true); AppLog_U21.Error("MLO export", ex); }
             }
         }
 

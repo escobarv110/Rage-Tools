@@ -395,7 +395,7 @@ namespace RageLightEditor.Editor
                 {
                     sp.Data = oldTextures.TryGetValue(pp.Hash, out var tex) && tex != null
                         ? tex
-                        : MaterialEditing.RecallTexture(shader, pp.Hash);
+                        : MaterialEditing.RecallTexture(shader, pp.Hash) ?? GameFurTexture_U21(t.Name, pp.Hash);
                 }
                 else
                 {

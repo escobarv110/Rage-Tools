@@ -77,6 +77,7 @@ namespace RageLightEditor.Rendering
                     }
             }
 
+            if (found < 4) found += UseGrassFurFallback_U21(mesh);
             mesh.IsFur = found > 0;
             if (!mesh.IsFur) return;
             mesh.FurLayerParams = new Vector4(Math.Max(mesh.FurLayerParams.X, 0.0f), mesh.FurLayerParams.Y, mesh.FurLayerParams.Z, mesh.FurLayerParams.W);

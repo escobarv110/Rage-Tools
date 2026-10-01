@@ -40,12 +40,6 @@ namespace RageLightEditor.Editor
                 ImGui.Separator();
                 if (ImGui.MenuItem("Ymap File")) RequestNewYmap = true;
                 if (ImGui.MenuItem("Ytyp File")) RequestNewYtyp = true;
-                if (ImGui.MenuItem("Ybn File", null, false, false)) { }
-                if (ImGui.MenuItem("Ynd File", null, false, false)) { }
-                if (ImGui.MenuItem("Ynv File", null, false, false)) { }
-                if (ImGui.MenuItem("Trains File", null, false, false)) { }
-                if (ImGui.MenuItem("Scenario File", null, false, false)) { }
-                if (ImGui.MenuItem("Audio Dat File", null, false, false)) { }
                 ImGui.EndMenu();
             }
             if (ImGui.MenuItem("Open Project...", "Ctrl+O")) RequestOpenProject = true;
@@ -151,7 +145,15 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip(AddSelectedTooltip());
             ImGui.SameLine();
             ImGui.TextDisabled("|"); ImGui.SameLine();
-            if (CurrentYmap != null) { if (ImGui.Button("+ Entity")) RequestNewEntity = true; ImGui.SameLine(); }
+            if (CurrentYmap != null || CurrentRoom != null || CurrentPortal != null || CurrentEntitySet != null || CurrentEntity?.MloParent != null)
+            {
+                if (ImGui.Button("+ Entity")) RequestNewEntity = true;
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip(CurrentRoom != null || CurrentPortal != null || CurrentEntitySet != null || CurrentEntity?.MloParent != null
+                        ? "Adds a prop to the selected interior room, portal or entity set (saved in its .ytyp)."
+                        : "Adds a prop to the selected ymap. Standing inside an interior room puts it in that room instead.");
+                ImGui.SameLine();
+            }
             if (CurrentYtyp != null) { if (ImGui.Button("+ Archetype")) RequestNewArchetype = true; ImGui.SameLine(); }
             if (!string.IsNullOrEmpty(Status)) ImGui.TextDisabled(Status);
             else ImGui.NewLine();

@@ -96,6 +96,9 @@ namespace RageLightEditor
             return clone;
         }
 
+        private readonly System.Runtime.CompilerServices.ConditionalWeakTable<YmapEntityDef, int[]> cloneSlot_U21 =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<YmapEntityDef, int[]>();
+
         private void ReattachClone_V65(YmapEntityDef clone)
         {
             try
@@ -107,7 +110,8 @@ namespace RageLightEditor
                     var back = inst?.TryGetArchetypeEntity(clone);
                     if (arch != null && back == null)
                     {
-                        arch.AddEntity(clone, 0, -1, -1);
+                        int[] slot = cloneSlot_U21.TryGetValue(clone, out var s) ? s : new[] { 0, -1, -1 };
+                        arch.AddEntity(clone, slot[0], slot[1], slot[2]);
                         inst?.AddEntity(clone);
                         inst?.UpdateEntity(clone);
                     }
@@ -124,6 +128,8 @@ namespace RageLightEditor
             {
                 if (clone.MloParent != null)
                 {
+                    var spot = CaptureMloChild_U5(clone);
+                    if (spot != null) { cloneSlot_U21.Remove(clone); cloneSlot_U21.Add(clone, new[] { spot.Room, spot.Portal, spot.EntSet }); }
                     (clone.MloParent.Archetype as MloArchetype)?.RemoveEntity(clone);
                     try { clone.MloParent.MloInstance?.DeleteEntity(clone); } catch { }
                     WorldEntityChanged(clone.MloParent);

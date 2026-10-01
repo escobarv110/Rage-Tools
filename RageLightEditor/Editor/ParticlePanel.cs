@@ -409,7 +409,12 @@ namespace RageLightEditor.Editor
                     foreach (var tx in texDict)
                     {
                         if (tx?.Name == null) continue;
-                        if (ImGui.Selectable(tx.Name, tx.Name == cur)) texOverride[index] = tx.Name;
+                        if (ImGui.Selectable(tx.Name, tx.Name == cur))
+                        {
+                            texOverride[index] = tx.Name;
+                            PtfxAuthor.SetSheet(Doc, em, tx);
+                            Touch(true);
+                        }
                     }
                     ImGui.EndCombo();
                 }

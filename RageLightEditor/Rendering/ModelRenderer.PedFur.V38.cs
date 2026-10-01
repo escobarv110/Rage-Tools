@@ -99,6 +99,7 @@ namespace RageLightEditor.Rendering
             if (mesh.FurAlphaDistance == Vector2.Zero) mesh.FurAlphaDistance = new Vector2(25f, 40f);
 
             mesh.FurComboSRV[0] = ResolveTexture(noise, embeddedDict, false, out _);
+            UsePedFurFallback_U21(mesh);
 
             if (furDbg_V21)
                 Console.WriteLine($"PEDFUR len {length:0.###} m, shells sink from the modelled coat down to the skin, layers {minLayers}..{maxLayers}, " +

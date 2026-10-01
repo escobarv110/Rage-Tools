@@ -203,7 +203,6 @@ namespace RageLightEditor.Editor
                 SameCol();
                 OptCheck("LOD lights", ref WorldLodLightsEnabled,
                          "The _lodlights / _distantlights ymaps: the game's stand-in lights and the distant\nsprites that make the city glow at night. Skipped where the real light is streamed in.");
-                ImGui.TextDisabled($"{WorldLightsEmitted:N0} lit of {WorldLightsInView:N0} in view");
                 DrawRenderExtras_P3();
 
                 ViewGroup("Interiors");
@@ -225,11 +224,6 @@ namespace RageLightEditor.Editor
                 }
             }
 
-            if (Header("Cinematic", RenderMode == 7))
-            {
-                DrawCinematicSection();
-            }
-
             if (Header("Camera", true))
             {
                 DrawCameraKnobs();
@@ -240,8 +234,6 @@ namespace RageLightEditor.Editor
                 OptCheck("Animations", ref WorldAnimations, "Props whose archetype names a clip dictionary play it - fans turn, conveyor textures roll. Off freezes them where they are.");
                 SameCol();
                 OptCheck("Coronas", ref ShowCoronas, "The glow sprite the map's lights draw at their source.");
-                SameCol();
-                OptCheck("Collision", ref WorldShowCollision, "The .ybn collision meshes, coloured by material (also on the toolbar).");
                 if (WorldShowCollision)
                     OptSlider("Collision opacity", ref WorldCollisionOpacity, 0.2f, 1.0f, "%.2f", "1 = solid, CodeWalker's look; lower sees through to the model.");
                 DrawHelpersExtras_H3();

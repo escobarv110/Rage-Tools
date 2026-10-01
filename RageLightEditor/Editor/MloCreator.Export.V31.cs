@@ -14,6 +14,7 @@ namespace RageLightEditor.Editor
             public readonly List<string> Missing = new List<string>();
             public string Folder = "";
             public string Error;
+            public string ErrorDetail_U21;
             public bool Ok => Error == null;
         }
 
@@ -62,7 +63,7 @@ namespace RageLightEditor.Editor
                 }
                 return r;
             }
-            catch (Exception ex) { r.Error = ex.Message; return r; }
+            catch (Exception ex) { r.Error = ex.Message; r.ErrorDetail_U21 = ex.ToString(); return r; }
         }
 
         public string BuildManifestXml_V31(string ymapStem, string ytypStem)

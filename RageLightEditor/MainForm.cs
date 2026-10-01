@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -322,6 +322,7 @@ namespace RageLightEditor
                 return null;
             };
             projCtl.SpawnPos = () => camera.Position + camera.GetForward() * 5.0f;
+            projCtl.NewEntityInInterior = ProjectNewEntityInInterior_U21;
             projCtl.EntityChanged += e => WorldEntityChanged(e);
             projCtl.GoToEntity += e =>
             {
@@ -1669,7 +1670,8 @@ namespace RageLightEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "YTYP export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppLog_U21.Error("Archetypes .ytyp export", ex, false);
+                MessageBox.Show(this, ex.Message + "\n\nThe full details are in Help > Show log.", "YTYP export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -4486,8 +4488,20 @@ namespace RageLightEditor
             }
             if (ProjWin.Project == null)
                 ProjWin.Project = new CwProject { Name = "New Project", HasChanged = true };
-            var ymap = ProjWin.CurrentYmap ?? ProjWin.Project.YmapFiles.FirstOrDefault() ?? ProjWin.Project.NewYmap();
             var spawn = camera.Position + camera.GetForward() * 5.0f;
+            var mloTarget = ResolveMloTarget_U21(spawn);
+            if (mloTarget.Valid)
+            {
+                var me = AddMloEntity_U21(mloTarget, hash, arch, spawn);
+                if (me == null) { panel.MloStatus = "could not add " + shortName + " to " + MloTargetText_U21(mloTarget); return; }
+                ProjWin.Select(me);
+                ProjWin.Visible = true;
+                WorldEdit.Select(me);
+                panel.MloStatus = $"placed {shortName} in {MloTargetText_U21(mloTarget)} ({mloTarget.Why})";
+                Console.WriteLine($"ARCHIVE placed {shortName} in {MloTargetText_U21(mloTarget)} at {spawn}");
+                return;
+            }
+            var ymap = ProjWin.CurrentYmap ?? ProjWin.Project.YmapFiles.FirstOrDefault() ?? ProjWin.Project.NewYmap();
             var ent = ProjWin.Project.NewEntity(ymap, spawn, gameFiles?.Cache);
             if (ent == null) { panel.MloStatus = "could not add an entity to " + ymap.Name; return; }
             ent._CEntityDef.archetypeName = new MetaHash(hash);
@@ -6942,6 +6956,10 @@ namespace RageLightEditor
                 SeqTest_Heightmap_V21(Check);
                 SeqTest_Fur_V21(Check);
                 SeqTest_Fur_U20(Check);
+                SeqTest_Particles_U21(Check);
+                SeqTest_MloAdd_U21(Check);
+                SeqTest_FurFallback_U21(Check);
+                SeqTest_Log_U21(Check);
                 SeqTest_RpfExtras_V22(Check);
                 SeqTest_RpfV23(Check);
                 SeqTest_MaterialReset_V24(Check);
