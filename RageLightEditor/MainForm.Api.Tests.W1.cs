@@ -47,7 +47,34 @@ namespace RageLightEditor
                 tcp.ReceiveTimeout = 3000;
                 var stream = tcp.GetStream();
                 var writer = new StreamWriter(stream, new UTF8Encoding(false)) { AutoFlush = true, NewLine = "\n" };
-                var reader = new StreamReader(stream, Encoding.UTF8);
+                var inbox = new StringBuilder();
+                var rawIn = new byte[65536];
+                var charsIn = new char[Encoding.UTF8.GetMaxCharCount(rawIn.Length)];
+                var decoder = Encoding.UTF8.GetDecoder();
+                bool Fill()
+                {
+                    int n = stream.Read(rawIn, 0, rawIn.Length);
+                    if (n <= 0) return false;
+                    inbox.Append(charsIn, 0, decoder.GetChars(rawIn, 0, n, charsIn, 0));
+                    return true;
+                }
+                string TakeLine()
+                {
+                    var s = inbox.ToString();
+                    int nl = s.IndexOf('\n');
+                    if (nl < 0) return null;
+                    inbox.Remove(0, nl + 1);
+                    return s.Substring(0, nl).TrimEnd('\r');
+                }
+                string ReadLine()
+                {
+                    while (true)
+                    {
+                        var l = TakeLine();
+                        if (l != null) return l;
+                        if (!Fill()) return null;
+                    }
+                }
 
                 void Pump(Func<bool> until)
                 {
@@ -63,7 +90,7 @@ namespace RageLightEditor
                     {
                         for (int i = 0; i < 32; i++)
                         {
-                            var l = reader.ReadLine();
+                            var l = ReadLine();
                             if (l == null) return null;
                             if (l.Contains("\"type\":\"event\"")) { strays.Add(l); continue; }
                             return l;
@@ -76,7 +103,8 @@ namespace RageLightEditor
                 {
                     var got = new List<string>();
                     tcp.ReceiveTimeout = 250;
-                    try { while (stream.DataAvailable) { var l = reader.ReadLine(); if (l == null) break; got.Add(l); } } catch { }
+                    try { while (stream.DataAvailable) if (!Fill()) break; } catch { }
+                    for (var l = TakeLine(); l != null; l = TakeLine()) got.Add(l);
                     tcp.ReceiveTimeout = 3000;
                     return got;
                 }

@@ -87,6 +87,12 @@ local function distance(a, b)
     return math.sqrt(d.x * d.x + d.y * d.y + d.z * d.z)
 end
 
+local saidInterior = {}
+
+local function inInterior(p)
+    return GetInteriorAtCoords(p.x, p.y, p.z) ~= 0
+end
+
 local function standInAt(hash, pos)
     for _, e in pairs(ents) do
         if e.hash == hash and e.spawned and DoesEntityExist(e.spawned) and e.place and distance(e.place.pos, pos) < 0.05 then
@@ -144,6 +150,13 @@ local function applyEntity(e, data)
         releaseEntity(e)
         return
     end
+    if not (e.spawned and DoesEntityExist(e.spawned)) and e.orig and inInterior(e.orig.pos) then
+        if not e.warnedInterior then
+            e.warnedInterior = true
+            say(('%s is part of an interior - the game cannot hide it, so save and restart the resource to see the move'):format(e.model))
+        end
+        return
+    end
     if not (e.spawned and DoesEntityExist(e.spawned)) then
         e.spawned = nil
         if loadModel(e.hash) then
@@ -175,6 +188,13 @@ local function findEntity(set)
         local p = set.place.pos
         local ent = standInAt(set.hash, p)
         if ent == 0 then ent = GetClosestObjectOfType(p.x, p.y, p.z, 2.0, set.hash, false, false, false) end
+        if ent == 0 and not set.spawned and not set.worldOnly and inInterior(p) then
+            set.worldOnly = true
+            if not saidInterior[set.model] then
+                saidInterior[set.model] = true
+                say(('%s: inside an interior, drawing the lights at their place without a copy'):format(set.model))
+            end
+        end
         if ent == 0 and not set.spawned and not set.worldOnly then
             if loadModel(set.hash) then
                 ent = CreateObjectNoOffset(set.hash, p.x, p.y, p.z, false, false, false)

@@ -15,7 +15,7 @@ namespace RageLightEditor
 {
     public partial class MainForm
     {
-        public const int FiveMResourceVersion_U16 = 4;
+        public const int FiveMResourceVersion_U16 = 5;
 
         private AsiClient_U16 asi_U16;
         private readonly Dictionary<string, string> asiSent_U16 = new Dictionary<string, string>();

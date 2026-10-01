@@ -88,6 +88,8 @@ namespace RageLightEditor
                       cfg.Contains("port = 27018") && manifest.Contains("ui_page") && manifest.Contains("client.lua") && manifest.Contains("server.lua"), cfg.Trim());
                 var lua = File.ReadAllText(Path.Combine(installed, "client.lua"));
                 check("fivem: the client draws lights with the game's own light natives", lua.Contains("DrawSpotLight") && lua.Contains("DrawLightWithRange") && lua.Contains("RegisterKeyMapping"), "");
+                check("fivem: inside an interior the client never spawns a copy over the real model",
+                      lua.Contains("GetInteriorAtCoords") && lua.Contains("and inInterior(p) then") && lua.Contains("and e.orig and inInterior(e.orig.pos) then"), "");
                 try { Directory.Delete(tmp, true); } catch { }
 
                 SeqTest_FiveMSocket_U12(check);
