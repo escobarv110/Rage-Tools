@@ -8,7 +8,7 @@ namespace RageLightEditor.Editor
     public static partial class GizmoStyle
     {
 
-        public enum GizmoLook { Modern = 0, Shaded = 1, Classic = 2 }
+        public enum GizmoLook { Modern = 0, Shaded = 1, Classic = 2, CodeWalker = 3 }
 
         public static GizmoLook Look = GizmoLook.Modern;
         public static bool Flat => Look == GizmoLook.Modern;
@@ -20,13 +20,14 @@ namespace RageLightEditor.Editor
             {
                 case 1: return GizmoLook.Shaded;
                 case 2: return GizmoLook.Classic;
+                case 3: return GizmoLook.CodeWalker;
                 default: return GizmoLook.Modern;
             }
         }
 
         public static void SetDebugLook(int code)
         {
-            Look = code == 0 ? GizmoLook.Classic : (code == 2 ? GizmoLook.Shaded : GizmoLook.Modern);
+            Look = code == 0 ? GizmoLook.Classic : (code == 2 ? GizmoLook.Shaded : (code == 3 ? GizmoLook.CodeWalker : GizmoLook.Modern));
         }
 
         private const float FLinePx = 3.5f;

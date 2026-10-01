@@ -329,6 +329,7 @@ namespace RageLightEditor.Editor
         public static void DrawTranslate(TriRenderer tr, Camera cam, Vector3 pos, Vector3[] basis, float scale,
                                          int hp, int ap, bool dragging, float am)
         {
+            if (CW) { DrawTranslateCW(tr, cam, pos, basis, scale, hp, ap, am); return; }
             if (Flat) { DrawTranslateFlat(tr, cam, pos, basis, scale, hp, ap, dragging, am); return; }
             if (Modern) { DrawTranslateModern(tr, cam, pos, basis, scale, hp, ap, dragging, am); return; }
             if (dragging && Modern)
@@ -371,6 +372,7 @@ namespace RageLightEditor.Editor
                                       int hp, int ap, bool dragging, float am, bool[] ringOn, bool viewRing,
                                       Vector3 dragAxis, Vector3 rotStartVec, float angle, float snapDeg)
         {
+            if (CW) { DrawRotateCW(tr, cam, pos, basis, scale, hp, ap, am, ringOn, viewRing); return; }
             if (Flat) { DrawRotateFlat(tr, cam, pos, basis, scale, hp, ap, dragging, am, ringOn, viewRing, dragAxis, rotStartVec, angle, snapDeg); return; }
             if (Modern) { DrawRotateModern(tr, cam, pos, basis, scale, hp, ap, dragging, am, ringOn, viewRing, dragAxis, rotStartVec, angle, snapDeg); return; }
             var (sr, su, _) = ScreenBasis(cam);
@@ -423,6 +425,7 @@ namespace RageLightEditor.Editor
         public static void DrawScale(TriRenderer tr, Camera cam, Vector3 pos, Vector3[] basis, float scale,
                                      int hp, int ap, bool dragging, float am, bool lockXY, bool planes)
         {
+            if (CW) { DrawScaleCW(tr, cam, pos, basis, scale, hp, ap, am, lockXY); return; }
             if (Flat) { DrawScaleFlat(tr, cam, pos, basis, scale, hp, ap, dragging, am, lockXY, planes); return; }
             if (Modern) { DrawScaleModern(tr, cam, pos, basis, scale, hp, ap, dragging, am, lockXY, planes); return; }
             bool xyHot = hp == 0 || hp == 1 || ap == 0 || ap == 1;
@@ -496,6 +499,7 @@ namespace RageLightEditor.Editor
 
         public static void AxisLetters(Camera cam, Vector3 pos, Vector3[] basis, float scale, int hp, int ap, float am, bool[] show = null)
         {
+            if (CW) return;
             if (Flat) { AxisLettersFlat(cam, pos, basis, scale, hp, ap, am, show); return; }
             if (Modern) { AxisLettersModern(cam, pos, basis, scale, hp, ap, am, show); return; }
             if (!ScreenText || am < 0.99f || !Modern) return;
@@ -544,6 +548,7 @@ namespace RageLightEditor.Editor
 
         public static void WorldLabel(Camera cam, Vector3 world, string text, Vector4 col, float am)
         {
+            if (CW) return;
             if (!ScreenText || am < 0.99f || string.IsNullOrEmpty(text)) return;
             if (!Project(cam, world, out var p)) return;
             var dl = ImGui.GetBackgroundDrawList();

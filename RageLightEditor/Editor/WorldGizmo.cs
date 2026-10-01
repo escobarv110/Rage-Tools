@@ -489,6 +489,18 @@ namespace RageLightEditor.Editor
             hotPart = -1;
             if (sel.Count == 0) return;
 
+            if (GizmoStyle.CW)
+            {
+                if (EffectiveMode == WorldGizmoMode.Rotate)
+                {
+                    for (int i = 0; i < 3; i++) ringMask[i] = RingEnabled(i);
+                    hotPart = GizmoStyle.HitRotateCW(ray, cam?.Position ?? ray.Position, pivot, basis, scale, ringMask, RotationAxes == WorldWidgetAxis.XYZ);
+                }
+                else if (EffectiveMode == WorldGizmoMode.Scale) { if (CanScale) hotPart = GizmoStyle.HitScaleCW(ray, pivot, basis, scale, ScaleLockXY); }
+                else hotPart = GizmoStyle.HitTranslateCW(ray, pivot, basis, scale);
+                return;
+            }
+
             float best = float.MaxValue;
             float threshold = scale * 0.14f;
 
@@ -649,6 +661,7 @@ namespace RageLightEditor.Editor
                 GizmoStyle.Readout(GizmoStyle.FormatAngle(lastRotAngle), GizmoStyle.Hot, cam, pos, am);
             }
 
+            if (GizmoStyle.CW) return;
             var front = sel.Count > 0 ? LocalForward(sel[0]) : Vector3.UnitX;
             var tipf = pos + front * (scale * 1.35f);
             var neck = pos + front * (scale * 1.2f);

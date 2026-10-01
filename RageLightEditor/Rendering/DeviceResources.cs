@@ -326,6 +326,14 @@ namespace RageLightEditor.Rendering
             Context.OutputMerger.SetTargets(dsv, rtv);
         }
 
+        public bool BeginBackbufferWithDepth_U24()
+        {
+            Context.Rasterizer.SetViewport(0, 0, Width, Height);
+            if (!DepthDsvValid || depthDsvReadOnly == null) { Context.OutputMerger.SetTargets((DepthStencilView)null, BackbufferRTV); return false; }
+            Context.OutputMerger.SetTargets(depthDsvReadOnly, BackbufferRTV);
+            return true;
+        }
+
         public void BeginBackbuffer()
         {
             Context.Rasterizer.SetViewport(0, 0, Width, Height);

@@ -2546,9 +2546,7 @@ namespace RageLightEditor.Editor
             if (ProjectWindow != null)
             {
                 bool pv = ProjectWindow.Visible;
-                if (Toggle("Project##tbproj", pv,
-                           "Your project: the map files you change. It opens as the Project tab on the right.\n" +
-                           "Shortcut: Ctrl+Shift+P, or Ctrl+U in the world", W("Project >")))
+                if (DrawProjectButton_U24(pv))
                     ProjectWindow.Visible = !pv;
                 ImGui.SameLine(0, 4);
             }
@@ -2581,7 +2579,7 @@ namespace RageLightEditor.Editor
 
             w += 20.0f + W("|");
             if (WorldSel != null || WorldSelection.HasValue) w += 4.0f + W("Frame") + 20.0f + W("|");
-            if (ProjectWindow != null) w += W("Project >") + 4.0f;
+            if (ProjectWindow != null) w += ProjectButtonWidth_U24(ProjectUnsaved_U24()) + 4.0f;
             w += W("Edit Light") + 8.0f;
             w += ImGui.CalcTextSize(StatsText ?? "").X + 12.0f;
             return w;

@@ -402,6 +402,7 @@ namespace RageLightEditor.Editor
         public float GizmoSizePx { get; set; } = 120f;
         public bool GizmoModern { get; set; } = true;
         public int GizmoStyleIndex { get; set; } = -1;
+        public bool GizmoCodeWalkerU24 { get; set; }
         public bool MirrorSurprise { get; set; } = true;
     }
 }

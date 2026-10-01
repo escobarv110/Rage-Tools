@@ -895,6 +895,7 @@ namespace RageLightEditor
 
         private void DrawWorldSelectionBox()
         {
+            selOverlay_U24.Clear();
             foreach (var hb in selHelperBoxesNoDepth) DrawOrientedBox(hb.Pos, hb.Ori, hb.Min, hb.Max, hb.Col);
             DrawWorldLightMarkers_J2();
             if (worldHoverSel.HasValue && worldHoverSel.CheckForChanges(WorldEdit.Selection))

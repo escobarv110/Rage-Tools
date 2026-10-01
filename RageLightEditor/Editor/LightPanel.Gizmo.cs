@@ -22,9 +22,9 @@ namespace RageLightEditor.Editor
                                  "at 4K with no display scaling try 180-240.");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
 
-            int style = Math.Clamp(settings.GizmoStyleIndex, 0, 2);
+            int style = Math.Clamp(settings.GizmoStyleIndex, 0, 3);
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.Combo("Style", ref style, "Modern\0Shaded\0Classic\0"))
+            if (ImGui.Combo("Style", ref style, "Modern\0Shaded\0Classic\0CodeWalker\0"))
             {
                 settings.GizmoStyleIndex = style;
                 settings.GizmoModern = style != 2;
@@ -37,7 +37,8 @@ namespace RageLightEditor.Editor
                                  "thin rotate rings (back half dimmed) plus an outer view ring, square scale tips;\n" +
                                  "hover turns a part yellow-white, a drag dims the rest.\n" +
                                  "Shaded: lit 3D cones and cubes with silhouettes, drop shadows and glow halos.\n" +
-                                 "Classic: the plain axes, cones and corner brackets of the first release.");
+                                 "Classic: the plain axes, cones and corner brackets of the first release.\n" +
+                                 "CodeWalker: the same thin red, green and blue gizmo as CodeWalker.");
         }
     }
 }

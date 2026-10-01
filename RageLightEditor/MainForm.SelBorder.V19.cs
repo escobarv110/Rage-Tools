@@ -20,7 +20,7 @@ namespace RageLightEditor
                 return;
             }
 
-            DrawOrientedBox(pos, ori, mn, mx, col);
+            QueueSelectionBox_U24(pos, ori, mn, mx);
         }
 
         private void DrawEntityBox_V19(CodeWalker.GameFiles.YmapEntityDef e, Vector4 col, bool full)

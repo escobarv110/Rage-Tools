@@ -7985,7 +7985,7 @@ namespace RageLightEditor
                 deviceResources.DepthSRV);
 
             if (!photoMode && !renderingStill && !RpfExplorerOnly_Q1) DrawDayOverlays_U2(context);
-            if (!photoMode && !renderingStill && !RpfExplorerOnly_Q1) { DrawPrecisionOverlay_T4(context); DrawGizmoOverlay(context); DrawMloCreatorGizmo_H5(context); DrawExtGizmo_V69(context); }
+            if (!photoMode && !renderingStill && !RpfExplorerOnly_Q1) { DrawPrecisionOverlay_T4(context); DrawSelectionOverlay_U24(context); DrawGizmoOverlay(context); DrawMloCreatorGizmo_H5(context); DrawExtGizmo_V69(context); }
             GpuMark_J4("post", false);
             GpuMark_J4("ui", true);
 

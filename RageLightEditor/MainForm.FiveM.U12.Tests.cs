@@ -93,6 +93,8 @@ namespace RageLightEditor
                 try { Directory.Delete(tmp, true); } catch { }
 
                 SeqTest_FiveMSocket_U12(check);
+                SeqTest_Discord_U24(check);
+                SeqTest_GizmoCW_U24(check);
             }
             catch (Exception ex) { check("fivem: no exception", false, ex.ToString()); }
         }

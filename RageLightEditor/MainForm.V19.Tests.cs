@@ -54,11 +54,14 @@ namespace RageLightEditor
             int before = lineRenderer?.LineCount ?? -1;
             if (before >= 0)
             {
+                int queued = SelOverlayCount_U24;
                 DrawSelectionBox_V19(Vector3.Zero, Quaternion.Identity,
                                      new Vector3(-1), new Vector3(1), new Vector4(1, 1, 1, 1), full: true);
                 int selLines = (lineRenderer?.LineCount ?? 0) - before;
-                check("v19 selection: the selected box is one thin box like CodeWalker",
-                      selLines == 12, selLines + " lines (12 box)");
+                check("v19 selection: the selected box is one box drawn after tone mapping in pure green, like CodeWalker",
+                      selLines == 0 && SelOverlayCount_U24 == queued + 1 && SelBoxGreen_U24 == new Vector4(0, 1, 0, 1),
+                      $"{selLines} HDR lines, {SelOverlayCount_U24 - queued} queued");
+                selOverlay_U24.Clear();
 
                 int b2 = lineRenderer?.LineCount ?? 0;
                 DrawSelectionBox_V19(Vector3.Zero, Quaternion.Identity,

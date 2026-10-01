@@ -331,6 +331,18 @@ namespace RageLightEditor.Editor
             var ray = cam.GetPickRay(mx, my, vw, vh);
             float scale = GetScale(cam, pos);
             float threshold = scale * 0.14f;
+            if (GizmoStyle.CW)
+            {
+                int cwPart = EffectiveMode == GizmoMode.Translate
+                    ? GizmoStyle.HitTranslateCW(ray, pos, axes, scale)
+                    : GizmoStyle.HitRotateCW(ray, cam.Position, pos, axes, scale, AllRings, true);
+                if (cwPart >= 0)
+                {
+                    float cd = RayPointDistance(ray, pos);
+                    if (cd < best) { best = cd; hotPart = cwPart; hotLight = lightIndex; }
+                }
+                return;
+            }
 
             if (EffectiveMode == GizmoMode.Translate)
             {

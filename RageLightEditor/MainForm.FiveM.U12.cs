@@ -93,6 +93,7 @@ namespace RageLightEditor
             StoreFiveMSettings_U12();
             Tick_FiveM_U13();
             Tick_FiveM_U16();
+            Tick_Discord_U24();
             var b = fivem_U12;
             if (b == null || !b.Listening)
             {
