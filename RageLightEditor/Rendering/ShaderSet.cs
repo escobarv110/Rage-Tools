@@ -45,15 +45,13 @@ namespace RageLightEditor.Rendering
 
         public ShaderSet(Device device, string source, string vsEntry, string psEntry, InputElement[] elements, string debugName)
         {
-            using (var vsb = ShaderBytecode.Compile(source, vsEntry, "vs_5_0", ShaderFlags.OptimizationLevel3, sourceFileName: debugName))
+            using (var vsb = ShaderCache_U22.Compile(source, vsEntry, "vs_5_0", ShaderFlags.OptimizationLevel3, debugName))
             {
-                if (vsb.Bytecode == null) throw new Exception($"VS compile failed ({debugName}): {vsb.Message}");
                 VS = new VertexShader(device, vsb);
                 if (elements != null) Layout = new InputLayout(device, vsb, elements);
             }
-            using (var psb = ShaderBytecode.Compile(source, psEntry, "ps_5_0", ShaderFlags.OptimizationLevel3, sourceFileName: debugName))
+            using (var psb = ShaderCache_U22.Compile(source, psEntry, "ps_5_0", ShaderFlags.OptimizationLevel3, debugName))
             {
-                if (psb.Bytecode == null) throw new Exception($"PS compile failed ({debugName}): {psb.Message}");
                 PS = new PixelShader(device, psb);
             }
         }

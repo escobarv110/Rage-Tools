@@ -16,19 +16,11 @@ namespace RageLightEditor
             ApplyGizmoDebugCamera();
             ApplyGizmoDebugPose();
 
-            DrawGizmoPass(GizmoStyle.OccludedAlpha);
-            lineRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.DepthDisabled);
-            triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
-
-            bool depthOk = deviceResources.DepthDsvValid && deviceResources.DepthDSV != null;
-            if (depthOk) context.OutputMerger.SetTargets(deviceResources.DepthDSV, deviceResources.BackbufferRTV);
             GizmoStyle.ScreenText = true;
             try { DrawGizmoPass(1.0f); }
             finally { GizmoStyle.ScreenText = false; }
-            var ds = depthOk ? CommonStates.DepthReadOnly : CommonStates.DepthDisabled;
-            lineRenderer.Flush(context, camera.ViewProjMatrix, ds);
-            triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, ds);
-            if (depthOk) deviceResources.BeginBackbuffer();
+            lineRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.DepthDisabled);
+            triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
         }
 
         private void ApplyGizmoDebugPose()

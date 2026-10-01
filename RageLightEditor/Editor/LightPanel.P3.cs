@@ -9,7 +9,7 @@ namespace RageLightEditor.Editor
 
         partial void DrawRenderExtras_P3()
         {
-            OptCheck("Hide base grass/LOD lights under project ymaps", ref HideBaseUnderProject,
+            OptCheck("Clear under project", ref HideBaseUnderProject,
                      "A project ymap replaces the game's file of the same name COMPLETELY: its grass batches\n" +
                      "and its lodlights / distantlights partners go with it, so a package that ships emptied\n" +
                      "copies of them (a 'vanilla' folder) really does delete them.\n" +

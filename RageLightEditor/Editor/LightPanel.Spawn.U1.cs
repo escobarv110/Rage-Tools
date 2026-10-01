@@ -9,7 +9,7 @@ namespace RageLightEditor.Editor
 
         private void DrawResetViewRow_U1()
         {
-            if (ImGui.SmallButton("Reset the view##u1reset")) RequestResetView_U1 = true;
+            if (ImGui.SmallButton("Reset view##u1reset")) RequestResetView_U1 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Back to the world spawn - " +
                                  MainForm.FormatSpawn_U1() + " - looking over downtown.\n" +

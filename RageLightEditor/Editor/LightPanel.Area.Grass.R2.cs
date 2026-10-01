@@ -9,7 +9,7 @@ namespace RageLightEditor.Editor
         {
             ImGui.Spacing();
             ImGui.TextDisabled("GRASS");
-            if (ImGui.Checkbox("Delete grass instances too", ref st.IncludeGrass_R2)) st.RequestRefreshGrass_R2 = true;
+            if (ImGui.Checkbox("Include grass", ref st.IncludeGrass_R2)) st.RequestRefreshGrass_R2 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Grass is not entities - it is the ymap's instance batches.\nOn: 'Delete inside' also removes every grass instance whose position falls in the area,\nand the ymaps it edits join the project so the change can be saved.");
 

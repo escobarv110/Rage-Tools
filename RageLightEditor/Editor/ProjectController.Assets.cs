@@ -39,7 +39,7 @@ namespace RageLightEditor.Editor
             }
             void FileFolders(string file)
             {
-                if (string.IsNullOrEmpty(file)) return;
+                if (string.IsNullOrEmpty(file) || !Path.IsPathRooted(file)) return;
                 string dir = null;
                 try { dir = Path.GetDirectoryName(Path.GetFullPath(file)); } catch { }
                 Folder(dir);

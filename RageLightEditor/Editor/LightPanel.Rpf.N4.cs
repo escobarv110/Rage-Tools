@@ -45,7 +45,7 @@ namespace RageLightEditor.Editor
         private bool rpfSearchBranch = true;
         private bool lastRpfSearchBranch = true;
         private string lastRpfBranchPrefix = "\0";
-        private static readonly string[] RpfScopeLabels_V23 = { "Selected branch", "Whole install", "This folder only" };
+        private static readonly string[] RpfScopeLabels_V23 = { "Branch", "Install", "Folder" };
         private string lastRpfSearch = "\0";
         private bool lastRpfSearchAll;
         private readonly List<ArchiveBrowser.Entry> rpfHits = new List<ArchiveBrowser.Entry>();

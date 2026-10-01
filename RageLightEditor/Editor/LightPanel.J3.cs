@@ -20,7 +20,7 @@ namespace RageLightEditor.Editor
         {
             if (!WorldMode) return;
             LoadInteriorTimecycleOption();
-            ImGui.Checkbox("Interior timecycle", ref WorldInteriorTimecycle);
+            ImGui.Checkbox("Timecycle", ref WorldInteriorTimecycle);
             Tip("Inside an interior, grade the world with that room's own timecycle modifier, as the game does.\nOff: the weather's cycle everywhere.");
             Info("Inside an interior, grade the world with that ROOM's timecycle modifier - the\n" +
                  "one the room's ytyp names (timecycleName) - the way the game does when the\n" +
@@ -45,7 +45,7 @@ namespace RageLightEditor.Editor
             if (!WorldInteriorTimecycle) return;
             if (string.IsNullOrEmpty(InteriorTimecycleStatus))
             {
-                ImGui.TextDisabled("Interior: outside");
+                ImGui.TextDisabled("Outside");
                 return;
             }
             ImGui.TextColored(UiTheme.Accent, "Interior");

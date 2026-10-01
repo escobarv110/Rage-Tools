@@ -78,7 +78,7 @@ float4 PSMain(PS_INPUT input) : SV_Target
 
         private void CreateDeviceObjects()
         {
-            using (var vsBlob = ShaderBytecode.Compile(ShaderSource, "VSMain", "vs_4_0"))
+            using (var vsBlob = RageLightEditor.Rendering.ShaderCache_U22.Compile(ShaderSource, "VSMain", "vs_4_0", ShaderFlags.None, "imgui"))
             {
                 vs = new VertexShader(device, vsBlob);
                 layout = new InputLayout(device, vsBlob, new[]
@@ -88,7 +88,7 @@ float4 PSMain(PS_INPUT input) : SV_Target
                     new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
                 });
             }
-            using (var psBlob = ShaderBytecode.Compile(ShaderSource, "PSMain", "ps_4_0"))
+            using (var psBlob = RageLightEditor.Rendering.ShaderCache_U22.Compile(ShaderSource, "PSMain", "ps_4_0", ShaderFlags.None, "imgui"))
             {
                 ps = new PixelShader(device, psBlob);
             }

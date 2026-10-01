@@ -11,6 +11,8 @@ namespace RageLightEditor
 
         partial void OnWorldTick_FurShot_V21()
         {
+            FindFilesProbe_U22();
+            YtypEntsProbe_U22();
             if (furShotStage_V21 >= 2) return;
             var name = Environment.GetEnvironmentVariable("RLE_FURSHOT");
             if (string.IsNullOrEmpty(name)) return;
@@ -33,6 +35,21 @@ namespace RageLightEditor
                     foreach (var pm in scene.AllMeshes) if (pm?.Shader != null) modelRenderer.RefreshMaterial(pm);
                     Console.WriteLine($"FURSHOT switched {done.Count} material(s) to {preset.Trim()}; fur on {scene.AllMeshes.Count(x => x.IsFur)} mesh(es), preview textures on {scene.AllMeshes.Count(x => x.FurPreviewTextures_U21)}");
                 }
+                if (Environment.GetEnvironmentVariable("RLE_MATPROBE") == "1")
+                    foreach (var pm in scene.AllMeshes)
+                    {
+                        if (pm?.Shader == null) continue;
+                        var sh = pm.Shader;
+                        var texs = new System.Collections.Generic.List<string>();
+                        var vals = new System.Collections.Generic.List<string>();
+                        var ps = sh.ParametersList?.Parameters; var hs = sh.ParametersList?.Hashes;
+                        for (int i = 0; ps != null && hs != null && i < ps.Length && i < hs.Length; i++)
+                        {
+                            if (ps[i].Data is CodeWalker.GameFiles.TextureBase tb) texs.Add(((CodeWalker.GameFiles.ShaderParamNames)(uint)hs[i]) + "=" + tb.Name);
+                            else if (ps[i].Data is SharpDX.Vector4 v) vals.Add(((CodeWalker.GameFiles.ShaderParamNames)(uint)hs[i]) + "=" + v.X.ToString("0.###") + "," + v.Y.ToString("0.###") + "," + v.Z.ToString("0.###") + "," + v.W.ToString("0.###"));
+                        }
+                        Console.WriteLine($"MATPROBE {sh.Name} ({sh.FileName} #{sh.FileName.Hash}) bucket {sh.RenderBucket} -> {pm.AlphaMode} never={pm.NeverDraw} visible={pm.Visible} decal={pm.DecalKind} diffuse='{pm.DiffuseName}' srv={(pm.DiffuseSRV != null)} idx={pm.IndexCount} tex[{string.Join(" ", texs)}] val[{string.Join(" ", vals)}]");
+                    }
                 var target = new SharpDX.Vector3(0, 0, 0.3f);
                 foreach (var fm in scene.AllMeshes)
                 {
@@ -57,7 +74,10 @@ namespace RageLightEditor
             if (c?.YdrDict == null || !gameFiles.Ready) return;
 
             uint h = JenkHash.GenHash(System.IO.Path.GetFileNameWithoutExtension(name).ToLowerInvariant());
-            if (!c.YdrDict.TryGetValue(h, out var fe) || fe == null)
+            CodeWalker.GameFiles.RpfFileEntry fe = null;
+            if (c.YdrDict.TryGetValue(h, out var feYdr) && feYdr != null) fe = feYdr;
+            else if (c.YftDict != null && c.YftDict.TryGetValue(h, out var feYft) && feYft != null) fe = feYft;
+            if (fe == null)
             {
                 furShotStage_V21 = 2;
                 Console.WriteLine($"FURSHOT no .ydr called '{name}' in the archives");

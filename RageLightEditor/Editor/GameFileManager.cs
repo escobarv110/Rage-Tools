@@ -84,11 +84,14 @@ namespace RageLightEditor.Editor
                              !File.Exists(Path.Combine(folder, "gta5.exe"));
 
                     Status = "Loading keys from your GTA5.exe...";
+                    var phase = System.Diagnostics.Stopwatch.StartNew();
                     if (!keysLoaded)
                     {
-                        GTA5Keys.LoadFromPath(folder, IsGen9, null);
+                        LoadKeys_U22(folder, IsGen9);
                         keysLoaded = true;
                     }
+                    Console.WriteLine($"GAMEINIT keys {phase.ElapsedMilliseconds} ms");
+                    phase.Restart();
 
                     Status = "Scanning RPF archives (first run takes a while)...";
                     var cache = new GameFileCache(2L * 1024 * 1024 * 1024, 10.0, folder, IsGen9, SelectedDlc ?? "", EnableMods, "")
@@ -101,6 +104,7 @@ namespace RageLightEditor.Editor
                     };
                     cache.Init(s => { if (!string.IsNullOrEmpty(s)) Status = s; }, s => { });
                     Cache = cache;
+                    Console.WriteLine($"GAMEINIT archives {phase.ElapsedMilliseconds} ms");
                     Ready = cache.IsInited;
                     Status = Ready ? "Game files ready." : "Init finished but cache not ready.";
                     if (Ready) BeginTextureIndex();

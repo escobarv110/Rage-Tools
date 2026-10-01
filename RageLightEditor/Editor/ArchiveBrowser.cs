@@ -102,9 +102,9 @@ namespace RageLightEditor.Editor
 
         public static readonly string[] FilterLabels =
         {
-            "All files", "Models (.ydr)", "Fragments (.yft)", "Drawable dicts (.ydd)",
-            "Textures (.ytd)", "Archetypes (.ytyp)", "Map placements (.ymap)",
-            "Collision (.ybn)", "Meta / XML (.ymt)", "Audio (.awc)", "Archives (.rpf)",
+            "All files", "Models", "Fragments", "Drawable dicts",
+            "Textures", "Archetypes", "Ymaps",
+            "Collision", "Meta", "Audio", "Archives",
         };
         private static readonly string[] FilterExts =
         {

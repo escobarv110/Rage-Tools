@@ -43,9 +43,9 @@ namespace RageLightEditor.Editor
         public void DrawYcdSection_V6()
         {
             ImGui.Separator();
-            if (!ImGui.CollapsingHeader("Clip dictionary (.ycd)", ImGuiTreeNodeFlags.DefaultOpen)) return;
+            if (!ImGui.CollapsingHeader("Clip dictionary")) return;
 
-            if (ImGui.Button("Open .ycd or .ycd.xml...", new Vector2(-1, 0))) RequestYcdOpen_V6 = true;
+            if (ImGui.Button("Open...", new Vector2(-1, 0))) RequestYcdOpen_V6 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Opens a clip dictionary AND plays what is in it: UV tracks land on\n" +
                                  "the materials they animate, bone tracks pose the model.");
@@ -162,7 +162,7 @@ namespace RageLightEditor.Editor
                     ycdFlags_V6 = (int)c.Unknown30; ycdRenameTo_V6 = c.Name;
                 }
 
-                if (ImGui.CollapsingHeader("Clip", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Clip"))
                 {
                     ImGui.TextWrapped(c.Name);
                     ImGui.TextDisabled(c.Kind + "  -  " + c.Hash);
@@ -178,7 +178,7 @@ namespace RageLightEditor.Editor
                                          "moves with it - a renamed clip nothing can find is worse than none.");
                 }
 
-                if (ImGui.CollapsingHeader("Playback", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Playback"))
                 {
                     bool changed = false;
                     ImGui.SetNextItemWidth(-90);
@@ -219,13 +219,13 @@ namespace RageLightEditor.Editor
             if (ycdAnimSel_V6 >= 0 && ycdAnimSel_V6 < YcdOutline_V6.Animations.Count)
             {
                 var a = YcdOutline_V6.Animations[ycdAnimSel_V6];
-                if (ImGui.CollapsingHeader("Animation", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Animation"))
                 {
                     ImGui.TextWrapped(a.Hash);
                     ImGui.TextDisabled($"{a.FrameCount} frames over {a.Duration:0.###} s  ({a.Fps:0.#} fps)");
                     ImGui.TextDisabled($"{a.SequenceCount} sequence(s), limit {a.SequenceFrameLimit}");
                 }
-                if (ImGui.CollapsingHeader($"Tracks ({a.Tracks.Count})", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader($"Tracks ({a.Tracks.Count})"))
                 {
                     if (ImGui.BeginTable("##ycdtracks", 3,
                         ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.ScrollY,

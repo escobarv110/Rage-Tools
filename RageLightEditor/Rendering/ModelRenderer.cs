@@ -241,6 +241,9 @@ namespace RageLightEditor.Rendering
             if (drawable != null)
             {
                 AddDrawable(model, drawable, world ?? Matrix.Identity, null);
+                var cloth = (drawable as FragDrawable)?.OwnerFragment?.DrawableCloth;
+                if (cloth != null && !ReferenceEquals(cloth, drawable))
+                    AddDrawable(model, cloth, world ?? Matrix.Identity, null);
             }
             return model;
         }

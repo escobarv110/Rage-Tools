@@ -73,18 +73,18 @@ namespace RageLightEditor.Editor
             ImGui.TextWrapped("Turn what is loaded here into an interior: rooms as boxes, portals as quads, the props " +
                               "assigned to rooms, written to a .ytyp (and a .ymap that places it).");
             ImGui.Spacing();
-            if (ImGui.Button("Start from the loaded scene", new Vector2(-1, 0))) RequestStartFromScene = true;
+            if (ImGui.Button("From scene", new Vector2(-1, 0))) RequestStartFromScene = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("An imported .ytyp seeds its rooms, portals and entity sets (editable);\n" +
                                  "loaded .ydr/.yft files become the entities, the biggest one the shell.");
-            if (ImGui.Button("Start an empty interior", new Vector2(-1, 0)))
+            if (ImGui.Button("Empty interior", new Vector2(-1, 0)))
             {
                 Session = new MloCreatorSession();
                 if (scene != null) Session.FitBoundsToScene(scene);
                 SelectRoom(0);
                 SetStatus("New interior. Add rooms, then portals.");
             }
-            if (ImGui.Button("Open project (.mloproj)...", new Vector2(-1, 0))) RequestOpenProject = true;
+            if (ImGui.Button("Open project...", new Vector2(-1, 0))) RequestOpenProject = true;
         }
 
         private void DrawToolbar(Scene scene)

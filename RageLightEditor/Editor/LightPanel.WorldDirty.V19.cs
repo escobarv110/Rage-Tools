@@ -44,7 +44,7 @@ namespace RageLightEditor.Editor
             var ymapName = sel.Ymap?.Name;
             ImGui.TextDisabled("in " + (string.IsNullOrEmpty(ymapName) ? "(unknown ymap)" : ymapName) + DirtyMark_V19(sel.Ymap));
 
-            if (ImGui.SmallButton("Show me where##v19locate")) RequestLocateSelected_V19 = true;
+            if (ImGui.SmallButton("Locate##v19locate")) RequestLocateSelected_V19 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Fly the camera to this prop and highlight it,\n" +
                                  "and open its .ymap in the project tree.");

@@ -25,7 +25,7 @@ namespace RageLightEditor
             if (!detachRestored)
             {
                 detachRestored = true;
-                if (settings.ProjectDetached && screenshotPath == null) ProjWin.Detached = true;
+                if (settings.ProjectDetached && screenshotPath == null) { ProjWin.Detached = true; ProjWin.Docked = false; }
             }
             if (DebugDetachProject && !detachDebugApplied)
             {
@@ -33,7 +33,7 @@ namespace RageLightEditor
                 ProjWin.Visible = true;
                 ProjWin.RequestDetach = true;
             }
-            if (ProjWin.Visible && !detachDefaultChecked && screenshotPath == null && !IsHeadless)
+            if (false && ProjWin.Visible && !detachDefaultChecked && screenshotPath == null && !IsHeadless)
             {
                 detachDefaultChecked = true;
                 bool neverChosen = !settings.ProjectDetached && settings.ProjectDetachedBounds == null && string.IsNullOrEmpty(settings.ProjectDetachedScreen);
@@ -48,6 +48,7 @@ namespace RageLightEditor
             if (ProjWin.RequestDetach)
             {
                 ProjWin.RequestDetach = false;
+                ProjWin.Docked = false;
                 ProjWin.Detached = true;
                 ProjWin.Minimized = false;
                 ProjWin.Maximized = false;

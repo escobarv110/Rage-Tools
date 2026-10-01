@@ -296,7 +296,6 @@ namespace RageLightEditor.Editor
         private static bool Header(string label, bool defaultOpen = false)
         {
             var flags = ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.SpanFullWidth;
-            if (defaultOpen) flags |= ImGuiTreeNodeFlags.DefaultOpen;
             if (ForceOpenHeader != null)
                 ImGui.SetNextItemOpen(label.Contains(ForceOpenHeader, StringComparison.OrdinalIgnoreCase),
                     ImGuiCond.Always);
@@ -506,7 +505,7 @@ namespace RageLightEditor.Editor
                 }
 
                 ImGui.Separator();
-                if (ImGui.SmallButton("Set all keyframes to this hour's value"))
+                if (ImGui.SmallButton("Set all keys"))
                 {
                     float v = r.Get(tcSelectedVar, Timecycle.CurrentSampleIndex, Timecycle.CurrentSampleBlend);
                     for (int i = 0; i < vals.Length; i++) vals[i] = v;
@@ -1621,6 +1620,7 @@ namespace RageLightEditor.Editor
                         ImGui.EndChild();
                         ImGui.EndTabItem();
                     }
+                    DrawProjectTab_U22();
                     if (BeginRightTab_J2("Assets"))
                     {
                         ImGui.BeginChild("##inspassets", new Vector2(0, 0));
@@ -1659,7 +1659,7 @@ namespace RageLightEditor.Editor
             {
                 DrawCinematicSection();
                 if (Header("View")) DrawViewSection();
-                if (Header("Weather, sky & timecycle")) DrawTimecycleSection();
+                if (Header("Timecycle")) DrawTimecycleSection();
                 DrawPanelFooter();
                 ImGui.End();
                 return;
@@ -1670,7 +1670,7 @@ namespace RageLightEditor.Editor
                 DrawCinematicSection();
             DrawMloCreatorSection_H5();
             if (Header("Import from GTA V")) DrawGameSection();
-            if (Header("Weather, sky & timecycle")) DrawTimecycleSection();
+            if (Header("Timecycle")) DrawTimecycleSection();
 
             if (!MaterialMode)
             {
@@ -1705,7 +1705,7 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
             if (PhotoModeAllowed)
             {
-                if (ImGui.Button("Photo mode  (P)", new Vector2(-1, 0))) RequestPhotoMode = true;
+                if (ImGui.Button("Photo mode", new Vector2(-1, 0))) RequestPhotoMode = true;
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip(
                         "Everything but the picture goes away: both panels, the grid, the gizmos,\n" +
@@ -1725,7 +1725,7 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
             ImGui.PushStyleColor(ImGuiCol.Button, UiTheme.DangerButton);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, UiTheme.DangerButtonHi);
-            if (ImGui.Button("Reset all settings to default", new Vector2(-1, 0))) openResetConfirm = true;
+            if (ImGui.Button("Reset all", new Vector2(-1, 0))) openResetConfirm = true;
             ImGui.PopStyleColor(2);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Puts every setting back to how it shipped: theme, shortcuts, panel\n" +
@@ -1764,6 +1764,7 @@ namespace RageLightEditor.Editor
             true,
         };
         public int SelectionMode;
+        private bool lastCollisionMode_U22, collisionShownBefore_U22;
         public bool MouseSelectEnabled = true;
         public string SelectionModeName => SelectionModeNames[Math.Clamp(SelectionMode, 0, SelectionModeNames.Length - 1)];
 
@@ -2069,7 +2070,7 @@ namespace RageLightEditor.Editor
                     $"{WorldDirtyCount} ymap{(WorldDirtyCount == 1 ? "" : "s")} edited");
 
             ImGui.TextDisabled(string.IsNullOrEmpty(WorldOutputFolder)
-                ? "no output folder chosen"
+                ? "No folder"
                 : System.IO.Path.GetFileName(WorldOutputFolder.TrimEnd('\\')) + "\\");
             if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(WorldOutputFolder))
                 ImGui.SetTooltip(WorldOutputFolder);
@@ -2082,7 +2083,7 @@ namespace RageLightEditor.Editor
 
             if (WorldDirtyCount > 0)
             {
-                if (ImGui.Button("Save edited ymaps", new Vector2(-1, 0))) RequestWorldSaveAll = true;
+                if (ImGui.Button("Save ymaps", new Vector2(-1, 0))) RequestWorldSaveAll = true;
                 if (ImGui.Button("Discard edits", new Vector2(-1, 0))) RequestWorldDiscard = true;
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Throws the changes away. The world reloads them from the\n" +
@@ -2368,7 +2369,7 @@ namespace RageLightEditor.Editor
 
             ImGui.Spacing();
             ImGui.TextDisabled(string.IsNullOrEmpty(ProjectOutputFolder)
-                ? "no output folder chosen" : ProjectOutputFolder);
+                ? "No folder" : ProjectOutputFolder);
             if (ImGui.Button("Output folder...", new Vector2(-1, 0))) RequestWorldChooseOutput = true;
 
             if (Project.Ymaps.Count > 0 && ImGui.Button("Generate manifest", new Vector2(-1, 0)))
@@ -2502,6 +2503,14 @@ namespace RageLightEditor.Editor
 
             if (!worldToolbarWraps_U5) Sep();
 
+            bool collMode = SelectionModeEnum == WorldSelectionMode.Collision;
+            if (collMode != lastCollisionMode_U22)
+            {
+                if (collMode) { collisionShownBefore_U22 = WorldShowCollision; WorldShowCollision = true; }
+                else WorldShowCollision = collisionShownBefore_U22;
+                lastCollisionMode_U22 = collMode;
+            }
+
             float cw = W("Picks: Entity");
             for (int i = 0; i < SelectionModeNames.Length; i++)
                 cw = Math.Max(cw, Math.Min(W("Picks: " + SelectionModeNames[i]), 230.0f));
@@ -2526,24 +2535,19 @@ namespace RageLightEditor.Editor
 
             Sep();
 
-            if (Toggle("Collision##tbview", WorldShowCollision,
-                       "Show the .ybn collision meshes, coloured by material.", W("Collision")))
-                WorldShowCollision = !WorldShowCollision;
             if (WorldSel != null || WorldSelection.HasValue)
             {
-                Gap();
                 if (ImGui.Button("Frame##tbview", new Vector2(W("Frame"), 0)))
                     RequestFrameWorldSelection_M3();
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("Fly the camera to what is selected\nShortcut: F");
+                Sep();
             }
-
-            Sep();
 
             if (ProjectWindow != null)
             {
                 bool pv = ProjectWindow.Visible;
-                if (Toggle("Project " + (pv ? "<" : ">") + "##tbproj", pv,
-                           "The Project window - ymaps, ytyps and entities you are editing\n" +
+                if (Toggle("Project##tbproj", pv,
+                           "Your project: the map files you change. It opens as the Project tab on the right.\n" +
                            "Shortcut: Ctrl+Shift+P, or Ctrl+U in the world", W("Project >")))
                     ProjectWindow.Visible = !pv;
                 ImGui.SameLine(0, 4);
@@ -2575,10 +2579,8 @@ namespace RageLightEditor.Editor
                 cw = Math.Max(cw, Math.Min(W("Picks: " + SelectionModeNames[i]), 230.0f));
             w += 20.0f + W("|") + cw + h + 4.0f + Math.Max(W("Picking on"), W("Picking off"));
 
-            w += 20.0f + W("|") + W("Collision");
-            if (WorldSel != null || WorldSelection.HasValue) w += 4.0f + W("Frame");
-
             w += 20.0f + W("|");
+            if (WorldSel != null || WorldSelection.HasValue) w += 4.0f + W("Frame") + 20.0f + W("|");
             if (ProjectWindow != null) w += W("Project >") + 4.0f;
             w += W("Edit Light") + 8.0f;
             w += ImGui.CalcTextSize(StatsText ?? "").X + 12.0f;
@@ -2871,7 +2873,7 @@ namespace RageLightEditor.Editor
 
             if (searching)
             {
-                if (ImGui.Button("Back to the tree", new Vector2(-1, 0)))
+                if (ImGui.Button("Back", new Vector2(-1, 0)))
                 {
                     archiveSearch = "";
                     archiveFilter = 0;
@@ -3430,11 +3432,11 @@ namespace RageLightEditor.Editor
 
             ImGui.Separator();
 
-            if (ImGui.Button("Import map (.ytyp + .ymap)...", new Vector2(-1, 0))) RequestImportMapFiles_V36?.Invoke();
+            if (ImGui.Button("Import map...", new Vector2(-1, 0))) RequestImportMapFiles_V36?.Invoke();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Pick any mix of .ytyp and .ymap files at once. The archetypes are loaded first,\n"
                                  + "then the placements - which is the order that works.");
-                        if (ImGui.Button("Import YTYP (MLO)...")) RequestImportYtyp?.Invoke();
+                        if (ImGui.Button("Import ytyp...")) RequestImportYtyp?.Invoke();
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Load an interior .ytyp: every entity is placed at its exact position.\nCustom props are read from the folder the .ytyp lives in;\nbase-game props come from your GTA V install.");
             ImGui.SameLine();
             if (ImGui.Button("Import YMAP...")) RequestImportYmap?.Invoke();
@@ -3624,7 +3626,7 @@ namespace RageLightEditor.Editor
                 ImGui.SliderFloat("##timespeed", ref TimeSpeed, 1.0f, 600.0f, "%.0f min/s");
                 UiTheme.PopTimeSlider();
             }
-            if (ImGui.Checkbox("Control time of day (right-drag)", ref ControlTimeOfDay))
+            if (ImGui.Checkbox("Drag time", ref ControlTimeOfDay))
             {
                 settings.ControlTimeOfDay = ControlTimeOfDay;
                 settings.Save();
@@ -3776,7 +3778,7 @@ namespace RageLightEditor.Editor
 
             if (!Timecycle.ScheduleFromFile)
             {
-                if (ImGui.SmallButton("Load time.xml (schedule)...")) RequestLoadTimeSchedule?.Invoke();
+                if (ImGui.SmallButton("Load time.xml...")) RequestLoadTimeSchedule?.Invoke();
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("Only needed without a GTA V folder: time.xml defines which\nhour each keyframe sits on. A standard schedule is assumed otherwise.");
             }
             if (!string.IsNullOrEmpty(TimecycleStatus))
@@ -4212,7 +4214,7 @@ namespace RageLightEditor.Editor
             if (lf != null)
             {
                 Field("Lights", scene.Lights.Count(l => scene.OwnerFile(l) == lf).ToString());
-                if (ImGui.Button("Make active (new lights go here)")) scene.ActiveFile = lf;
+                if (ImGui.Button("Make active")) scene.ActiveFile = lf;
             }
 
             var first = info?.Entities.FirstOrDefault(e => e.ArchetypeHash == a.Hash);
@@ -4697,7 +4699,7 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Surfaces");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Flatten fake bevels", ref c.BevelFlatten, 0.0f, 1.0f, "%.2f");
+            ImGui.SliderFloat("Flatten bevels", ref c.BevelFlatten, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(
@@ -4774,7 +4776,7 @@ namespace RageLightEditor.Editor
                 ImGui.SliderFloat("Ray distance", ref c.SsrDistance, 1.0f, 60.0f, "%.0f m");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Surface thickness", ref c.SsrThickness, 0.02f, 2.0f, "%.2f m");
+                ImGui.SliderFloat("Thickness", ref c.SsrThickness, 0.02f, 2.0f, "%.2f m");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("The depth buffer says where surfaces are, not how solid they\n" +
@@ -4794,7 +4796,7 @@ namespace RageLightEditor.Editor
             if (c.Dof > 0.001f)
             {
                 bool autoFocus = c.DofAutoFocus;
-                if (ImGui.Checkbox("Focus on what the camera is looking at", ref autoFocus))
+                if (ImGui.Checkbox("Auto focus", ref autoFocus))
                 {
                     c.DofAutoFocus = autoFocus;
                     settings.Save();
@@ -4953,13 +4955,13 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Green to magenta - what corrects the cast\n" +
                                                         "fluorescent light leaves on a scene.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Lift (shadows)", ref c.Lift, -0.25f, 0.25f, "%.3f");
+            ImGui.SliderFloat("Lift", ref c.Lift, -0.25f, 0.25f, "%.3f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The shadows moved without touching the highlights. Lifting them\n" +
                                  "slightly is what gives a print its milky black.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Gain (highlights)", ref c.Gain, 0.5f, 2.0f, "%.2f");
+            ImGui.SliderFloat("Gain", ref c.Gain, 0.5f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
             ImGui.SliderFloat("Bleach bypass", ref c.Bleach, 0.0f, 1.0f, "%.2f");
@@ -5081,7 +5083,7 @@ namespace RageLightEditor.Editor
                     "size; if the card cannot allocate at the sample count you asked for, the\n" +
                     "render steps down rather than failing.");
             bool ss = c.Supersample > 1;
-            if (ImGui.Checkbox("Supersample (2x, much cleaner)", ref ss))
+            if (ImGui.Checkbox("Supersample", ref ss))
             {
                 c.Supersample = ss ? 2 : 1;
                 settings.Save();
@@ -5102,7 +5104,7 @@ namespace RageLightEditor.Editor
                 ImGui.SetTooltip($"{RenderSizeLabels[rs]}, at the current camera and settings.");
 
             ImGui.Spacing();
-            if (ImGui.Button("Reset Cinematic to defaults", new Vector2(-1, 0)))
+            if (ImGui.Button("Reset Cinematic", new Vector2(-1, 0)))
             {
                 settings.Cinematic = new AppSettings.CinematicPrefs();
                 settings.Save();
@@ -5111,8 +5113,8 @@ namespace RageLightEditor.Editor
 
         public static readonly string[] RenderSizeLabels =
         {
-            "Window size", "1920 x 1080 (HD)", "2560 x 1440 (QHD)", "3840 x 2160 (4K)",
-            "5120 x 2880 (5K)", "7680 x 4320 (8K)",
+            "Window size", "1080p", "1440p", "4K",
+            "5K", "8K",
         };
         private static readonly int[] renderSizeW = { 0, 1920, 2560, 3840, 5120, 7680 };
         private static readonly int[] renderSizeH = { 0, 1080, 1440, 2160, 2880, 4320 };
@@ -5182,7 +5184,7 @@ namespace RageLightEditor.Editor
             if (!MaterialMode)
             {
                 ViewGroup("Lights");
-                ImGui.Checkbox("Animate flashiness", ref AnimateFlashiness);
+                ImGui.Checkbox("Flashiness", ref AnimateFlashiness);
                 SameCol();
                 ImGui.Checkbox("Day/night ambient", ref DayNightAmbient);
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("Scale scene ambient with the preview hour (bright day / dark night)");
@@ -5198,7 +5200,7 @@ namespace RageLightEditor.Editor
             if (!MaterialMode)
             {
                 SameCol();
-                ImGui.Checkbox("Honour light flags", ref RespectShadowFlags);
+                ImGui.Checkbox("Use flags", ref RespectShadowFlags);
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("On: a light with no Cast Shadows flag never casts, whatever the\n" +
                                      "shadow mode says. No Specular and Don't Light Alpha are always live.\n" +
@@ -5206,13 +5208,13 @@ namespace RageLightEditor.Editor
                 if (ShowShadows)
                 {
                     ImGui.SetNextItemWidth(-140);
-                    ImGui.Combo("Cast from", ref ShadowMode, "Nearest lights\0Flagged only\0Selected only\0");
+                    ImGui.Combo("Cast from", ref ShadowMode, "Nearest\0Flagged\0Selected\0");
                     if (ImGui.IsItemHovered())
                         ImGui.SetTooltip(
                             "Only a few lights can cast shadows at once (8 spot + 4 point).\n\n" +
-                            "Nearest lights: whichever are closest to you.\n" +
-                            "Flagged only: just lights with a Cast Shadows flag (game behaviour).\n" +
-                            "Selected only: only the light(s) you have selected.\n\n" +
+                            "Nearest: whichever are closest to you.\n" +
+                            "Flagged: just lights with a Cast Shadows flag (game behaviour).\n" +
+                            "Selected: only the light(s) you have selected.\n\n" +
                             "All three hold their slots long enough not to flicker as you walk.");
                     if (ShadowMode == 2 && scene.SelectedIndex < 0)
                         ImGui.TextDisabled("select a light to see its shadows");
@@ -5224,12 +5226,12 @@ namespace RageLightEditor.Editor
         private void DrawViewOverlays()
         {
             ViewGroup("Overlays");
-            ImGui.Checkbox("Gizmo (selected)", ref ShowGizmos);
+            ImGui.Checkbox("Gizmo", ref ShowGizmos);
             SameCol();
             ImGui.Checkbox("All gizmos", ref ShowAllGizmos);
             ImGui.Checkbox("Grid", ref ShowGrid);
             SameCol();
-            ImGui.Checkbox("Light markers", ref ShowMarkers);
+            ImGui.Checkbox("Markers", ref ShowMarkers);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Clickable dot at every light position");
             ImGui.Checkbox("Coronas", ref ShowCoronas);
             SameCol();
@@ -5251,7 +5253,7 @@ namespace RageLightEditor.Editor
 
         private void DrawViewCamera()
         {
-            ViewGroup("Camera & display");
+            ViewGroup("Camera");
             DrawShadingCombo();
 
             if (RenderMode == 7)
@@ -5350,7 +5352,7 @@ namespace RageLightEditor.Editor
                 ImGui.SetNextItemWidth(-140);
                 int mode = settings.BackfaceMode;
                 if (ImGui.Combo("Two-sided", ref mode,
-                        "Game two-sided materials\0Flat sheets only\0Nothing (cull all)\0"))
+                        "Game\0Flat only\0None\0"))
                 {
                     settings.BackfaceMode = mode;
                     Rendering.CommonStates.BackfaceMode = mode;
@@ -5461,7 +5463,7 @@ namespace RageLightEditor.Editor
                 if (ch) { l.Intensity = Math.Max(intensity, 0); MarkDirty(true); }
 
                 float falloff = l.Falloff;
-                ch = ImGui.DragFloat("Falloff (m)", ref falloff, 0.02f, 0.01f, 500.0f);
+                ch = ImGui.DragFloat("Falloff", ref falloff, 0.02f, 0.01f, 500.0f);
                 UndoOnActivate();
                 if (ch) { l.Falloff = Math.Max(falloff, 0.01f); MarkDirty(true); }
 
@@ -5543,12 +5545,12 @@ namespace RageLightEditor.Editor
             if (l.Type == LightType.Spot && Header("Cone", true))
             {
                 float inner = l.ConeInnerAngle;
-                bool ch = ImGui.SliderFloat("Inner angle (deg)", ref inner, 0.0f, 90.0f, "%.2f");
+                bool ch = ImGui.SliderFloat("Inner angle", ref inner, 0.0f, 90.0f, "%.2f");
                 UndoOnActivate();
                 if (ch) { l.ConeInnerAngle = inner; MarkDirty(true); }
 
                 float outer = l.ConeOuterAngle;
-                ch = ImGui.SliderFloat("Outer angle (deg)", ref outer, 0.0f, 90.0f, "%.2f");
+                ch = ImGui.SliderFloat("Outer angle", ref outer, 0.0f, 90.0f, "%.2f");
                 UndoOnActivate();
                 if (ch) { l.ConeOuterAngle = outer; MarkDirty(true); }
                 ImGui.TextDisabled("Half-angles; game clamps ~90.");
@@ -5590,7 +5592,7 @@ namespace RageLightEditor.Editor
             if (Header("Volume", true))
             {
                 bool drawVol = (l.Flags & LightDefs.FlagDrawVolume) != 0;
-                if (ImGui.Checkbox("Draw volume (flag 12)", ref drawVol))
+                if (ImGui.Checkbox("Draw volume", ref drawVol))
                 {
                     scene.PushUndo();
                     if (drawVol) l.Flags |= LightDefs.FlagDrawVolume; else l.Flags &= ~LightDefs.FlagDrawVolume;
@@ -5608,7 +5610,7 @@ namespace RageLightEditor.Editor
                 if (ch) { l.VolumeSizeScale = vs; MarkDirty(true); }
 
                 bool outerCol = (l.Flags & LightDefs.FlagVolumeOuterColour) != 0;
-                if (ImGui.Checkbox("Enable outer colour (flag 19)", ref outerCol))
+                if (ImGui.Checkbox("Outer colour", ref outerCol))
                 {
                     scene.PushUndo();
                     if (outerCol) l.Flags |= LightDefs.FlagVolumeOuterColour; else l.Flags &= ~LightDefs.FlagVolumeOuterColour;
@@ -5658,22 +5660,22 @@ namespace RageLightEditor.Editor
                 if (ch) { l.ShadowNearClip = snc; MarkDirty(true); }
 
                 int lfd = l.LightFadeDistance;
-                ch = ImGui.SliderInt("Light fade (m)", ref lfd, 0, 255, l.LightFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = ImGui.SliderInt("Light fade", ref lfd, 0, 255, l.LightFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.LightFadeDistance = (byte)lfd; MarkDirty(true); }
 
                 int sfd = l.ShadowFadeDistance;
-                ch = ImGui.SliderInt("Shadow fade (m)", ref sfd, 0, 255, l.ShadowFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = ImGui.SliderInt("Shadow fade", ref sfd, 0, 255, l.ShadowFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.ShadowFadeDistance = (byte)sfd; MarkDirty(true); }
 
                 int spfd = l.SpecularFadeDistance;
-                ch = ImGui.SliderInt("Specular fade (m)", ref spfd, 0, 255, l.SpecularFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = ImGui.SliderInt("Specular fade", ref spfd, 0, 255, l.SpecularFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.SpecularFadeDistance = (byte)spfd; MarkDirty(true); }
 
                 int vfd = l.VolumetricFadeDistance;
-                ch = ImGui.SliderInt("Volumetric fade (m)", ref vfd, 0, 255, l.VolumetricFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = ImGui.SliderInt("Volume fade", ref vfd, 0, 255, l.VolumetricFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.VolumetricFadeDistance = (byte)vfd; MarkDirty(true); }
             }
@@ -5681,7 +5683,7 @@ namespace RageLightEditor.Editor
             if (Header("Culling plane", true))
             {
                 bool en = (l.Flags & LightDefs.FlagCullingPlane) != 0;
-                if (ImGui.Checkbox("Enable culling plane (flag 18)", ref en))
+                if (ImGui.Checkbox("Culling plane", ref en))
                 {
                     scene.PushUndo();
                     if (en) l.Flags |= LightDefs.FlagCullingPlane; else l.Flags &= ~LightDefs.FlagCullingPlane;
@@ -5809,7 +5811,7 @@ namespace RageLightEditor.Editor
             {
                 uint flags = l.Flags;
                 string fhex = flags.ToString("X8");
-                if (ImGui.InputText("Flags (hex)", ref fhex, 16, ImGuiInputTextFlags.CharsHexadecimal | ImGuiInputTextFlags.EnterReturnsTrue))
+                if (ImGui.InputText("Hex flags", ref fhex, 16, ImGuiInputTextFlags.CharsHexadecimal | ImGuiInputTextFlags.EnterReturnsTrue))
                 {
                     if (uint.TryParse(fhex, System.Globalization.NumberStyles.HexNumber, null, out var nf))
                     {
@@ -5853,12 +5855,12 @@ namespace RageLightEditor.Editor
                     scene.Dirty = true;
                 }
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Night (8PM-7AM)"))
+                if (ImGui.SmallButton("Night"))
                 {
                     scene.PushUndo(); l.TimeFlags = 0xF0007F; scene.Dirty = true;
                 }
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Day (7AM-8PM)"))
+                if (ImGui.SmallButton("Day"))
                 {
                     scene.PushUndo(); l.TimeFlags = 0x0FFF80; scene.Dirty = true;
                 }

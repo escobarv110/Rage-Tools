@@ -12,7 +12,7 @@ namespace RageLightEditor.Editor
         internal void DrawUnsupportedRulesToggle_S6()
         {
             var show = ShowUnsupportedRules_S6;
-            if (ImGui.Checkbox("Show model / trail rules as cards", ref show))
+            if (ImGui.Checkbox("Rule cards", ref show))
                 ShowUnsupportedRules_S6 = show;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Rules that draw geometry (ptxd_Model), a ribbon (ptxd_Trail) or a\n" +

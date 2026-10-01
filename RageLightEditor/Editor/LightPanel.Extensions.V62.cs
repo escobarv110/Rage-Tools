@@ -47,7 +47,7 @@ namespace RageLightEditor.Editor
             var list = ArchetypeExtensions_V62.Get(arch);
 
             ImGui.Spacing();
-            ImGui.TextDisabled("EXTENSIONS ON THIS ARCHETYPE");
+            ImGui.TextDisabled("EXTENSIONS");
             ImGui.SameLine();
             ImGui.TextDisabled("(" + list.Length + ")");
 
@@ -223,7 +223,7 @@ namespace RageLightEditor.Editor
         {
             ImGui.SetNextWindowSize(new Vector2(320 * UiScale_V17.Scale, 380 * UiScale_V17.Scale));
             if (!ImGui.BeginPopup("##fxpop")) return;
-            ImGui.TextDisabled("THE GAME'S AMBIENT EFFECTS");
+            ImGui.TextDisabled("AMBIENT EFFECTS");
             ImGui.SetNextItemWidth(-1);
             if (ImGui.IsWindowAppearing()) ImGui.SetKeyboardFocusHere();
             ImGui.InputTextWithHint("##fxfind", "fire, smoke, water, leaves...", ref extFxFilter_V71, 64);

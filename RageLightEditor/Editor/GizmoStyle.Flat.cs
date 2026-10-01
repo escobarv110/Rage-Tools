@@ -29,16 +29,16 @@ namespace RageLightEditor.Editor
             Look = code == 0 ? GizmoLook.Classic : (code == 2 ? GizmoLook.Shaded : GizmoLook.Modern);
         }
 
-        private const float FLinePx = 2.5f;
-        private const float FRimPx = 1.0f;
-        private const float FHeadLen = 0.17f, FHeadHalfW = 0.068f;
+        private const float FLinePx = 3.5f;
+        private const float FRimPx = 0.75f;
+        private const float FHeadLen = 0.20f, FHeadHalfW = 0.085f;
         private const float FSquareR = 0.048f, FCentreSquareR = 0.062f;
         private const float FRingPx = 2.0f, FViewRingPx = 1.5f, FCentrePx = 1.8f;
         private const float FDimOther = 0.5f;
         private const float FBackAlpha = 0.30f;
 
         private static readonly Vector4 FRim = new Vector4(0.02f, 0.02f, 0.03f, 0.72f);
-        private static readonly Vector4 FHot = new Vector4(1.00f, 0.93f, 0.50f, 1f);
+        private static readonly Vector4 FHot = new Vector4(1.00f, 1.00f, 0.00f, 1f);
         private static readonly Vector4 FCentre = new Vector4(0.96f, 0.96f, 0.98f, 1f);
         private static readonly Vector4 FViewRing = new Vector4(0.95f, 0.95f, 0.98f, 0.80f);
 

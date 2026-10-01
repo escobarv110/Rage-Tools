@@ -83,6 +83,7 @@ $asi = Join-Path $root "RageLightEditor/Assets/fivem/RageToolsLive.asi"
 if (Test-Path $asi) { Copy-Item $asi (Join-Path $out "RageToolsLive.asi") -Force }
 
 Step "5/5 verify + zip"
+$env:RLE_SHADERCACHE_DIR = Join-Path $out "shadercache"
 # A WinExe launched with "& $exe args" does NOT block, so this used to check $LASTEXITCODE
 # from whatever ran before it - the verification wasn't verifying anything. Piping the output
 # forces PowerShell to read the process to completion.
@@ -110,6 +111,9 @@ if (Test-Path $gta) {
 } else {
     Write-Host "  --seqtest SKIPPED - no GTA V at $gta" -ForegroundColor Yellow
 }
+Remove-Item Env:RLE_SHADERCACHE_DIR -ErrorAction SilentlyContinue
+$shipped = @(Get-ChildItem (Join-Path $out "shadercache") -Filter *.cso -ErrorAction SilentlyContinue).Count
+Write-Host "  $shipped compiled shaders ship with the build (no compile on first launch)"
 
 # The verification run above starts the packaged exe, which writes its runtime files beside itself.
 # settings.json holds the GTA V install path, so on a machine where the release folder has been

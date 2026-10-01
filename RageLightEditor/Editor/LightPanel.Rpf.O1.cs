@@ -488,7 +488,7 @@ namespace RageLightEditor.Editor
                 ImGui.Text("Current size:      " + RpfExplorer.SizeText(cur));
                 ImGui.Text("Defragmented size: " + RpfExplorer.SizeText(want));
                 ImGui.Text("Size reduction:    " + RpfExplorer.SizeText(Math.Max(0, cur - want)));
-                ImGui.Checkbox("Recursive (nested archives too)", ref rpfDefragRecursive);
+                ImGui.Checkbox("Recursive", ref rpfDefragRecursive);
                 ImGui.Spacing();
                 ImGui.BeginDisabled(rpf == null || !RpfEditMode);
                 if (ImGui.Button("Begin defragment", new Vector2(180, 0)))

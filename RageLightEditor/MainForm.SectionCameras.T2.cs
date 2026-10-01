@@ -58,6 +58,7 @@ namespace RageLightEditor
                 settings.FovDeg = MathUtil.Clamp(here.FieldOfView / 0.0174533f,
                                                  Rendering.Camera.MinFovDeg, Rendering.Camera.MaxFovDeg);
             }
+            Console.WriteLine($"SHADERCACHE {Rendering.ShaderCache_U22.Hits} cached, {Rendering.ShaderCache_U22.Misses} compiled in {Rendering.ShaderCache_U22.CompileMs:0} ms");
             Console.WriteLine($"SECTIONCAMS {n} remembered placement(s) read; standing in {panel.Workspace}" +
                               (here.Valid ? $" at {camera?.Position}" : " (never been there)"));
         }

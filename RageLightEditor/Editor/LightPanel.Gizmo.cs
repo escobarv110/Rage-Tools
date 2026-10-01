@@ -11,7 +11,7 @@ namespace RageLightEditor.Editor
 
             float size = settings.GizmoSizePx;
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Gizmo size", ref size, 40f, 400f, "%.0f px"))
+            if (ImGui.SliderFloat("Size", ref size, 40f, 400f, "%.0f px"))
             {
                 settings.GizmoSizePx = Math.Clamp(size, 40f, 400f);
                 GizmoStyle.ApplySettings(settings);
@@ -24,7 +24,7 @@ namespace RageLightEditor.Editor
 
             int style = Math.Clamp(settings.GizmoStyleIndex, 0, 2);
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.Combo("Gizmo style", ref style, "Modern\0Shaded\0Classic\0"))
+            if (ImGui.Combo("Style", ref style, "Modern\0Shaded\0Classic\0"))
             {
                 settings.GizmoStyleIndex = style;
                 settings.GizmoModern = style != 2;

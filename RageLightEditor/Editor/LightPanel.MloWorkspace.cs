@@ -30,13 +30,13 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
 
             ImGui.TextDisabled("SCENE");
-            if (ImGui.Button("Open shell (.ydr / .yft)...", new Vector2(-1, 0))) RequestOpenFile?.Invoke();
+            if (ImGui.Button("Open shell...", new Vector2(-1, 0))) RequestOpenFile?.Invoke();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Open the interior's own model - walls and floors. It becomes the archetype's drawable\n" +
                                  "(the shell), and everything else loaded becomes an entity in a room.");
             if (ImGui.Button("Add props...", new Vector2(-1, 0))) RequestAddFile?.Invoke();
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add .ydr / .yft props to the scene: each becomes an entity of the interior.");
-            if (ImGui.Button("Import .ytyp (existing interior)...", new Vector2(-1, 0))) RequestImportYtyp?.Invoke();
+            if (ImGui.Button("Import ytyp...", new Vector2(-1, 0))) RequestImportYtyp?.Invoke();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Load an existing MLO: its shell and props are placed, and the creator is seeded\n" +
                                  "with its rooms, portals and entity sets - editable copies, written to a new file.");
@@ -44,7 +44,7 @@ namespace RageLightEditor.Editor
             if (ui.Session == null)
             {
                 if (!scene.HasModel) ImGui.BeginDisabled();
-                if (ImGui.Button("Start the interior from the scene", new Vector2(-1, 0))) ui.RequestStartFromScene = true;
+                if (ImGui.Button("Start from scene", new Vector2(-1, 0))) ui.RequestStartFromScene = true;
                 if (!scene.HasModel) ImGui.EndDisabled();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Entering this workspace does this by itself once something is loaded; use it after\n" +
@@ -87,7 +87,7 @@ namespace RageLightEditor.Editor
             var ui = MloCreator;
             ImGui.TextDisabled("MLO CREATOR");
             bool win = ui.WindowVisible;
-            if (ImGui.Checkbox("Show the MLO Creator window", ref win)) ui.WindowVisible = win;
+            if (ImGui.Checkbox("Creator window", ref win)) ui.WindowVisible = win;
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("The interior's tree + pages: rooms, portals, entities, sets, the write buttons.\nA resizable window floating over the viewport - or, detached, an OS window of its own on any monitor.");
             ImGui.SameLine();
             if (ImGui.SmallButton(ui.Detached ? "Attach##mlospaceattach" : "Detach##mlospacedetach")) { if (ui.Detached) ui.RequestAttach = true; else { ui.WindowVisible = true; ui.RequestDetach = true; } }

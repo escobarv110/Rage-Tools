@@ -242,7 +242,7 @@ namespace RageLightEditor.Editor
         {
             var te = Terrain;
             bool paint = te.PaintEnabled;
-            if (ImGui.Checkbox("Paint with the left button", ref paint)) te.PaintEnabled = paint;
+            if (ImGui.Checkbox("Paint", ref paint)) te.PaintEnabled = paint;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Off, the left button orbits the camera as it does everywhere else -\n" +
                                  "for framing the mesh without painting a stripe across it on the way.");

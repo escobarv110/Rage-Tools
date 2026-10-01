@@ -58,7 +58,7 @@ namespace RageLightEditor.Editor
 
         public void Draw(float displayW, float displayH)
         {
-            if (!Visible || Minimized || Detached) return;
+            if (!Visible || Minimized || Detached || ShowsDocked) return;
 
             ImGui.SetNextWindowSize(new Vector2(Math.Min(1180, displayW - 80), Math.Min(760, displayH - 80)), ImGuiCond.FirstUseEver);
             ImGui.SetNextWindowPos(new Vector2(displayW * 0.5f, displayH * 0.5f), ImGuiCond.FirstUseEver, new Vector2(0.5f, 0.5f));
@@ -115,9 +115,12 @@ namespace RageLightEditor.Editor
 
         private void DrawWindowButtons()
         {
+            if (embedded) { DrawEmbeddedButtons_U22(); return; }
             if (Detached) { DrawDetachedWindowButtons(); return; }
             float right = ImGui.GetWindowWidth() - 8;
-            ImGui.SameLine(Math.Max(right - 106, ImGui.GetCursorPosX() + 8));
+            ImGui.SameLine(Math.Max(right - 160, ImGui.GetCursorPosX() + 8));
+            DrawDockButton_U22();
+            ImGui.SameLine();
             if (ImGui.SmallButton("^##pwdetach")) RequestDetach = true;
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Detach into its own window (drag it to another monitor)");
             ImGui.SameLine();
@@ -144,7 +147,7 @@ namespace RageLightEditor.Editor
 
         public void DrawTaskbar(float displayW, float displayH, float bottomInset)
         {
-            if (!Visible || !Minimized) return;
+            if (!Visible || !Minimized || ShowsDocked) return;
             const float h = 26.0f;
             ImGui.SetNextWindowPos(new Vector2(0, displayH - bottomInset - h), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(displayW, h), ImGuiCond.Always);
@@ -230,7 +233,7 @@ namespace RageLightEditor.Editor
             ImGui.TextDisabled("PROJECT EXPLORER");
             if (Project == null)
             {
-                ImGui.TextWrapped("No project open. File > New Project, or Open Project.");
+                DrawEmptyState_U22();
                 return;
             }
 

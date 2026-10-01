@@ -18,7 +18,7 @@ namespace RageLightEditor.Editor
             if (nav == null) return;
 
             ImGui.Spacing();
-            ImGui.TextDisabled("NAV MESHES IN THIS INSTALL");
+            ImGui.TextDisabled("NAV MESHES");
             ImGui.SameLine();
             if (!nav.CellsReady)
             {

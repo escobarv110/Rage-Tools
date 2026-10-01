@@ -9,7 +9,7 @@ namespace RageLightEditor.Editor
         public bool WorldEnableMods;
         public int WorldDlcIndex_V21;
         private bool modsDlcLoaded_V21;
-        private string[] dlcLabels_V21 = { "Newest installed" };
+        private string[] dlcLabels_V21 = { "Latest" };
         private List<string> dlcNames_V21 = new List<string>();
 
         public string SelectedDlcName_V21 =>
@@ -31,7 +31,7 @@ namespace RageLightEditor.Editor
             string was = SelectedDlcName_V21;
             if (string.IsNullOrEmpty(was)) was = settings?.WorldDlc ?? "";
             dlcNames_V21 = new List<string>(found);
-            dlcLabels_V21 = new[] { "Newest installed" }.Concat(dlcNames_V21).ToArray();
+            dlcLabels_V21 = new[] { "Latest" }.Concat(dlcNames_V21).ToArray();
             int at = string.IsNullOrEmpty(was) ? -1 : dlcNames_V21.IndexOf(was);
             WorldDlcIndex_V21 = at >= 0 ? at + 1 : 0;
         }
@@ -42,9 +42,9 @@ namespace RageLightEditor.Editor
             LoadModsDlcOptions_V21();
             SyncDlcList_V21();
 
-            ImGui.Checkbox("Load my mods folder", ref WorldEnableMods);
+            ImGui.Checkbox("Mods folder", ref WorldEnableMods);
             Tip("Stream what is in GTA V\\mods\\ instead of the stock archives - the OpenIV layout.");
-            Info("Load my mods folder.\n" +
+            Info("Mods folder.\n" +
                  "OpenIV installs a mod by copying the archive it changes into a mods\\ folder\n" +
                  "beside the game, so the original is never touched. Both copies are indexed\n" +
                  "either way; this decides which one the world streams.\n" +

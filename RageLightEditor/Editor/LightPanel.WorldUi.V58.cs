@@ -12,7 +12,7 @@ namespace RageLightEditor.Editor
         private bool WorldSection_V58(string label, bool openByDefault)
         {
             if (!worldSectionsInit_V58)
-                ImGui.SetNextItemOpen(openByDefault, ImGuiCond.FirstUseEver);
+                ImGui.SetNextItemOpen(false, ImGuiCond.FirstUseEver);
             return ImGui.CollapsingHeader(label);
         }
 
@@ -91,7 +91,7 @@ namespace RageLightEditor.Editor
 
                 if (ImGui.TreeNodeEx("More##v58weather", ImGuiTreeNodeFlags.SpanAvailWidth))
                 {
-                    if (ImGui.Checkbox("Right-drag changes the time", ref ControlTimeOfDay))
+                    if (ImGui.Checkbox("Drag time", ref ControlTimeOfDay))
                     {
                         settings.ControlTimeOfDay = ControlTimeOfDay;
                         settings.Save();
@@ -115,15 +115,6 @@ namespace RageLightEditor.Editor
                 ImGui.Spacing();
             }
 
-            if (GotoFocus_O3) ImGui.SetNextItemOpen(true, ImGuiCond.Always);
-            if (WorldSection_V58("Camera##v58", true))
-            {
-                ImGui.Spacing();
-                DrawGoToBody_O3();
-                ImGui.Spacing();
-                DrawFovRow(-46);
-                ImGui.Spacing();
-            }
 
 
             worldSectionsInit_V58 = true;

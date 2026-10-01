@@ -87,7 +87,7 @@ namespace RageLightEditor.Editor
                 if (entries.Count > MaxEntries) entries.RemoveRange(0, entries.Count - MaxEntries);
                 if (level == Level.Error) ErrorsUnseen++;
                 Version++;
-                try { file?.WriteLine($"{now:HH:mm:ss} {(level == Level.Error ? "ERROR " : level == Level.Warning ? "WARN  " : "")}{text}"); } catch { }
+                try { file?.WriteLine($"{now:HH:mm:ss.fff} {(level == Level.Error ? "ERROR " : level == Level.Warning ? "WARN  " : "")}{text}"); } catch { }
             }
         }
 

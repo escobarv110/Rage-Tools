@@ -40,7 +40,7 @@ namespace RageLightEditor.Editor
     {
         public string Query = "";
         public int SourceFilter;
-        public static readonly string[] SourceLabels = { "All sources", "Game archives", "Prop folders", "Project / interior folder", "Light props" };
+        public static readonly string[] SourceLabels = { "All sources", "Game archives", "Prop folders", "Project folder", "Light props" };
         public int KindFilter;
         public static readonly string[] KindLabels = { ".ydr + .yft", ".ydr only", ".yft only" };
 
@@ -58,7 +58,7 @@ namespace RageLightEditor.Editor
         public readonly List<string> PropFolders = new List<string>();
 
         public int PlaceAt;
-        public static readonly string[] PlaceAtLabels = { "Placement point (else view target)", "View target", "Surface under the view centre", "Selected room's floor centre" };
+        public static readonly string[] PlaceAtLabels = { "Snap point", "View target", "View surface", "Room floor" };
         public bool SelectAfterPlace = true;
         public bool ShowThumbnails = true;
         public bool ClickPlaces = true;

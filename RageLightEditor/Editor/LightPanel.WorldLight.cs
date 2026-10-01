@@ -112,7 +112,7 @@ namespace RageLightEditor.Editor
             }
             if (WorldLightUnsaved)
             {
-                ImGui.TextColored(UiTheme.Warn, "edited in memory - Save as... keeps it");
+                ImGui.TextColored(UiTheme.Warn, "Unsaved");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("The prop's lights are changed in the world's copy of the drawable only.\n" +
                                      "Save as writes them to a loose .ydr/.yft; Add to project makes that file\n" +

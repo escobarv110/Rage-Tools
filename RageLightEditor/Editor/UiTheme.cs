@@ -3,10 +3,10 @@ using ImGuiNET;
 
 namespace RageLightEditor.Editor
 {
-    public static class UiTheme
+    public static partial class UiTheme
     {
-        public static readonly string[] Names = { "Accent tinted", "Dark gray", "Light", "Classic ImGui (blue)" };
-        public const int DefaultTheme = 3;
+        public static readonly string[] Names = { "Accent tinted", "Dark gray", "Light", "Classic ImGui (blue)", "Graphite" };
+        public const int DefaultTheme = 4;
 
         public static float ClassicPanelAlpha = 0.86f;
 
@@ -34,6 +34,7 @@ namespace RageLightEditor.Editor
             style.FramePadding = new Vector2(6 * k, 4 * k);
             style.ButtonTextAlign = new Vector2(0.5f, 0.5f);
             ApplySemantic(theme);
+            if (theme == 4) { ApplyGraphite_U22(accent); return; }
 
             if (theme == 3)
             {

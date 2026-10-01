@@ -43,7 +43,7 @@ namespace RageLightEditor.Editor
                                  "Everything below then edits it, and Save .ypt as... writes it out.");
 
             ImGui.BeginDisabled(Doc == null);
-            if (ImGui.Button("Add another effect to this asset", new Vector2(-1, 0)) && Doc != null)
+            if (ImGui.Button("Add effect", new Vector2(-1, 0)) && Doc != null)
             {
                 var eff = PtfxAuthor.AddEffect(Doc, NewEffectName_T6, null);
                 if (eff != null) { SelectByName_T6(eff.Name); Status = "added " + eff.Name; }
@@ -51,7 +51,7 @@ namespace RageLightEditor.Editor
             ImGui.EndDisabled();
 
             ImGui.BeginDisabled(Sim.Effect == null);
-            if (ImGui.Button("New asset from the playing effect", new Vector2(-1, 0)))
+            if (ImGui.Button("From playing effect", new Vector2(-1, 0)))
                 RequestNewFromPlaying_T6 = true;
             ImGui.EndDisabled();
             if (ImGui.IsItemHovered())
@@ -202,7 +202,7 @@ namespace RageLightEditor.Editor
 
             ImGui.TextDisabled("Emission");
             bool oneShot = er.IsOneShot != 0;
-            if (ImGui.Checkbox("burst (one shot)##t6", ref oneShot))
+            if (ImGui.Checkbox("Burst##t6", ref oneShot))
             {
                 er.IsOneShot = (byte)(oneShot ? 1 : 0);
                 TouchFromTimeline(true);
@@ -248,7 +248,7 @@ namespace RageLightEditor.Editor
 
             int blend = pr.BlendSet == 0 ? 0 : 1;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.Combo("##t6blend", ref blend, "smoke (alpha)\0fire and sparks (additive)\0", 2))
+            if (ImGui.Combo("##t6blend", ref blend, "Alpha\0Additive\0", 2))
             {
                 pr.BlendSet = blend;
                 TouchFromTimeline(false);
@@ -281,13 +281,13 @@ namespace RageLightEditor.Editor
             ImGui.InputTextWithHint("##t6sheetsearch", "search sheets...", ref sheetSearch_T6, 48);
             if (ImGui.BeginChild("##t6sheetlist", new Vector2(0, 150.0f), ImGuiChildFlags.Borders))
             {
-                if (ImGui.Selectable("plain soft puff (made here, no game needed)"))
+                if (ImGui.Selectable("Soft puff"))
                 {
                     PtfxAuthor.SetSheet(Doc, em, PtfxAuthor.MakePuffSheet("rle_puff", 128));
                     texOverride.Remove(index);
                     TouchFromTimeline(true);
                 }
-                if (ImGui.Selectable("import an image of your own..."))
+                if (ImGui.Selectable("Import image..."))
                     RequestImportSheet_T6 = index;
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip(".dds, .png, .jpg or .bmp.\n\n" +

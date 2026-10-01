@@ -16,7 +16,7 @@ namespace RageLightEditor.Editor
         private void DrawToolNodes_L3()
         {
             var f3 = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.NoTreePushOnOpen | (Page == PageKind.Lights ? ImGuiTreeNodeFlags.Selected : 0);
-            ImGui.TreeNodeEx("Lights (light editor)###mloclightsnode", f3);
+            ImGui.TreeNodeEx("Lights###mloclightsnode", f3);
             if (ImGui.IsItemClicked()) ShowPage(PageKind.Lights);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Select a prop's light and edit it exactly as in the Lights workspace - over THIS interior's props only.");
             var f4 = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.NoTreePushOnOpen | (Page == PageKind.Assets ? ImGuiTreeNodeFlags.Selected : 0);

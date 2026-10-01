@@ -47,27 +47,27 @@ namespace RageLightEditor.Editor
             if (CloudsEnabled)
             {
                 OptSlider("Cloud speed", ref CloudSpeed, 0.0f, 5.0f, "%.2f", "How fast the hat drifts. 1 = the game's.");
-                OptCheck("Clouds follow weather", ref CloudsFollowWeather,
+                OptCheck("Weather clouds", ref CloudsFollowWeather,
                          "Pick the hat from the weather's cloud settings (weather.xml -> cloudkeyframes.xml CloudList)\ninstead of the Cloud hat combo.");
                 SameCol();
-                OptCheck("Game cloud lighting", ref CloudsGameLighting,
+                OptCheck("Cloud lighting", ref CloudsGameLighting,
                          "Light the hats with the game's cloudkeyframes.xml colours for the hour and weather\n" +
                          "(sun/moon, ambient, sky fill, scattering) - dark at night, bright at noon.\n" +
                          "Off: a flat directional-light colour, the classic map-viewer look.");
             }
-            OptCheck("Water refraction", ref WaterRefraction,
+            OptCheck("Refraction", ref WaterRefraction,
                      "Read the scene behind the water surface through the ripples (the game's refraction\n" +
                      "target). Off: the water alpha-blends over what was drawn, as before.");
         }
 
         partial void DrawLightingExtras_Sky()
         {
-            ViewGroup("Tone and exposure");
+            ViewGroup("Tone");
             int tm = ToneMapCodeWalker ? 0 : 1;
             OptWidth();
-            if (ImGui.Combo("Tone map", ref tm, "RAGE\0Game filmic\0")) ToneMapCodeWalker = tm == 0;
+            if (ImGui.Combo("Tone map", ref tm, "RAGE\0Filmic\0")) ToneMapCodeWalker = tm == 0;
             Tip("RAGE: average-luminance auto exposure, Reinhard with a white point, 0.6 x bloom.\n" +
-                "Game filmic: the timecycle's own filmic curve and colour correction at a fixed exposure.");
+                "Filmic: the timecycle's own filmic curve and colour correction at a fixed exposure.");
             if (ToneMapCodeWalker)
             {
                 OptCheck("Auto exposure", ref AutoExposure, "Adapt the exposure to the frame's average brightness, as the game does.\nOff: the Exposure slider alone.");
@@ -77,24 +77,24 @@ namespace RageLightEditor.Editor
                       "1.0 = the automatic result. Below 1 brightens, above 1 darkens (it scales the\nadapted luminance the operator divides by).");
 
             ViewGroup("Fog");
-            OptCheck("Game fog", ref GameFog,
+            OptCheck("Enabled", ref GameFog,
                      "The game's fog, driven by the timecycle's fog_* values - ground fog\n" +
                      "with height falloff, distance haze, sun/moon tinted atmosphere. Thick in w_foggy, a\n" +
                      "faint blue haze in w_clear, and it thins by itself as the camera climbs.");
             if (GameFog)
-                OptSlider("Fog scale", ref FogScale, 0.0f, 4.0f, "%.2f", "Multiplies the cycle's fog and haze densities. 1 = the game's.");
+                OptSlider("Density", ref FogScale, 0.0f, 4.0f, "%.2f", "Multiplies the cycle's fog and haze densities. 1 = the game's.");
 
             if (WorldMode)
             {
                 ViewGroup("Sun shadows");
-                OptSlider("Shadow distance", ref SunShadowDistance, 50.0f, 3000.0f, "%.0f m",
+                OptSlider("Distance", ref SunShadowDistance, 50.0f, 3000.0f, "%.0f m",
                           "How far from the camera the sun's cascaded shadow maps reach (the game's\nintervals 7/20/65/160/600 m scale to it). Further costs more per frame.");
             }
         }
 
         partial void DrawLightingExtras_SkyAdvanced()
         {
-            OptCheck("HDR lighting", ref TimecycleHdr,
+            OptCheck("HDR", ref TimecycleHdr,
                      "HDR: the timecycle's full light and sky intensities (light_dir_mult, sky_hdr),\n" +
                      "divided back out by the auto exposure. Off: the LDR clamps (sun to 1,\n" +
                      "ambient to 0.5, sky_hdr to 1.8).");

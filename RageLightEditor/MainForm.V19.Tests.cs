@@ -57,8 +57,8 @@ namespace RageLightEditor
                 DrawSelectionBox_V19(Vector3.Zero, Quaternion.Identity,
                                      new Vector3(-1), new Vector3(1), new Vector4(1, 1, 1, 1), full: true);
                 int selLines = (lineRenderer?.LineCount ?? 0) - before;
-                check("v19 selection: the selected box is drawn with an outline and corner brackets",
-                      selLines == 48, selLines + " lines (12 box + 12 outline + 24 bracket)");
+                check("v19 selection: the selected box is one thin box like CodeWalker",
+                      selLines == 12, selLines + " lines (12 box)");
 
                 int b2 = lineRenderer?.LineCount ?? 0;
                 DrawSelectionBox_V19(Vector3.Zero, Quaternion.Identity,

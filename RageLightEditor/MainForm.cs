@@ -7804,6 +7804,7 @@ namespace RageLightEditor
             if (panel.ShowGridEffective(scene.HasModel) && !panel.WorldMode) DrawGrid();
             if (!photoMode) DrawSelectedPropOutline();
             if (!panel.WorldMode) DrawLightGizmos();
+            if (panel.WorldMode && !photoMode) DrawWorldSelectionBox();
             lineRenderer.Flush(context, camera.ViewProjMatrix);
 
             if (panel.ShowMarkers) DrawLightMarkers();
@@ -7812,7 +7813,6 @@ namespace RageLightEditor
             }
             else if (panel.WorldMode)
             {
-                DrawWorldSelectionBox();
                 DrawAreaHelpers_J5();
                 DrawGrassBrush_S5();
             }

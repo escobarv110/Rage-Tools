@@ -19,6 +19,7 @@ namespace RageLightEditor.Editor
         public int MloLabelModeV19 { get; set; }
         public float PanelScaleV17 { get; set; } = 1.0f;
         public bool ThemeDefaulted { get; set; }
+        public bool ThemeGraphiteU22 { get; set; }
 
         public static float[] DefaultAccent = { 0.96f, 0.65f, 0.11f };
 
@@ -289,6 +290,7 @@ namespace RageLightEditor.Editor
             s.WalkSpeed = Math.Clamp(s.WalkSpeed, 0.02f, 20f);
             s.ThemeIndex = Math.Clamp(s.ThemeIndex, 0, UiTheme.Names.Length - 1);
             if (!s.ThemeDefaulted) { s.ThemeIndex = UiTheme.DefaultTheme; s.ThemeDefaulted = true; }
+            if (!s.ThemeGraphiteU22) { s.ThemeIndex = UiTheme.DefaultTheme; s.ThemeGraphiteU22 = true; }
             s.BackfaceMode = Math.Clamp(s.BackfaceMode, 0, 2);
             s.WeatherTransitionSeconds = Math.Clamp(s.WeatherTransitionSeconds, 0f, 30f);
             if (s.Accent == null || s.Accent.Length != 3)

@@ -13,6 +13,12 @@ namespace RageLightEditor.Editor
 
         private string rightTabRequest = Environment.GetEnvironmentVariable("RLE_RIGHTTAB");
         private int rightTabRequestFrames;
+        public void SelectRightTab_U22(string name)
+        {
+            rightTabRequest = name;
+            rightTabRequestFrames = 0;
+        }
+
         private bool BeginRightTab_J2(string name)
         {
             if (rightTabRequest == null || !string.Equals(rightTabRequest, name, StringComparison.OrdinalIgnoreCase))

@@ -36,6 +36,7 @@ namespace RageLightEditor
             if (combo == (Keys.Control | Keys.G))
             {
                 panel.GotoFocus_O3 = true;
+                if (panel.WorldMode) panel.SelectRightTab_U22("Options");
                 return true;
             }
             return false;

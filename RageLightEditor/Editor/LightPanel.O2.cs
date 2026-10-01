@@ -14,7 +14,7 @@ namespace RageLightEditor.Editor
 
         private static readonly string[] vcChannelLabels_O2 =
         {
-            "All (rgb)", "R natural ambient", "G artificial ambient", "B tint / blend", "A alpha",
+            "RGB", "R natural", "G artificial", "B tint", "A alpha",
         };
 
         private void DrawVertexColourChannel_O2()

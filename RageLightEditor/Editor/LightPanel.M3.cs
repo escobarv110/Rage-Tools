@@ -162,11 +162,11 @@ namespace RageLightEditor.Editor
                 OptSlider("Detail", ref WorldLodScale, 0.1f, 2.0f, "%.2f",
                           "Scales every entity's LOD distance. Below 1 swaps to coarser stand-ins\nsooner; above 1 holds the detailed version further out.");
                 ImGui.Spacing();
-                if (ImGui.Button("Unload everything", new Vector2(-1, 0))) RequestWorldReload = true;
+                if (ImGui.Button("Reload", new Vector2(-1, 0))) RequestWorldReload = true;
                 Tip("Drop every streamed ymap and model and stream the view again\n(also what makes a changed HD textures switch apply to what is already built).");
                 if (Advanced("map"))
                 {
-                    OptCheck("Cull to the view", ref WorldFrustumCull, "Only stream and draw what the camera can see. Off: everything in the radius, all round.");
+                    OptCheck("View culling", ref WorldFrustumCull, "Only stream and draw what the camera can see. Off: everything in the radius, all round.");
                     SameCol();
                     DrawInteriorCullRoomsOption_J4();
                     DrawGeneralExtras_World();
@@ -183,7 +183,7 @@ namespace RageLightEditor.Editor
                             "would. On: all of them at once, on top of each other." +
                             (WorldRef.HiddenScriptedVariants > 0 ? $"\n\nHiding {WorldRef.HiddenScriptedVariants} right now." : ""));
                     }
-                    OptSliderInt("Entity budget", ref WorldMaxEntities, 5000, 120000, "%d",
+                    OptSliderInt("Budget", ref WorldMaxEntities, 5000, 120000, "%d",
                                  "Ceiling on entities picked in one frame. A SAFETY limit, not a quality one - use Detail for that.");
                     ImGui.TreePop();
                 }
@@ -224,8 +224,12 @@ namespace RageLightEditor.Editor
                 }
             }
 
+            if (GotoFocus_O3) ImGui.SetNextItemOpen(true, ImGuiCond.Always);
             if (Header("Camera", true))
             {
+                DrawGoToBody_O3();
+                ImGui.Spacing();
+                DrawFovRow(-140);
                 DrawCameraKnobs();
             }
 
@@ -252,7 +256,7 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
             ImGui.PushStyleColor(ImGuiCol.Button, UiTheme.DangerButton);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, UiTheme.DangerButtonHi);
-            if (ImGui.Button("Reset world options", new Vector2(-1, 0))) openWorldResetConfirm = true;
+            if (ImGui.Button("Reset all", new Vector2(-1, 0))) openWorldResetConfirm = true;
             ImGui.PopStyleColor(2);
             Tip("Put every option in this tree back to its default: streaming radius and detail,\n" +
                 "culling, the ymap filters, collision, map lights, grass and HD textures, sky,\n" +

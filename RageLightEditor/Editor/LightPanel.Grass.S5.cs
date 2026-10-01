@@ -15,9 +15,9 @@ namespace RageLightEditor.Editor
 
         public static readonly string[] GrassBrushScopes_S5 =
         {
-            "Off (look around)",
-            "The selected batch's ymap",
-            "The project's ymaps",
+            "Off",
+            "Selected ymap",
+            "Project ymaps",
             "Any ymap",
         };
 

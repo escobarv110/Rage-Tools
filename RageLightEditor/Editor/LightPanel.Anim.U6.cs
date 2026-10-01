@@ -94,7 +94,7 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("A .ydr or .yft off disk - what GIMS, Sollumz or this tool's own\n" +
                                  "exports produce. Its materials are what you can animate.");
-            if (ImGui.Button("Take the model open in Lights", new Vector2(-1, 0))) a.RequestTakeOpenModel = true;
+            if (ImGui.Button("Use Lights model", new Vector2(-1, 0))) a.RequestTakeOpenModel = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Copy whatever is open in the Lights workspace into this one,\n" +
                                  "without going back to disk. Each section owns its own scene.");
@@ -229,7 +229,7 @@ namespace RageLightEditor.Editor
             ImGui.TextColored(AnimWorkspaceColour, "UV ANIMATION");
             ImGui.Separator();
 
-            if (ImGui.CollapsingHeader("Clip", ImGuiTreeNodeFlags.DefaultOpen))
+            if (ImGui.CollapsingHeader("Clip"))
             {
                 string name = clip.Name ?? "";
                 ImGui.SetNextItemWidth(-110);
@@ -241,7 +241,7 @@ namespace RageLightEditor.Editor
 
                 float dur = clip.Duration;
                 ImGui.SetNextItemWidth(-110);
-                if (ImGui.DragFloat("Length (s)", ref dur, 0.05f, 0.1f, 120.0f, "%.2f"))
+                if (ImGui.DragFloat("Length", ref dur, 0.05f, 0.1f, 120.0f, "%.2f"))
                 {
                     float scale = Math.Max(dur, 0.1f) / Math.Max(clip.Duration, 1e-4f);
                     clip.Duration = Math.Max(dur, 0.1f);
@@ -289,7 +289,7 @@ namespace RageLightEditor.Editor
 
             if (track == null)
             {
-                if (ImGui.Button("Add a UV animation track", new Vector2(-1, 0)))
+                if (ImGui.Button("Add track", new Vector2(-1, 0)))
                     a.RequestAddTrack = a.SelectedMaterial;
                 DrawAnimExport_U6();
                 return;
@@ -301,7 +301,7 @@ namespace RageLightEditor.Editor
             ImGui.SameLine();
             if (ImGui.SmallButton("Remove track")) a.RequestRemoveTrack = a.SelectedMaterial;
 
-            if (ImGui.CollapsingHeader("Preset", ImGuiTreeNodeFlags.DefaultOpen))
+            if (ImGui.CollapsingHeader("Preset"))
             {
                 ImGui.SetNextItemWidth(-70);
                 ImGui.Combo("##animpreset", ref animPreset_U6, UvAnimPresets.Names, UvAnimPresets.Names.Length);
@@ -335,7 +335,7 @@ namespace RageLightEditor.Editor
         private void DrawAnimComposed_U6(UvAnimTrack track)
         {
             var a = Anim;
-            if (!ImGui.CollapsingHeader("Transform", ImGuiTreeNodeFlags.DefaultOpen)) return;
+            if (!ImGui.CollapsingHeader("Transform")) return;
             float t = a.Clip.Wrap(a.Time);
 
             DrawAnimChannel_U6(track, UvAnimChannel.ScaleU, t, 0.01f, 0.01f, 32f, "%.3f",
@@ -389,7 +389,7 @@ namespace RageLightEditor.Editor
         private void DrawAnimRawRows_U6(UvAnimTrack track)
         {
             var a = Anim;
-            if (!ImGui.CollapsingHeader("Raw 2x3 (globalAnimUV0 / 1)", ImGuiTreeNodeFlags.DefaultOpen)) return;
+            if (!ImGui.CollapsingHeader("Raw 2x3 (globalAnimUV0 / 1)")) return;
             float t = a.Clip.Wrap(a.Time);
             ImGui.TextDisabled("U' = u*x + v*y + z");
             DrawAnimChannel_U6(track, UvAnimChannel.Row0X, t, 0.005f, -32f, 32f, "%.4f", "globalAnimUV0.x");
@@ -401,7 +401,7 @@ namespace RageLightEditor.Editor
             DrawAnimChannel_U6(track, UvAnimChannel.Row1Z, t, 0.005f, -64f, 64f, "%.4f", "globalAnimUV1.z");
 
             ImGui.Spacing();
-            if (ImGui.Button("Back to scale / rotation / offset", new Vector2(-1, 0)))
+            if (ImGui.Button("Back", new Vector2(-1, 0)))
             {
                 track.Raw = false;
                 a.Status = "Editing scale / rotation / offset again (the raw keys are still there).";
@@ -444,7 +444,7 @@ namespace RageLightEditor.Editor
         {
             var a = Anim;
             ImGui.Separator();
-            if (!ImGui.CollapsingHeader("Export", ImGuiTreeNodeFlags.DefaultOpen)) return;
+            if (!ImGui.CollapsingHeader("Export")) return;
 
             int live = a.Clip?.Tracks?.Count(t => t != null && t.Enabled) ?? 0;
             if (live == 0) ImGui.TextDisabled("No enabled track to write.");

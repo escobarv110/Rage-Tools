@@ -20,11 +20,7 @@ namespace RageLightEditor
                 return;
             }
 
-            var c = (mn + mx) * 0.5f;
-            var hOut = (mx - mn) * 0.5f * SelOutlineScale_V19;
-            DrawOrientedBox(pos, ori, c - hOut, c + hOut, SelShadow_V19);
             DrawOrientedBox(pos, ori, mn, mx, col);
-            DrawSelectionBrackets_V19(pos, ori, mn, mx, col);
         }
 
         private void DrawEntityBox_V19(CodeWalker.GameFiles.YmapEntityDef e, Vector4 col, bool full)

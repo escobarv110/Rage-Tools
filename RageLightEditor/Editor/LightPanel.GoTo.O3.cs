@@ -78,7 +78,7 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(shift ? "Jump straight there (Shift held)." : "Fly there - hold Shift to jump instead.");
 
-            if (ImGui.SmallButton("Copy camera coords##o3gotocopy"))
+            if (ImGui.SmallButton("Copy coords##o3gotocopy"))
             {
                 string s = FormatCoords_O3(CameraCoords_O3);
                 try { ImGui.SetClipboardText(s); } catch { }

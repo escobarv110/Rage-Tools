@@ -158,7 +158,7 @@ namespace RageLightEditor.Editor
                 ImGui.SetTooltip("An empty .ynv for the 150 m cell you are standing in - somewhere to\n" +
                                  "draw or generate a mesh for a building the game has none for.");
 
-            if (Header("Other ways to open"))
+            if (Header("More"))
             {
                 ImGui.SetNextItemWidth(-1);
                 ImGui.SliderFloat("##navq2radius", ref nav.LoadRadius, 75.0f, 3000.0f, "the mesh reaches %.0f m");
@@ -204,7 +204,7 @@ namespace RageLightEditor.Editor
             ImGui.EndChild();
 
             ImGui.Spacing();
-            if (Header("What the colours mean", true))
+            if (Header("Legend", true))
             {
                 bool any = false;
                 for (int i = 0; i < NavMeshEditor.CatNames.Length; i++)
@@ -225,7 +225,7 @@ namespace RageLightEditor.Editor
 
             if (Header("Editing"))
             {
-                ImGui.Checkbox("Delete polygons outright", ref nav.HardDeletePolys_V15);
+                ImGui.Checkbox("Hard delete", ref nav.HardDeletePolys_V15);
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip(
                         "OFF (recommended): Del takes the selected polygons OUT of the pathfinding\n" +
@@ -254,7 +254,7 @@ namespace RageLightEditor.Editor
                     ImGui.SetTooltip("The adjacency graph: a line from each polygon to every edge a\n" +
                                      "neighbour is reachable through. This is what the game walks.");
                 any |= ImGui.Checkbox("Mark the isolated ones", ref nav.HighlightIsolated);
-                ImGui.Checkbox("Show through everything", ref nav.DrawOnTop);
+                ImGui.Checkbox("Draw on top", ref nav.DrawOnTop);
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Off (the default), a wall in front of a polygon hides it, as the eye expects -\n" +
                                      "the mesh is still biased onto the ground it lies on, so the road never buries it.\n" +
@@ -316,10 +316,10 @@ namespace RageLightEditor.Editor
             }
             else
             {
-                if (Header("What this polygon is", true)) DrawNavType_Q2(nav);
+                if (Header("Type", true)) DrawNavType_Q2(nav);
                 if (Header("Corners")) DrawNavCorners_Q2(nav);
             }
-            if (Header("Draw and delete")) DrawNavCreate_Q2(nav);
+            if (Header("Edit")) DrawNavCreate_Q2(nav);
             if (Header("Advanced")) DrawNavAdvanced_Q2(nav);
 
             ImGui.Separator();
@@ -437,7 +437,7 @@ namespace RageLightEditor.Editor
                 for (int i = 0; i < vs.Length; i++)
                     if (ImGui.RadioButton($"corner {i}:  {vs[i].X:0.##}, {vs[i].Y:0.##}, {vs[i].Z:0.##}##navq2v{i}", nav.SelectedVertex == i))
                         nav.SelectedVertex = i;
-            if (ImGui.Button("Frame it  (F)", new Vector2(-1, 0))) nav.RequestFrameSelection = true;
+            if (ImGui.Button("Frame", new Vector2(-1, 0))) nav.RequestFrameSelection = true;
         }
 
         private void DrawNavCreate_Q2(NavMeshEditor nav)
@@ -445,14 +445,14 @@ namespace RageLightEditor.Editor
             ImGui.TextWrapped("Click the corners on the world, then close it. The new polygon is the " +
                               "same kind as the selected one.");
             bool placing = nav.PlacingPoly;
-            if (ImGui.Checkbox("Draw a polygon  (P)", ref placing))
+            if (ImGui.Checkbox("Draw polygon", ref placing))
             { nav.PlacingPoly = placing; if (!placing) nav.PendingPoly.Clear(); }
             ImGui.TextDisabled($"{nav.PendingPoly.Count} corner(s) placed");
             ImGui.BeginDisabled(nav.PendingPoly.Count < 3);
-            if (ImGui.Button("Close the polygon  (Enter)", new Vector2(-1, 0))) nav.RequestClosePoly = true;
+            if (ImGui.Button("Close polygon", new Vector2(-1, 0))) nav.RequestClosePoly = true;
             ImGui.EndDisabled();
             ImGui.BeginDisabled(nav.PendingPoly.Count == 0);
-            if (ImGui.Button("Discard the corners  (Esc)", new Vector2(-1, 0))) nav.PendingPoly.Clear();
+            if (ImGui.Button("Discard", new Vector2(-1, 0))) nav.PendingPoly.Clear();
             ImGui.EndDisabled();
             ImGui.Spacing();
             ImGui.BeginDisabled(nav.SelectedPolys.Count == 0);
@@ -477,10 +477,10 @@ namespace RageLightEditor.Editor
             ImGui.TextWrapped("Build walkable polygons over the collision under an area - for a building " +
                               "that has none yet. Every sample is a ray straight down; cells flatter than " +
                               "the slope limit become quads.");
-            ImGui.Checkbox("Use the Area tool's polygon", ref nav.GenUseArea);
+            ImGui.Checkbox("Use area", ref nav.GenUseArea);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Off: a square of the 'Load here' reach, centred on the camera.");
-            ImGui.Checkbox("Mark the result as interior", ref nav.GenInterior);
+            ImGui.Checkbox("Interior", ref nav.GenInterior);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("What a floor inside an MLO carries. Off: pavement, which is what open ground carries.");
             ImGui.SetNextItemWidth(-1);

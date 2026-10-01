@@ -172,7 +172,7 @@ namespace RageLightEditor.Editor
 
         private void HandleShortcuts()
         {
-            Focused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+            Focused = ImGui.IsWindowFocused(embedded ? ImGuiFocusedFlags.ChildWindows : ImGuiFocusedFlags.RootAndChildWindows);
             if (!Focused) return;
             var io = ImGui.GetIO();
             if (io.WantTextInput) return;

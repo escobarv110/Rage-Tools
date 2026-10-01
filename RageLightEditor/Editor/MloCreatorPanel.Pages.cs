@@ -86,7 +86,7 @@ namespace RageLightEditor.Editor
                 if (s.ShellFile != null && !string.Equals(System.IO.Path.GetFileNameWithoutExtension(s.ShellFile.Name), s.Name.Trim(), StringComparison.OrdinalIgnoreCase))
                     ImGui.TextColored(UiTheme.Warn, $"! the game finds the shell by the interior's name: ship it as {s.Name.Trim().ToLowerInvariant()}.ydr");
 
-                if (ImGui.Button("Import .ybn (collision)...##v34", new Vector2(-1, 0)))
+                if (ImGui.Button("Import collision...##v34", new Vector2(-1, 0)))
                     RequestImportShellYbn_V34 = true;
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Pick the collision file for this interior. It is named in the .ytyp so the game finds it, and copied beside the .ytyp when you export.");
@@ -104,7 +104,7 @@ namespace RageLightEditor.Editor
                 }
 
                 bool shellLimbo = s.ShellGoesInLimbo_V33;
-                if (ImGui.Checkbox("Shell as an entity in limbo##v33", ref shellLimbo))
+                if (ImGui.Checkbox("Shell in limbo##v33", ref shellLimbo))
                 {
                     s.ShellInLimbo_V33 = shellLimbo;
                     Track("Shell in limbo", "mlo.shelllimbo");

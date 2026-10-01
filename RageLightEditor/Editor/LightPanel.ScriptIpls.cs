@@ -8,7 +8,7 @@ namespace RageLightEditor.Editor
         public bool WorldScriptIpls = true;
         public int WorldInteriorSets = 1;
         private bool scriptIplOptionLoaded;
-        private static readonly string[] InteriorSetsLabels = { "As placed (map default)", "Auto (the shell's style)", "All sets" };
+        private static readonly string[] InteriorSetsLabels = { "Default", "Auto", "All" };
 
         public void LoadScriptIplOptions()
         {
@@ -22,7 +22,7 @@ namespace RageLightEditor.Editor
         {
             if (!WorldMode) return;
             LoadScriptIplOptions();
-            ImGui.Checkbox("Script IPLs (FiveM)", ref WorldScriptIpls);
+            ImGui.Checkbox("Script IPLs", ref WorldScriptIpls);
             Tip("Bring back the interiors the online DLCs' change sets dropped (PDM showroom, FIB lobby, bank vault) - what every FiveM server RequestIpl()s.");
             {
                 var c = Game?.Cache;

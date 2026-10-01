@@ -72,7 +72,7 @@ namespace RageLightEditor.Editor
                 if (ImGui.Button("Done##area", new Vector2(half, 0))) st.RequestFinishDraw = true;
                 ImGui.SameLine();
                 if (ImGui.Button("Cancel##area", new Vector2(half, 0))) st.RequestCancelDraw = true;
-                if (ImGui.Button("Undo last corner", new Vector2(full, 0))) st.RequestUndoCorner = true;
+                if (ImGui.Button("Undo corner", new Vector2(full, 0))) st.RequestUndoCorner = true;
                 var dz = new Vector2(st.DraftZMin, st.DraftZMax);
                 ImGui.SetNextItemWidth(full);
                 if (ImGui.DragFloat2("##draftz", ref dz, 0.25f, -500.0f, 2000.0f, "%.1f m")) { st.DraftZMin = Math.Min(dz.X, dz.Y); st.DraftZMax = Math.Max(dz.X, dz.Y); }
@@ -144,12 +144,12 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
             ImGui.TextDisabled("CONTENTS");
             bool changed = false;
-            changed |= ImGui.Checkbox("Include LOD / SLOD levels", ref st.IncludeLod);
+            changed |= ImGui.Checkbox("LOD levels", ref st.IncludeLod);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Off: only HD and orphan-HD placements - the props. On: the LOD stand-ins too.");
-            changed |= ImGui.Checkbox("Include interior (MLO) props", ref st.IncludeInterior);
+            changed |= ImGui.Checkbox("Interior props", ref st.IncludeInterior);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Props inside interiors whose pivot falls in the area. They can be moved; Delete leaves them (their placement lives in the ytyp).");
-            changed |= ImGui.Checkbox("Include interior instances (shells)", ref st.IncludeMloInstances);
-            changed |= ImGui.Checkbox("Count the bounds centre too", ref st.UseBoundsCentre);
+            changed |= ImGui.Checkbox("Interior shells", ref st.IncludeMloInstances);
+            changed |= ImGui.Checkbox("Bounds centre", ref st.UseBoundsCentre);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("An entity whose pivot is outside but whose box centre is inside counts as inside.");
             ImGui.SetNextItemWidth(full);
             changed |= ImGui.InputTextWithHint("##areaname_f", "name contains...", ref st.NameFilter, 96);
@@ -199,7 +199,7 @@ namespace RageLightEditor.Editor
             float h2 = (ImGui.GetContentRegionAvail().X - ImGui.GetStyle().ItemSpacing.X) * 0.5f;
             if (ImGui.Button("Undo last", new Vector2(h2, 0))) st.RequestUndo = true;
             ImGui.SameLine();
-            if (ImGui.Button("Save area list...", new Vector2(h2, 0))) st.RequestSaveList = true;
+            if (ImGui.Button("Save list...", new Vector2(h2, 0))) st.RequestSaveList = true;
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("A text file: archetype, position, ymap of every entity inside - for the mapper's records.");
 
             DrawAreaGrassRows_R2(st, full);

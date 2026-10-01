@@ -79,7 +79,7 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Brings in the archetypes its entities place, so you can\n" +
                                  "edit the props of a map you already have.");
-            if (ImGui.Button("Open a model (.ydr / .yft)...", new Vector2(-1, 0))) RequestExtOpenModel_V68 = true;
+            if (ImGui.Button("Open model...", new Vector2(-1, 0))) RequestExtOpenModel_V68 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The model to look at while you place the extensions on it,\n" +
                                  "and the one whose vertices the corners snap to.");
@@ -200,7 +200,7 @@ namespace RageLightEditor.Editor
                 ImGui.SetTooltip("Loads the archetype's own model from the archives, so you can see " +
                                  "what you are working on and snap the corners onto it.");
 
-            if (ImGui.Button("New archetype from the model", new Vector2(-1, 0))) RequestExtNewArchetype_V68 = true;
+            if (ImGui.Button("New archetype", new Vector2(-1, 0))) RequestExtNewArchetype_V68 = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("For a loose model with no .ytyp yet: makes one named after it,\n" +
                                  "so its extensions have somewhere to live.");
@@ -290,7 +290,7 @@ namespace RageLightEditor.Editor
                     ImGui.TextColored(new Vector4(1, 1, 1, 1),
                         "Click a vertex for " + ArchetypeExtensions_V62.Spaced(Ext.SnapFieldName) +
                         (Ext.SnapChain.Count > 0 ? $"   ({Ext.SnapChain.Count} more after it)" : ""));
-                    if (ImGui.SmallButton("Cancel (Esc)")) Ext.CancelSnap();
+                    if (ImGui.SmallButton("Cancel")) Ext.CancelSnap();
                 }
                 ImGui.EndChild();
                 ImGui.PopStyleColor();

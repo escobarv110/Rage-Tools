@@ -27,10 +27,10 @@ namespace RageLightEditor.Editor
         public const float ViewRingR = 1.22f;
         public const float HeadR = 0.075f;
 
-        public static readonly Vector4 X = new Vector4(1.00f, 0.22f, 0.32f, 1f);
-        public static readonly Vector4 Y = new Vector4(0.52f, 0.88f, 0.15f, 1f);
-        public static readonly Vector4 Z = new Vector4(0.20f, 0.56f, 1.00f, 1f);
-        public static readonly Vector4 Hot = new Vector4(1.00f, 0.86f, 0.18f, 1f);
+        public static readonly Vector4 X = new Vector4(1.00f, 0.10f, 0.10f, 1f);
+        public static readonly Vector4 Y = new Vector4(0.10f, 1.00f, 0.10f, 1f);
+        public static readonly Vector4 Z = new Vector4(0.20f, 0.45f, 1.00f, 1f);
+        public static readonly Vector4 Hot = new Vector4(1.00f, 1.00f, 0.00f, 1f);
         public static readonly Vector4 Centre = new Vector4(0.95f, 0.95f, 0.95f, 1f);
         public static readonly Vector4 ViewRing = new Vector4(0.92f, 0.92f, 0.95f, 0.85f);
         public static readonly Vector4 Outline = new Vector4(0.02f, 0.02f, 0.03f, 0.85f);

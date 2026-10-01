@@ -16,7 +16,7 @@ namespace RageLightEditor.Editor
         {
             var te = Terrain;
             if (te == null) return;
-            if (ImGui.SmallButton("Ground texture library..."))
+            if (ImGui.SmallButton("Textures..."))
             {
                 te.LibraryOpen = true;
                 te.LibrarySlot = slot;
@@ -45,7 +45,7 @@ namespace RageLightEditor.Editor
                                          : $" - the finest edge this mesh can draw is about {te.VertexSpacing:0.##} m."));
                 if (tight) ImGui.PopStyleColor();
             }
-            if (ImGui.Button("Subdivide (4x the triangles)", new Vector2(-1, 0))) te.RequestSubdivide = true;
+            if (ImGui.Button("Subdivide", new Vector2(-1, 0))) te.RequestSubdivide = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Split every triangle into four, carrying the painting with it. Halves the vertex\n" +
                                  "spacing, so the brush can draw an edge half as wide.\n" +
@@ -63,7 +63,7 @@ namespace RageLightEditor.Editor
             ImGui.TextDisabled("Layer textures");
 
             var mode = te.TextureExport;
-            if (ImGui.RadioButton("Write a .ytd beside the .ydr", mode == TerrainEditor.TexDestination.Ytd))
+            if (ImGui.RadioButton("Separate .ytd", mode == TerrainEditor.TexDestination.Ytd))
                 te.TextureExport = TerrainEditor.TexDestination.Ytd;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The usual pair - but only INSIDE an RPF: the game loads a .ytd\n" +
@@ -79,14 +79,14 @@ namespace RageLightEditor.Editor
                                  "file - drop it anywhere and it is textured, with no .ytd to name, ship or load.\n" +
                                  "It is bigger by exactly the pixels it now holds.");
 
-            if (ImGui.RadioButton("Neither - name them only", mode == TerrainEditor.TexDestination.Reference))
+            if (ImGui.RadioButton("Names only", mode == TerrainEditor.TexDestination.Reference))
                 te.TextureExport = TerrainEditor.TexDestination.Reference;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The material names its four layers and nothing else is written. Right when the\n" +
                                  "textures are the game's own, or already live in a .ytd of yours.");
 
             bool game = te.IncludeGameTextures;
-            if (ImGui.Checkbox("Include the game's own textures", ref game)) te.IncludeGameTextures = game;
+            if (ImGui.Checkbox("Game textures", ref game)) te.IncludeGameTextures = game;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Off, only the layers you loaded from DISK are written: a texture pulled out of the\n" +
                                  "archives is already somewhere the game resolves it from, and copying it into a mod\n" +

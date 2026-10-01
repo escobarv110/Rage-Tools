@@ -18,7 +18,7 @@ namespace RageLightEditor.Editor
         public int PlaceRoomMode;
         public static readonly string[] PlaceRoomModeNames =
         {
-            "The room the camera is in", "The room selected in the tree", "Wherever it lands (containment)",
+            "Camera room", "Selected room", "Auto",
         };
         public int PlaceRoomIndex = -1;
         public string PlaceRoomLabel = "";

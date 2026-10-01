@@ -20,7 +20,7 @@ namespace RageLightEditor.Editor
         partial void DrawInteriorCullRoomsOption_J4()
         {
             if (!WorldInteriorCull) ImGui.BeginDisabled();
-            ImGui.Checkbox("Unseen rooms too", ref WorldInteriorCullRooms);
+            ImGui.Checkbox("Room culling", ref WorldInteriorCullRooms);
             if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
                 ImGui.SetTooltip("Rooms of the interior that no portal in view leads to are not drawn either (the game's\n" +
                                  "portal traversal). Turn off if a custom MLO with sloppy portals shows holes.\n" +

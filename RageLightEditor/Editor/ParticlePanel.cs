@@ -311,7 +311,7 @@ namespace RageLightEditor.Editor
             ImGui.SetNextItemWidth(-1);
             if (ImGui.DragFloat3("##ptfxorigin", ref origin, 0.05f))
                 Sim.Origin = new SDX.Vector3(origin.X, origin.Y, origin.Z);
-            if (ImGui.Button("Place where I am looking", new Vector2(-1, 0))) RequestPlaceAtView = true;
+            if (ImGui.Button("Place at view", new Vector2(-1, 0))) RequestPlaceAtView = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Puts the effect on the surface under the middle of the viewport,\n" +
                                  "or a few metres ahead of the camera when there is nothing there.");
@@ -340,7 +340,7 @@ namespace RageLightEditor.Editor
                                  "1.00 is the size the asset actually asks for, in metres.");
 
             ImGui.SetNextItemWidth(-1);
-            ImGui.Combo("##ptfxblend", ref blendChoice, "blend: per-rule (auto)\0blend: alpha\0blend: additive\0", 3);
+            ImGui.Combo("##ptfxblend", ref blendChoice, "Blend: auto\0Blend: alpha\0Blend: additive\0", 3);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Per-rule reads each ParticleRule's BlendSet. The two overrides are\n" +
                                  "for judging a rule whose blend set we map wrongly.");

@@ -119,7 +119,7 @@ namespace RageLightEditor.Editor
 
             ImGui.Spacing();
             ImGui.Separator();
-            ImGui.TextDisabled("COLLISION UNDER CURSOR");
+            ImGui.TextDisabled("UNDER CURSOR");
             rowSeq = 0;
             var b = c.CollisionBounds;
             var ybn = b.GetRootYbn();
@@ -148,7 +148,7 @@ namespace RageLightEditor.Editor
             Row("Hit distance", $"{c.HitDist:0.##} m");
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(UiTheme.Accent.X, UiTheme.Accent.Y, UiTheme.Accent.Z, 0.35f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(UiTheme.AccentBright.X, UiTheme.AccentBright.Y, UiTheme.AccentBright.Z, 0.55f));
-            if (ImGui.SmallButton("Selection mode: Collision##colcursor")) RequestSelectCollisionUnderCursor = true;
+            if (ImGui.SmallButton("Pick collision##colcursor")) RequestSelectCollisionUnderCursor = true;
             ImGui.PopStyleColor(2);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Switch to the Collision selection mode with this polygon selected\n" +
@@ -519,7 +519,7 @@ namespace RageLightEditor.Editor
 
         private void DrawOccludeTriPage(YmapOccludeModelTriangle t)
         {
-            SelSection("OCCLUDE MODEL TRIANGLE");
+            SelSection("OCCLUDER TRIANGLE");
             Row("Ymap", t.Ymap?.Name ?? "");
             Row("Model", (t.Model?.Index ?? 0).ToString() + "   " + (t.Model?.ToString() ?? ""));
             Row("Triangle", t.Index.ToString());

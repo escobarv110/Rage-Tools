@@ -42,16 +42,16 @@ namespace RageLightEditor.Editor
             if (ImGui.TreeNodeEx("How finely##r1shellopt", ImGuiTreeNodeFlags.SpanAvailWidth))
             {
                 ImGui.SetNextItemWidth(120);
-                ImGui.DragFloat("Grid (m)##r1vox", ref ShellVoxel_R1, 0.01f, 0.08f, 1.0f, "%.2f");
+                ImGui.DragFloat("Grid##r1vox", ref ShellVoxel_R1, 0.01f, 0.08f, 1.0f, "%.2f");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("The voxel edge. 0.25 m suits a house; drop it for narrow interiors (slower),\nraise it for something the size of a warehouse.");
                 ImGui.SetNextItemWidth(120);
-                ImGui.DragFloat("Widest doorway (m)##r1core", ref ShellDoorWidth_R1, 0.05f, 0.60f, 8.0f, "%.2f");
+                ImGui.DragFloat("Max doorway##r1core", ref ShellDoorWidth_R1, 0.05f, 0.60f, 8.0f, "%.2f");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("A gap this wide or narrower joins two rooms; anything wider is open space, and\n" +
                                      "the two sides stay ONE room. Raise it to split a big hall at its archways;\n" +
                                      "lower it to stop a wide opening being read as a door.");
-                ImGui.Checkbox("Openings to the outside become portals##r1out", ref ShellOutsidePortals_R1);
+                ImGui.Checkbox("Outside portals##r1out", ref ShellOutsidePortals_R1);
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("A door or a garage mouth that opens on the world gets a portal to limbo,\nwhich is what lets the sun and the exterior through it.");
                 ImGui.TreePop();

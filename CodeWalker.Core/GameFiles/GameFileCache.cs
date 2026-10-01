@@ -1361,6 +1361,18 @@ namespace CodeWalker.GameFiles
 
 
 
+            if (ytypfile.CompositeEntityTypes != null)
+            {
+                lock (compositeStartModels)
+                    foreach (var cet in ytypfile.CompositeEntityTypes)
+                    {
+                        var cname = cet.Name.ToString();
+                        var sname = cet.StartModel.ToString();
+                        if (string.IsNullOrEmpty(cname) || string.IsNullOrEmpty(sname)) continue;
+                        compositeStartModels[JenkHash.GenHash(cname.ToLowerInvariant())] = JenkHash.GenHash(sname.ToLowerInvariant());
+                    }
+            }
+
             if ((ytypfile.AllArchetypes == null) || (ytypfile.AllArchetypes.Length == 0))
             {
                 ErrorLog(entry.Path + ": no archetypes found");
@@ -2089,8 +2101,16 @@ namespace CodeWalker.GameFiles
             projectArchetypes.TryGetValue(hash, out arch);
             if (arch != null) return arch;
             archetypeDict.TryGetValue(hash, out arch);
+            if (arch == null && compositeStartModels.TryGetValue(hash, out var startHash) && startHash != hash)
+            {
+                projectArchetypes.TryGetValue(startHash, out arch);
+                if (arch == null) archetypeDict.TryGetValue(startHash, out arch);
+            }
             return arch;
         }
+
+        private readonly Dictionary<uint, uint> compositeStartModels = new Dictionary<uint, uint>();
+        public int CompositeEntityTypeCount => compositeStartModels.Count;
         public MapDataStoreNode GetMapNode(uint hash)
         {
             if (!IsInited) return null;
