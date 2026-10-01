@@ -95,3 +95,13 @@ This project is provided as an open-source development tool for the FiveM / Cfx.
 In short: use it, modify it, and build with it - but don't take a modified version, rebrand it, and sell it as your own.
 
 The full text is in [`LICENSE`](LICENSE).
+
+## Support the project
+
+RAGE Tools is free and it stays free - no paywalls, no locked features, no "pro" version. You never have to pay a thing to use it.
+
+If it saved you hours (or a headache) and you feel like saying thanks, you can chip in here. Every donation goes straight back into development: more tools, more fixes and faster updates.
+
+**[Support RAGE Tools](https://checkout.revolut.com/pay/3e3d382f-ca07-454d-8d82-1a72fe9fe6cc)**
+
+Starring the repo, reporting bugs and sharing it with other modders helps just as much.
