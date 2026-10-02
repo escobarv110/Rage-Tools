@@ -50,22 +50,6 @@ float SceneViewDistance(float2 screenPos)
     return ProjParams.y / (z + ProjParams.x);
 }
 
-float Hash3(float3 p)
-{
-    p = frac(p * 0.3183099 + float3(0.1, 0.2, 0.3));
-    p *= 17.0;
-    return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
-}
-float Noise3(float3 x)
-{
-    float3 i = floor(x); float3 f = frac(x);
-    f = f * f * (3.0 - 2.0 * f);
-    return lerp(lerp(lerp(Hash3(i + float3(0,0,0)), Hash3(i + float3(1,0,0)), f.x),
-                     lerp(Hash3(i + float3(0,1,0)), Hash3(i + float3(1,1,0)), f.x), f.y),
-                lerp(lerp(Hash3(i + float3(0,0,1)), Hash3(i + float3(1,0,1)), f.x),
-                     lerp(Hash3(i + float3(0,1,1)), Hash3(i + float3(1,1,1)), f.x), f.y), f.z);
-}
-
 float4 PSMain(PS_Input i) : SV_TARGET
 {
     float3 eye = CameraPos.xyz;
@@ -96,48 +80,19 @@ float4 PSMain(PS_Input i) : SV_TARGET
     if (s1 <= s0 + 1e-4) discard;
 
     float soft = saturate(i.Centre.w);
-    float spread = max(i.AxisD.w, 1.0);
-    float k = max(i.Colour.a, 0.5);
-    float amountNoise = Params.x;
-    int steps = (int)clamp(Params.y, 4, 32);
-    float seg = (s1 - s0);
-    float dt = seg / steps;
-    float3 nDrift = -normalize(D) * (CameraPos.w * 0.12);
-    float3 nDrift2 = float3(0.03, 0.02, -0.05) * CameraPos.w;
-
-    float3 acc = 0;
-
-    float jit = frac(sin(dot(px, float2(12.9898, 78.233))) * 43758.5453);
-    float s = s0 + dt * (0.5 + (jit - 0.5) * 0.9);
-    [loop]
-    for (int n = 0; n < steps; n++)
-    {
-        float3 p = lo + ld * s;
-        float t = saturate(p.z);
-
-        float sw = lerp(1.0, spread, t);
-        float2 uv = p.xy / sw;
-
-        float along = pow(saturate(1.0 - t), k);
-
-        float edge = 1.0 - max(abs(uv.x), abs(uv.y));
-        float halfW = max(min(length(X), length(Y)), 0.01);
-        float fw = clamp(lerp(0.02, 0.08, soft) / halfW, 0.1, 0.5);
-        float feather = smoothstep(0.0, fw, edge);
-        float core = 1.0 + 0.25 * saturate(1.0 - dot(uv, uv));
-        float dens = along * feather * core;
-        if (amountNoise > 0.001)
-        {
-            float3 wp = eye + rd * s;
-            float n1 = Noise3(wp * 1.7 + nDrift);
-            float n2 = Noise3(wp * 4.3 + nDrift2 + nDrift * 1.7);
-            float nz = (n1 * 0.65 + n2 * 0.35);
-            dens *= lerp(1.0, nz * 2.0, amountNoise);
-        }
-        acc += dens * dt;
-        s += dt;
-    }
-    if (Params.w > 0.5) acc = seg;
+    int densityType = (int)round(i.Colour.a);
+    float pathLen = s1 - s0;
+    float z0 = saturate(lo.z + ld.z * s0);
+    float z1 = saturate(lo.z + ld.z * s1);
+    float d0 = 1.0 - z0;
+    float d1 = 1.0 - z1;
+    float integral1 = (d0 + d1) * 0.5;
+    float integral2 = (d0 * d0 + d0 * d1 + d1 * d1) / 3.0;
+    float acc = pathLen;
+    if (densityType == 4 || densityType == 5) acc = pathLen * integral1;
+    else if (densityType == 6 || densityType == 7) acc = pathLen * integral2;
+    if (densityType != 0) acc *= lerp(1.0, acc, soft);
+    if (Params.w > 0.5) acc = pathLen;
     float3 rad = i.Colour.rgb * acc * Params.z;
     return float4(rad, 1.0);
 }

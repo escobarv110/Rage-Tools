@@ -26,6 +26,16 @@ namespace RageLightEditor
                         if (fe.NameLower != null && fe.NameLower.Contains(w.Trim().ToLowerInvariant()))
                         {
                             Console.WriteLine("FINDFILE " + fe.Path);
+                            var dumpDir = Environment.GetEnvironmentVariable("RLE_FINDFILES_DUMP");
+                            if (!string.IsNullOrWhiteSpace(dumpDir))
+                            {
+                                try
+                                {
+                                    var data = rm.GetFileData(fe.Path);
+                                    if (data != null) System.IO.File.WriteAllBytes(System.IO.Path.Combine(dumpDir, n + "_" + fe.Name), data);
+                                }
+                                catch (Exception ex) { Console.WriteLine("FINDFILE dump failed: " + ex.Message); }
+                            }
                             n++;
                             break;
                         }

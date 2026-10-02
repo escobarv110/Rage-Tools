@@ -17,6 +17,14 @@ cbuffer CloudVars : register(b0)
     float4 DensityShiftScale;
     float4 ScaleDiffuseFillAmbientWrap;
     float4 Piercing;
+    float4 Rescale12;
+    float4 Rescale3Offset1;
+    float4 Offset23;
+    float4 AnimScale12;
+    float4 AnimScale3Flags;
+    float4 AnimCombine;
+    float4 AnimSculpt;
+    float4 AnimBlend;
 
     float4 GFogParams0;
     float4 GFogParams1;
@@ -31,6 +39,8 @@ cbuffer CloudVars : register(b0)
 }
 
 Texture2D DensityTex : register(t0);
+Texture2D DetailDensityTex : register(t1);
+Texture2D DetailDensity2Tex : register(t2);
 SamplerState WrapLinear : register(s0);
 
 struct VS_Input
@@ -52,6 +62,8 @@ struct PS_Input
     float3 Dir : TEXCOORD2;
     float3 Nrm : TEXCOORD3;
     float HazeScale : TEXCOORD4;
+    float4 Uv23 : TEXCOORD5;
+    float2 DensityAdjust : TEXCOORD6;
 };
 
 float ComputeGlobalVolumetricFogValue_Crytek(float3 cameraToWorldPos, out float dist)
@@ -113,7 +125,11 @@ PS_Input VSMain(VS_Input i)
     o.Pos = mul(float4(p, 1.0), ViewProjNoTrans);
 
     o.Pos.z = max(o.Pos.z, 1e-6 * o.Pos.w);
-    o.Uv = i.Uv + UvOffset.xy;
+    float2 scroll = UvOffset.xy;
+    o.Uv = i.Uv * Rescale12.xy + Rescale3Offset1.zw + scroll * AnimScale12.xy;
+    o.Uv23.xy = i.Uv * Rescale12.zw + Offset23.xy + scroll * AnimScale12.zw;
+    o.Uv23.zw = i.Uv * Rescale3Offset1.xy + Offset23.zw + scroll * AnimScale3Flags.xy;
+    o.DensityAdjust = float2(i.Col.g, i.Col.b);
 
     o.Alpha = i.Col.a * Scale.w;
     o.Dir = p;
@@ -125,8 +141,25 @@ PS_Input VSMain(VS_Input i)
 float4 PSMain(PS_Input i) : SV_TARGET
 {
 
-    float4 d = DensityTex.Sample(WrapLinear, i.Uv);
-    float density = 1.0 - d.g;
+    float density;
+    if (AnimScale3Flags.z > 0.5)
+    {
+        float3 animDensity;
+        animDensity.x = DensityTex.Sample(WrapLinear, i.Uv).g;
+        animDensity.y = DetailDensityTex.Sample(WrapLinear, i.Uv23.xy).g;
+        animDensity.z = DetailDensity2Tex.Sample(WrapLinear, i.Uv23.zw).g;
+        animDensity = 1.0 - animDensity * animDensity;
+        animDensity *= AnimBlend.xyz;
+        float3 combineDensity = animDensity * AnimCombine.xyz;
+        float3 sculptDensity = animDensity * AnimSculpt.xyz;
+        float combinedDensity = i.DensityAdjust.x * max(combineDensity.x, max(combineDensity.y, combineDensity.z));
+        float sculptedDensity = i.DensityAdjust.y + sculptDensity.x + sculptDensity.y + sculptDensity.z;
+        density = combinedDensity - ((1.0 - combinedDensity) * sculptedDensity);
+    }
+    else
+    {
+        density = 1.0 - DensityTex.Sample(WrapLinear, i.Uv).g;
+    }
     float3 view = normalize(i.Dir);
     float3 c;
     float a;

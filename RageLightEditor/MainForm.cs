@@ -4262,6 +4262,7 @@ namespace RageLightEditor
 
         private void WorldDeleteSelected()
         {
+            if (WorldEdit.Selection.Light != null && WorldDeleteLight_U25()) return;
             bool tookU5 = false;
             WorldDeleteSelected_U5(ref tookU5);
             if (tookU5) return;
@@ -7585,7 +7586,7 @@ namespace RageLightEditor
                 var l = gpuLightSources[i];
                 if (l == null) continue;
                 uint hash = l.ProjectedTextureHash.Hash;
-                if ((l.Flags & LightDefs.FlagTextureProjection) == 0 || hash == 0) continue;
+                if ((l.Flags & LightDefs.FlagTextureProjection) == 0 || hash == 0 || NoProjTex_U25) continue;
                 if (!projSlots.TryGetValue(hash, out int slot))
                 {
                     if (projSlots.Count >= GpuLight.MaxProjTextures) continue;
@@ -7786,7 +7787,7 @@ namespace RageLightEditor
             if (volumes.Count > 0)
             {
                 DrawVolumes();
-                triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAdditiveAlpha, CommonStates.DepthReadOnly);
+                FlushVolumes_U25(context);
             }
 
             if (panel.ArchiveMode && previewCollision != null && !previewCollision.IsEmpty)
@@ -7822,7 +7823,7 @@ namespace RageLightEditor
             triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
 
             DrawDistantLights_V47(context);
-            if (panel.ShowCoronas && coronas.Count > 0 && panel.RenderMode != 8)
+            if (panel.ShowCoronas && !NoCoronas_U25 && coronas.Count > 0 && panel.RenderMode != 8)
             {
                 foreach (var c in coronas)
                 {
@@ -8342,41 +8343,8 @@ namespace RageLightEditor
             }
             else panel.VolumeOverflow = 0;
 
-            foreach (var v in list)
-            {
-                float len = Math.Max(v.Falloff * v.SizeScale, 0.05f);
-                float a0 = Math.Clamp(0.22f * v.Intensity, 0.02f, 0.5f);
-                var baseCol = new Vector4(v.Colour, a0);
-                var rimCol = new Vector4(v.HasOuter ? v.OuterColour : v.Colour, 0.0f);
-
-                var dir = v.Dir.LengthSquared() > 1e-6f ? Vector3.Normalize(v.Dir) : -Vector3.UnitZ;
-                var tx = Vector3.Normalize(Vector3.Cross(dir, Math.Abs(dir.Z) < 0.9f ? Vector3.UnitZ : Vector3.UnitX));
-                var ty = Vector3.Cross(dir, tx);
-
-                float feather = panel.VolumeFeather;
-                switch (v.Type)
-                {
-                    case 2:
-                        float half = Math.Clamp(v.OuterAngleRad, 0.03f, 1.53f);
-                        ConeShape_R5(half, len, out float radius, out float axial);
-                        triRenderer.AddConeFeathered(v.Pos, v.Pos + dir * axial, tx, ty, radius,
-                            baseCol, rimCol, 24, feather, 18);
-                        break;
-                    case 1:
-                        triRenderer.AddSphereFeathered(v.Pos, len * 0.5f,
-                            new Vector4(v.Colour, Math.Clamp(a0 * 0.4f, 0.015f, 0.25f)), 10, 14, feather, 14);
-                        break;
-                    case 4:
-                        var ext = dir * (v.ExtentX * 0.5f);
-                        float cr = Math.Max(v.Falloff * 0.4f * v.SizeScale, 0.05f);
-                        var ccol = new Vector4(v.Colour, Math.Clamp(a0 * 0.35f, 0.015f, 0.25f));
-                        triRenderer.AddCylinderFeathered(v.Pos + ext, v.Pos - ext, tx, ty, cr,
-                            ccol, 16, feather);
-                        triRenderer.AddSphereFeathered(v.Pos + ext, cr, ccol, 6, 10, feather);
-                        triRenderer.AddSphereFeathered(v.Pos - ext, cr, ccol, 6, 10, feather);
-                        break;
-                }
-            }
+            volumeRenderer_U25 ??= new Rendering.LightVolumeRenderer_U25(deviceResources.Device);
+            foreach (var v in list) AddVolume_U25(v);
         }
 
         private static float DayAmbientFactor(int hour)

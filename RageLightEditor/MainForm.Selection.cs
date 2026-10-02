@@ -422,7 +422,6 @@ namespace RageLightEditor
         private void PickMloInstances(ref Ray ray, Vector3 camPos, ref WorldSelection hit)
         {
             World.SnapshotWalkedYmaps(selYmaps);
-            var bbox = new BoundingBox(new Vector3(-1.5f), new Vector3(1.5f));
             foreach (var ymap in selYmaps)
             {
                 var mlos = ymap.MloEntities;
@@ -430,6 +429,8 @@ namespace RageLightEditor
                 foreach (var ent in mlos)
                 {
                     if (ent == null) continue;
+                    float mh = MloMarkerHalf_U25(ent.Position);
+                    var bbox = new BoundingBox(new Vector3(-mh), new Vector3(mh));
                     var camrel = ent.Position - camPos;
                     var orinv = Quaternion.Invert(ent.Orientation);
                     var mray = new Ray(orinv.Multiply(ray.Position - ent.Position), orinv.Multiply(ray.Direction));
@@ -804,7 +805,8 @@ namespace RageLightEditor
                         foreach (var ent in mlos)
                         {
                             if (ent == null || selHelperBoxesNoDepth.Count >= SelMaxHelperBoxes) continue;
-                            selHelperBoxesNoDepth.Add(new HelperBox { Pos = ent.Position, Ori = ent.Orientation, Min = new Vector3(-1.5f), Max = new Vector3(1.5f), Col = HelperBlue });
+                            float mh = MloMarkerHalf_U25(ent.Position);
+                            selHelperBoxesNoDepth.Add(new HelperBox { Pos = ent.Position, Ori = ent.Orientation, Min = new Vector3(-mh), Max = new Vector3(mh), Col = HelperBlue });
                             if ((ent.Position - camPos).LengthSquared() < MloLabelDist * MloLabelDist &&
                                 !ReferenceEquals(ent, WorldEdit.Selection.MloEntityDef))
                                 DrawWorldLabel(ent.Position + new Vector3(0, 0, 1.6f), MloLabelText(ent), MloLabel);
@@ -896,12 +898,25 @@ namespace RageLightEditor
         private void DrawWorldSelectionBox()
         {
             selOverlay_U24.Clear();
+            selSegs_U25.Clear();
+            if (l4Deferred_U25) { L4Tris.Clear_U25(); l4Deferred_U25 = false; }
+            var mode = SelMode;
+            int start = lineRenderer.LineCount;
             foreach (var hb in selHelperBoxesNoDepth) DrawOrientedBox(hb.Pos, hb.Ori, hb.Min, hb.Max, hb.Col);
+            CaptureLines_U25(start, false, HelperPx_U25);
             DrawWorldLightMarkers_J2();
             if (worldHoverSel.HasValue && worldHoverSel.CheckForChanges(WorldEdit.Selection))
+            {
+                start = lineRenderer.LineCount;
                 DrawSelection(worldHoverSel, MouseHitWhite, false);
+                CaptureLines_U25(start, !OnTop_U25(worldHoverSel, mode), HelperPx_U25, HoverWhite_U25);
+            }
             if (WorldEdit.Selection.HasValue)
+            {
+                start = lineRenderer.LineCount;
                 DrawSelection(WorldEdit.Selection, SelGreen, true);
+                CaptureLines_U25(start, !OnTop_U25(WorldEdit.Selection, mode), SelBoxPx_U24);
+            }
             foreach (var extra in WorldEdit.Extra_V20)
                 if (extra != null) DrawEntityBox_V19(extra, SelGreen, true);
             DrawPickDebug();

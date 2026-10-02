@@ -72,6 +72,11 @@ namespace RageLightEditor.Editor
                 Type = (byte)la.Type,
                 ExtentX = la.Extent.X,
                 HasOuter = (la.Flags & LightDefs.FlagVolumeOuterColour) != 0,
+                InnerAngleRad = Math.Min(la.ConeInnerAngle, la.ConeOuterAngle) * 0.01745329f,
+                FalloffExponent = la.FalloffExponent,
+                LightIntensity = la.Intensity,
+                OuterIntensity = la.VolumeOuterIntensity,
+                OuterExponent = la.VolumeOuterExponent,
             });
             VolumesEmitted++;
         }

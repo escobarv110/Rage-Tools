@@ -245,6 +245,7 @@ namespace RageLightEditor
         private string CloudStatus => cloudRenderer == null ? "none" : cloudRenderer.Status;
 
         private static readonly bool EnvCloudsOff = Environment.GetEnvironmentVariable("RLE_CLOUDS") == "0";
+        private static readonly string EnvCloudFrag_U25 = Environment.GetEnvironmentVariable("RLE_CLOUDFRAG");
 
         private CloudLighting BuildCloudLighting()
         {
@@ -290,6 +291,7 @@ namespace RageLightEditor
                                          : new Vector3(1, 1, 1);
                 string frag = panel.CloudFrag;
                 if (panel.CloudsFollowWeather) frag = cloudRenderer.FragForWeather(weather.CurrentPreset.Cycles) ?? frag;
+                frag = EnvCloudFrag_U25 ?? frag;
                 cloudRenderer.Render(context, SkyViewProj(), camera.Position, sunCol, (float)now * panel.CloudSpeed, frag,
                                      sceneRenderer.GameFog, BuildCloudLighting());
             }

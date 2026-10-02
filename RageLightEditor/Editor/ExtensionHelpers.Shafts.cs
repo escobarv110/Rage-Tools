@@ -105,14 +105,7 @@ namespace RageLightEditor.Editor
             if (inten <= 0.0005f) return false;
 
             float soft = MathUtil.Clamp(ls.softness, 0.0f, 1.0f);
-            float k;
-            switch ((int)ls.densityType)
-            {
-                case 0: k = 0.35f; break;
-                case 6: case 7: k = 2.0f + soft; break;
-                default: k = 1.0f + soft * 0.75f; break;
-            }
-            shafts.Add(centre, X, Y, wdir * len, soft, 1.0f, col * inten, k);
+            shafts.Add(centre, X, Y, wdir * len, soft, 1.0f, col * inten, (int)ls.densityType);
             return true;
         }
     }

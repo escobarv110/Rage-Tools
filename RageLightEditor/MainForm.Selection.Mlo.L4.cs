@@ -86,7 +86,7 @@ namespace RageLightEditor
                     DrawWorldLabel(top, $"{room.Index}: {room.RoomName}", isFocus ? MloLabelSel : RoomLabel);
                 }
             }
-            if (drawn > 0) L4FlushDepthTested();
+            if (drawn > 0) l4Deferred_U25 = true;
             return true;
         }
     }

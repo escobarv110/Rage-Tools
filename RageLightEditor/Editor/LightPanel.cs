@@ -126,7 +126,8 @@ namespace RageLightEditor.Editor
         public bool ImportPropLights = true;
         public bool ImportAllProps = true;
         public bool ImportVegetation = true;
-        public float Exposure = 1.0f;
+        public const float DefaultExposure_U25 = 1.0f;
+        public float Exposure = DefaultExposure_U25;
         public bool PostFxColourCorrect = true;
         private string propFilter = "";
         public float VolumeFeather = 0.85f;

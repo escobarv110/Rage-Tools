@@ -62,6 +62,7 @@ namespace RageLightEditor
                 panel.RequestSelectWorldLightEntity = null;
             }
             ServiceWorldLightAdd_U18();
+            ServiceWorldLightDelete_U25();
             if (panel.WorldLightEdited)
             {
                 panel.WorldLightEdited = false;
@@ -436,7 +437,7 @@ namespace RageLightEditor
             var ci = System.Globalization.CultureInfo.InvariantCulture;
             float F(string v) => float.TryParse(v, System.Globalization.NumberStyles.Float, ci, out var f) ? f : 0f;
             Vector3 V3(string v) { var p = v.Split(','); return new Vector3(p.Length > 0 ? F(p[0]) : 0, p.Length > 1 ? F(p[1]) : 0, p.Length > 2 ? F(p[2]) : 0); }
-            bool valueEdit = false, doUndo = false, selectEntity = false;
+            bool valueEdit = false, doUndo = false, selectEntity = false, doDelete = false;
             Vector3? move = null, dir = null;
             foreach (var part in spec.Split(';'))
             {
@@ -464,6 +465,8 @@ namespace RageLightEditor
                     case "dir": dir = V3(v); break;
                     case "undo": doUndo = v == "1"; break;
                     case "entity": selectEntity = v == "1"; break;
+                    case "delete": doDelete = v == "1"; break;
+                    case "volume": l.VolumeIntensity = F(v); l.Flags |= LightDefs.FlagDrawVolume; valueEdit = true; break;
                 }
             }
             if (valueEdit)
@@ -493,6 +496,20 @@ namespace RageLightEditor
                 Console.WriteLine($"WORLDLIGHTEDIT after undo: colour={l.ColorR},{l.ColorG},{l.ColorB} intensity={l.Intensity:0.##} local={l.Position} restored {(WorldLights.AllFieldsEqual(before, l) ? "OK" : "MISMATCH")}");
                 TryWorldRedo();
                 Console.WriteLine($"WORLDLIGHTEDIT after redo: colour={l.ColorR},{l.ColorG},{l.ColorB} intensity={l.Intensity:0.##} local={l.Position}");
+            }
+            if (doDelete && s.LightEntity?.Archetype != null)
+            {
+                var de = s.LightEntity;
+                int Count() => worldRender.Lights.TryGetDefs(de.Archetype.Hash, out var dd) && dd != null ? dd.Length : 0;
+                int n0 = Count();
+                WorldDeleteLight_U25();
+                int n1 = Count();
+                TryWorldUndo();
+                int n2 = Count();
+                TryWorldRedo();
+                int n3 = Count();
+                Console.WriteLine($"WORLDLIGHTDELETE {de.Archetype.Name}: {n0} lights, after delete {n1}, after undo {n2}, after redo {n3}, selection {(WorldEdit.Selection.Light != null ? "kept" : "cleared")}");
+                return;
             }
             if (selectEntity && s.LightEntity != null)
             {

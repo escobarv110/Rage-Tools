@@ -21,13 +21,16 @@ namespace RageLightEditor
                 if (rpf?.AllEntries == null) continue;
                 foreach (var e in rpf.AllEntries)
                 {
-                    if (!(e is RpfFileEntry fe) || fe.NameLower == null || !fe.NameLower.EndsWith(".ytyp") || !fe.NameLower.Contains(want.ToLowerInvariant())) continue;
+                    if (!(e is RpfFileEntry fe) || fe.NameLower == null || !fe.NameLower.EndsWith(".ytyp")) continue;
+                    bool fileMatch = fe.NameLower.Contains(want.ToLowerInvariant());
+                    if (!fileMatch && !fe.NameLower.StartsWith("v_")) continue;
                     YtypFile y = null;
                     try { y = c.RpfMan.GetFile<YtypFile>(fe); } catch { }
                     if (y == null) continue;
                     foreach (var a in y.AllArchetypes ?? Array.Empty<Archetype>())
                     {
                         if (!(a is MloArchetype m)) continue;
+                        if (!fileMatch && (m.Name ?? "").IndexOf(want, StringComparison.OrdinalIgnoreCase) < 0) continue;
                         var counts = new Dictionary<string, int>();
                         foreach (var me in m.entities ?? Array.Empty<MCEntityDef>())
                         {

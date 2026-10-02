@@ -645,6 +645,7 @@ namespace RageLightEditor.Editor
             public Vector3 Pos, Dir;
             public Vector3 Colour, OuterColour;
             public float OuterAngleRad, Falloff, SizeScale, Intensity;
+            public float InnerAngleRad, FalloffExponent, LightIntensity, OuterIntensity, OuterExponent;
             public byte Type;
             public float ExtentX;
             public bool HasOuter;
@@ -724,6 +725,11 @@ namespace RageLightEditor.Editor
                         Type = (byte)l.Type,
                         ExtentX = l.Extent.X,
                         HasOuter = (l.Flags & LightDefs.FlagVolumeOuterColour) != 0,
+                        InnerAngleRad = Math.Min(l.ConeInnerAngle, l.ConeOuterAngle) * 0.01745329f,
+                        FalloffExponent = l.FalloffExponent,
+                        LightIntensity = l.Intensity,
+                        OuterIntensity = l.VolumeOuterIntensity,
+                        OuterExponent = l.VolumeOuterExponent,
                     });
                 }
 
@@ -737,7 +743,8 @@ namespace RageLightEditor.Editor
                         cpos += toCam * (Math.Min(l.CoronaZBias, tlen * 0.5f) / tlen);
                     }
                     var ccol = new Vector3(l.ColorR, l.ColorG, l.ColorB) / 255.0f;
-                    coronasOut.Add((cpos, ccol, l.CoronaSize * 0.1f, l.CoronaIntensity * flash));
+                    float cview = LightDefs.CoronaView_U25(l, inst.WorldPosition, inst.WorldDirection, cameraPos);
+                    if (cview > 0.001f) coronasOut.Add((cpos, ccol, l.CoronaSize * 0.1f, l.CoronaIntensity * flash * cview));
                 }
 
                 if ((l.Flags & LightDefs.FlagCoronaOnly) != 0) continue;

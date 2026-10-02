@@ -73,8 +73,17 @@ namespace RageLightEditor.Editor
                 OptCheck("Auto exposure", ref AutoExposure, "Adapt the exposure to the frame's average brightness, as the game does.\nOff: the Exposure slider alone.");
                 OptSlider("Bloom", ref RageBloom, 0.0f, 2.0f, "%.2f", "Scale on the glow around bright things. 0 = off, 1 = the reference look.");
             }
-            OptSlider("Exposure", ref Exposure, 0.05f, 4.0f, "%.2f",
-                      "1.0 = the automatic result. Below 1 brightens, above 1 darkens (it scales the\nadapted luminance the operator divides by).");
+            float defW = ImGui.CalcTextSize("Default").X + ImGui.GetStyle().FramePadding.X * 2.0f;
+            float sp = ImGui.GetStyle().ItemInnerSpacing.X;
+            ImGui.SetNextItemWidth(Math.Max(40.0f, ImGui.GetContentRegionAvail().X - OptLabelW - defW - sp));
+            ImGui.SliderFloat("##exposure", ref Exposure, 0.05f, 4.0f, "%.2f");
+            Tip("1.0 = the automatic result. Below 1 brightens, above 1 darkens (it scales the\nadapted luminance the operator divides by).");
+            Exposure = Math.Clamp(Exposure, 0.05f, 4.0f);
+            ImGui.SameLine(0, sp);
+            if (ImGui.Button("Default##exposure")) Exposure = DefaultExposure_U25;
+            Tip("Back to " + DefaultExposure_U25.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + ".");
+            ImGui.SameLine(0, sp);
+            ImGui.TextUnformatted("Exposure");
 
             ViewGroup("Fog");
             OptCheck("Enabled", ref GameFog,

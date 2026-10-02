@@ -2,7 +2,7 @@ using System;
 
 namespace RageLightEditor.Editor
 {
-    public static class LightDefs
+    public static partial class LightDefs
     {
         public struct FlagDef
         {

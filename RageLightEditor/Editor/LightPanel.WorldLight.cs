@@ -17,7 +17,7 @@ namespace RageLightEditor.Editor
         public bool RequestSelectWorldLight;
         public YmapEntityDef RequestSelectWorldLightEntity;
         public int RequestSelectWorldLightIndex;
-        public bool RequestWorldLightSaveAs, RequestWorldLightAddToProject;
+        public bool RequestWorldLightSaveAs, RequestWorldLightAddToProject, RequestWorldLightDelete_U25;
 
         public bool WorldLightEdited;
         public LightAttributes WorldLightEditKey, WorldLightEditBefore, WorldLightEditAfter;
@@ -129,6 +129,11 @@ namespace RageLightEditor.Editor
                 ImGui.SetTooltip("Save the edited prop (asks where, the first time) and add that file to the project:\n" +
                                  "the project's copy replaces the game's, so the world draws and lights from it.");
             if (!canSave) ImGui.EndDisabled();
+            ImGui.PushStyleColor(ImGuiCol.Button, UiTheme.DangerButton);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, UiTheme.DangerButtonHi);
+            if (ImGui.Button("Delete light##wlight", new Vector2(-1, 0))) RequestWorldLightDelete_U25 = true;
+            ImGui.PopStyleColor(2);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Remove this light from the prop. Undo brings it back.\nShortcut: Delete");
             if (!string.IsNullOrEmpty(WorldLightStatus)) ImGui.TextWrapped(WorldLightStatus);
 
             DrawCollisionUnderCursor_Selection();

@@ -114,9 +114,6 @@ namespace RageLightEditor.Editor
             {
                 OptSlider("Light boost", ref LightsMultiplier, 0.0f, 4.0f, "%.2fx",
                           "Debug multiplier on every light's contribution. 1.0 = game-accurate; anything\nelse is for finding a light, not for judging one.");
-                if (ShowVolumes)
-                    OptSlider("Volume feather", ref VolumeFeather, 0.0f, 1.0f, "%.2f",
-                              "Softens the edge of the volume so the shaft fades out\ninstead of ending on a hard silhouette. 0 = hard edge.");
             }
             OptSlider("Ambient", ref AmbientLevel, 0.0f, 0.5f, "%.3f",
                       "The flat preview ambient of a scene with NO timecycle loaded. With a cycle\nloaded the cycle's own ambient is used and this does nothing visible.");

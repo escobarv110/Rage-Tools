@@ -50,6 +50,13 @@ namespace RageLightEditor.Rendering
 
         public int LineCount => verts.Count / 2;
 
+        public void TakeSince(int startLine, List<(Vector3 a, Vector3 b, Vector4 c)> into)
+        {
+            int s = Math.Max(startLine, 0) * 2;
+            for (int i = s; i + 1 < verts.Count; i += 2) into.Add((verts[i].Position, verts[i + 1].Position, verts[i].Colour));
+            if (s < verts.Count) verts.RemoveRange(s, verts.Count - s);
+        }
+
         public void AddLine(Vector3 a, Vector3 b, Vector4 colour)
         {
             verts.Add(new LineVertex(a, colour));

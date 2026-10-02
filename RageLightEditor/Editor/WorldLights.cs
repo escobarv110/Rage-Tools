@@ -31,7 +31,7 @@ namespace RageLightEditor.Editor
         {
             if (!asked.Add(archetypeHash)) return;
             var defs = Extract(drawable);
-            if (defs != null && defs.Length > 0) { byArchetype[archetypeHash] = defs; RememberDrawable(archetypeHash, drawable); }
+            if (defs != null && defs.Length > 0) { byArchetype[archetypeHash] = defs; RememberDrawable(archetypeHash, drawable); RememberOriginal_U25(archetypeHash, defs); }
         }
 
         public bool Has(uint archetypeHash) => byArchetype.ContainsKey(archetypeHash);
@@ -120,6 +120,7 @@ namespace RageLightEditor.Editor
                 var e = visible[vi];
                 var arch = e?.Archetype;
                 if (arch == null) continue;
+                if (Vector3.DistanceSquared(e.Position, cameraPos) <= maxD2) AddOriginalCells_U25(e, arch.Hash);
                 if (!byArchetype.TryGetValue(arch.Hash, out var defs)) continue;
                 float ed2 = Vector3.DistanceSquared(e.Position, cameraPos);
                 float reach = MaxDistance + e.BSRadius;
@@ -151,7 +152,8 @@ namespace RageLightEditor.Editor
                         var toCam = cameraPos - cpos;
                         var tlen = toCam.Length();
                         if (tlen > 0.001f) cpos += toCam * (Math.Min(la.CoronaZBias, tlen * 0.5f) / tlen);
-                        coronasOut.Add((cpos, new Vector3(la.ColorR, la.ColorG, la.ColorB) / 255.0f, la.CoronaSize * 0.1f, la.CoronaIntensity * flash));
+                        float cview = LightDefs.CoronaView_U25(la, wpos, ori.Multiply(d.Dir), cameraPos);
+                        if (cview > 0.001f) coronasOut.Add((cpos, new Vector3(la.ColorR, la.ColorG, la.ColorB) / 255.0f, la.CoronaSize * 0.1f, la.CoronaIntensity * flash * cview));
                     }
                     if ((la.Flags & LightDefs.FlagCoronaOnly) != 0) continue;
 

@@ -32,6 +32,14 @@ namespace RageLightEditor.Rendering
         public Vector4 DensityShiftScale;
         public Vector4 ScaleDiffuseFillAmbientWrap;
         public Vector4 Piercing;
+        public Vector4 Rescale12;
+        public Vector4 Rescale3Offset1;
+        public Vector4 Offset23;
+        public Vector4 AnimScale12;
+        public Vector4 AnimScale3Flags;
+        public Vector4 AnimCombine;
+        public Vector4 AnimSculpt;
+        public Vector4 AnimBlend;
         public GameFogVars Fog;
     }
 
@@ -43,7 +51,7 @@ namespace RageLightEditor.Rendering
         public CloudKeyframeState Kf;
     }
 
-    public class CloudRenderer : IDisposable
+    public partial class CloudRenderer : IDisposable
     {
         private readonly Device device;
         private readonly ShaderSet shader;
@@ -159,6 +167,7 @@ namespace RageLightEditor.Rendering
             m = modelRenderer.BuildFromDrawable(drw, layer.Filename);
             if (m == null || m.Meshes.Count == 0) { missing.Add(hash); return null; }
             density = new ShaderResourceView[m.Meshes.Count];
+            var mparams = new CloudMeshParams_U25[m.Meshes.Count];
             for (int i = 0; i < m.Meshes.Count; i++)
             {
                 var mesh = m.Meshes[i];
@@ -180,7 +189,8 @@ namespace RageLightEditor.Rendering
                     }
                 }
                 density[i] = srv ?? mesh.DiffuseSRV;
-                if (density[i] == null)
+                mparams[i] = BuildMeshParams_U25(mesh, density[i]);
+                if (density[i] == null || (mparams[i].Anim && mparams[i].Detail1 == null))
                 {
                     m.Dispose();
                     retryAt[hash] = frame + 30;
@@ -189,6 +199,7 @@ namespace RageLightEditor.Rendering
                 }
             }
             models[hash] = m;
+            meshParams_U25[hash] = mparams;
             densities[hash] = density;
             if (DebugDump)
             {
@@ -275,11 +286,16 @@ namespace RageLightEditor.Rendering
                     v.CloudColour = new Vector4(1, 1, 1, 1);
                     v.DensityShiftScale = new Vector4(0, 1, 0, 0);
                 }
-                cb.Update(context, ref v);
+                meshParams_U25.TryGetValue(JenkHash.GenHash(layer.Filename.ToLowerInvariant()), out var mps);
                 for (int mi = 0; mi < model.Meshes.Count; mi++)
                 {
                     var mesh = model.Meshes[mi];
                     if (mesh.VB == null || mesh.IB == null) continue;
+                    var mp = mps != null && mi < mps.Length ? mps[mi] : null;
+                    ApplyMeshParams_U25(ref v, mp);
+                    cb.Update(context, ref v);
+                    context.PixelShader.SetShaderResource(1, mp?.Detail1);
+                    context.PixelShader.SetShaderResource(2, mp?.Detail2);
                     context.PixelShader.SetShaderResource(0, density != null && mi < density.Length ? density[mi] : mesh.DiffuseSRV);
                     context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(mesh.VB, MeshVertex.Stride, 0));
                     context.InputAssembler.SetIndexBuffer(mesh.IB, Format.R16_UInt, 0);
@@ -290,6 +306,8 @@ namespace RageLightEditor.Rendering
             if (applied)
             {
                 context.PixelShader.SetShaderResource(0, null);
+                context.PixelShader.SetShaderResource(1, null);
+                context.PixelShader.SetShaderResource(2, null);
                 context.OutputMerger.SetBlendState(CommonStates.BlendOpaque);
                 context.OutputMerger.SetDepthStencilState(CommonStates.DepthDefault);
                 context.Rasterizer.State = CommonStates.RasterSolid;
