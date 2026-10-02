@@ -9,7 +9,12 @@ namespace RageLightEditor.Editor
         public void DrawAppearanceMenu_V19()
         {
             if (!ImGui.BeginMenu("Appearance")) return;
+            DrawAppearanceBody_V19();
+            ImGui.EndMenu();
+        }
 
+        private void DrawAppearanceBody_V19()
+        {
             ImGui.TextDisabled("How the whole tool looks");
             ImGui.Separator();
 
@@ -55,8 +60,7 @@ namespace RageLightEditor.Editor
             ImGui.TextDisabled(UiScaleNote_V17 ?? "");
 
             DrawFontSection_V20();
-
-            ImGui.EndMenu();
+            DrawInterfaceSection_U27();
         }
     }
 }

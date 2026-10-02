@@ -32,6 +32,18 @@ namespace RageLightEditor.Editor
             var border = G(0.235f, 0.243f, 0.265f, 0.85f);
             var accSoft = new Vector4(accent.X, accent.Y, accent.Z, 0.35f);
             var accFaint = new Vector4(accent.X, accent.Y, accent.Z, 0.22f);
+            if (LightPanel.ShellChrome_U27)
+            {
+                bg = G(0.078f, 0.082f, 0.094f, 0.97f);
+                bgAlt = G(0.098f, 0.102f, 0.114f, 1f);
+                frame = G(0.039f, 0.043f, 0.051f, 1f);
+                frameHi = G(0.100f, 0.106f, 0.122f, 1f);
+                frameAct = G(0.130f, 0.137f, 0.155f, 1f);
+                button = G(0.122f, 0.133f, 0.153f, 1f);
+                buttonHi = G(0.161f, 0.176f, 0.204f, 1f);
+                buttonAct = Mix(buttonHi, acc, 0.45f);
+                border = G(0.137f, 0.145f, 0.165f, 0.9f);
+            }
 
             Set(ImGuiCol.Text, G(0.910f, 0.918f, 0.935f));
             Set(ImGuiCol.TextDisabled, G(0.530f, 0.550f, 0.590f));

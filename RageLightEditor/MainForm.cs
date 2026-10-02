@@ -6324,6 +6324,7 @@ namespace RageLightEditor
         {
             if (on == isFullscreen) return;
             isFullscreen = on;
+            if (FullscreenHook_U27 != null) { FullscreenHook_U27(on); return; }
             if (on)
             {
                 photoSavedBorder = FormBorderStyle;
@@ -6776,6 +6777,7 @@ namespace RageLightEditor
 
         public void RenderFrame()
         {
+            if (ServiceRestart_U27()) return;
             if (renderStillPending && !renderingStill)
             {
                 renderStillPending = false;

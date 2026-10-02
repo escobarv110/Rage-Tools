@@ -14,6 +14,7 @@
   <!-- Only our own app assembly is obfuscated. CodeWalker.Core / SharpDX / ImGui.NET stay
        intact (open-source + reflection-heavy). -->
   <Module file="$(InPath)\RageLightEditor.dll">
+    <SkipNamespace name="RageLightEditor.Shell" />
     <!-- These are (de)serialised by property NAME via System.Text.Json. Renaming their members
          would produce unreadable files that also break between builds - keep them intact. -->
     <SkipType name="RageLightEditor.Editor.AppSettings" skipMethods="true" skipStringHiding="true"

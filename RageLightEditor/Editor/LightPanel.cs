@@ -321,11 +321,13 @@ namespace RageLightEditor.Editor
             }
 
             DrawTopBar();
+            if (ShellChrome_U27) DrawShellPopups_U27();
             DrawDockSpace_V30(displayWidth, displayHeight);
             if (WorldMode) DrawWorldToolbar(displayWidth);
             if (ShowLeftPanel) DrawLeftPanel(displayWidth, displayHeight);
-            if (ShowRightPanel) DrawRightPanel(displayWidth, displayHeight);
-            if (WorldMode) DrawStatusBar(displayWidth, displayHeight);
+            if (ShellOwnsRight_U27) DrawShellRightPage_U27(displayWidth, displayHeight);
+            else if (ShowRightPanel) DrawRightPanel(displayWidth, displayHeight);
+            if (WorldMode && !ShellChrome_U27) DrawStatusBar(displayWidth, displayHeight);
             DrawPanelHandles(displayWidth, displayHeight);
             WorkspaceOverlay_N4(displayWidth, displayHeight);
             WorkspaceOverlay_P4(displayWidth, displayHeight);
@@ -809,14 +811,17 @@ namespace RageLightEditor.Editor
                 ImGui.SetTooltip(ShowLeftPanel ? "Hide the left panel  (F9)" : "Show the left panel  (F9)");
             ImGui.End();
 
-            float rx = displayWidth - TabW - 4.0f - (ShowRightPanel ? settings.RightPanelWidth : 0.0f);
-            ImGui.SetNextWindowPos(new Vector2(rx, y), ImGuiCond.Always);
-            ImGui.Begin("##righthandle", flags);
-            if (ImGui.Button(ShowRightPanel ? ">##hideright" : "<##showright", new Vector2(TabW, TabH)))
-                ShowRightPanel = !ShowRightPanel;
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(ShowRightPanel ? "Hide the right panel  (F10)" : "Show the right panel  (F10)");
-            ImGui.End();
+            if (!ShellOwnsRight_U27)
+            {
+                float rx = displayWidth - TabW - 4.0f - (ShowRightPanel ? settings.RightPanelWidth : 0.0f);
+                ImGui.SetNextWindowPos(new Vector2(rx, y), ImGuiCond.Always);
+                ImGui.Begin("##righthandle", flags);
+                if (ImGui.Button(ShowRightPanel ? ">##hideright" : "<##showright", new Vector2(TabW, TabH)))
+                    ShowRightPanel = !ShowRightPanel;
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip(ShowRightPanel ? "Hide the right panel  (F10)" : "Show the right panel  (F10)");
+                ImGui.End();
+            }
 
             ImGui.PopStyleVar();
         }
@@ -1830,11 +1835,12 @@ namespace RageLightEditor.Editor
         public CodeWalker.GameFiles.YmapEntityDef RequestWorldSelectEntity;
         public bool RequestWorldFrameSelected;
         private string explorerFilter = "";
-        private const float ToolbarH = 34.0f, StatusH = 24.0f;
+        private const float ToolbarH = 34.0f, StatusHBase_U27 = 24.0f;
+        private static float StatusH => ShellChrome_U27 ? 0.0f : StatusHBase_U27;
 
         private bool worldToolbarWraps_U5;
 
-        private float ToolbarHNow_U5 => ToolbarH +
+        private float ToolbarHNow_U5 => ShellChrome_U27 && !NavMode ? 0.0f : ToolbarH +
             (worldToolbarWraps_U5 && !NavMode
                 ? ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.Y
                 : 0.0f);
@@ -2390,6 +2396,7 @@ namespace RageLightEditor.Editor
         private void DrawWorldToolbar(float displayWidth)
         {
             { bool q2 = false; WorldToolbar_Q2(displayWidth, ref q2); if (q2) return; }
+            if (ShellChrome_U27) { ShellToolbarLogic_U27(); return; }
             worldToolbarWraps_U5 = WorldToolbarWidth_U5() > displayWidth - 16.0f;
             ImGui.SetNextWindowPos(new Vector2(0, TopBarHeight), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(displayWidth, ToolbarHNow_U5), ImGuiCond.Always);
@@ -4448,6 +4455,7 @@ namespace RageLightEditor.Editor
 
         private void DrawTopBar()
         {
+            if (ShellChrome_U27) { TopBarHeight = 0; return; }
             if (!ImGui.BeginMainMenuBar()) { TopBarHeight = 0; return; }
             TopBarHeight = ImGui.GetWindowSize().Y;
 

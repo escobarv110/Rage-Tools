@@ -533,7 +533,10 @@ namespace RageLightEditor
             form.DebugMatExportAll = matExportAll;
             form.DebugDetachProject = detachProject;
             form.DebugDetachMlo = detachMlo;
-            form.Show();
+            var newUiEnv = Environment.GetEnvironmentVariable("RLE_NEWUI");
+            bool newUi = string.IsNullOrEmpty(newUiEnv) ? Editor.AppSettings.PeekNewUi_U27() : newUiEnv == "1";
+            ApplicationContext shellContext = newUi ? Shell.ShellHost_U27.Start(form) : null;
+            if (shellContext == null) form.Show();
 
             Application.Idle += (s, e) =>
             {
@@ -542,8 +545,18 @@ namespace RageLightEditor
                     form.RenderFrame();
                 }
             };
-            Application.Run(form);
+            if (shellContext != null) Application.Run(shellContext);
+            else Application.Run(form);
             FlightRecorder.CleanExit();
+            if (form.RestartPending_U27)
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath)
+                    { UseShellExecute = false, WorkingDirectory = AppContext.BaseDirectory });
+                }
+                catch (Exception ex) { Console.WriteLine("RESTART failed: " + ex.Message); }
+            }
 
             var lost = form.DeviceLostReport;
             if (!string.IsNullOrEmpty(lost))

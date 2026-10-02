@@ -9,7 +9,7 @@ namespace RageLightEditor.Editor
         private static readonly bool forceDock_V30 =
             Environment.GetEnvironmentVariable("RLE_DOCK") == "1";
 
-        public bool DockedLayout => forceDock_V30 || (settings != null && settings.DockedLayout);
+        public bool DockedLayout => !ShellChrome_U27 && (forceDock_V30 || (settings != null && settings.DockedLayout));
 
         public uint DockSpaceId_V30 { get; private set; }
 
