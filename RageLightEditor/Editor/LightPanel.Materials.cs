@@ -29,7 +29,7 @@ namespace RageLightEditor.Editor
                      "points, blue audio, yellow doors, violet ladders, cyan buoyancy, lime proc objects.\n" +
                      $"Now: {WorldExtensionsDrawn:N0} markers");
             if (ShowLightShafts)
-                OptSlider("Shaft glow", ref LightShaftIntensity, 0.0f, 3.0f, "%.2fx", "Scales every shaft's brightness. 1 = the extension's own intensity.");
+                OptSlider("Shaft glow", ref LightShaftIntensity, 0.0f, 3.0f, "%.2fx", "Scales every shaft's brightness. 1 = the extension's own intensity.", def: 1.0f);
         }
 
         partial void DrawRenderExtras_Materials()
@@ -45,7 +45,7 @@ namespace RageLightEditor.Editor
                          $"from now on; 'Unload everything' rebuilds all. HD hits so far: {WorldHdTextureHits:N0}"))
                 WorldHdTextures = hd;
             if (WorldGrass)
-                OptSlider("Grass distance", ref WorldGrassDistance, 0.25f, 2.0f, "%.2fx", "Scales how far out grass batches are drawn (on top of Detail).");
+                OptSlider("Grass distance", ref WorldGrassDistance, 0.25f, 2.0f, "%.2fx", "Scales how far out grass batches are drawn (on top of Detail).", def: 1.0f);
         }
     }
 }

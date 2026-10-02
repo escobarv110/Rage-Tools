@@ -44,5 +44,11 @@ float4 PSMain(PS_Input input) : SV_TARGET
 
     float2 uv = saturate((input.Uv - b) / max(1.0 - 2.0 * b, 1e-4));
     float4 c = Photo.Sample(Samp, uv);
-    return float4(c.rgb * Tint.rgb, c.a * Tint.a);
+    float a = c.a * Tint.a;
+    if (Frame.z > 0.0)
+    {
+        float r = length((input.Uv - 0.5) * 2.0);
+        a *= 1.0 - smoothstep(1.0 - Frame.z, 1.0, r);
+    }
+    return float4(c.rgb * Tint.rgb, a);
 }

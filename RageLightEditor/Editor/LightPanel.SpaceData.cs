@@ -48,9 +48,9 @@ namespace RageLightEditor.Editor
         partial void DrawHelpersExtras_SpaceDataAdvanced()
         {
             OptSlider("Map data range", ref SpaceDataRange, 100.0f, 4000.0f, "%.0f m",
-                      "Paths, scenarios and audio zones further than this from the camera are not drawn.");
+                      "Paths, scenarios and audio zones further than this from the camera are not drawn.", def: 1000.0f);
             OptSlider("Nav mesh range", ref SpaceNavRange, 150.0f, 1500.0f, "%.0f m",
-                      "How far the nav meshes stream in around the camera (150 m cells; each cell is a file).");
+                      "How far the nav meshes stream in around the camera (150 m cells; each cell is a file).", def: 450.0f);
         }
 
         partial void DrawWorldSelectionExtras_SpaceData(ref bool handled)

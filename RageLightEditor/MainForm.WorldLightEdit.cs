@@ -245,31 +245,6 @@ namespace RageLightEditor
 
         partial void DrawWorldLightCandidates_I6()
         {
-            var vis = World.Visible;
-            var L = worldRender.Lights;
-            var camPos = camera.Position;
-            float range2 = WorldLightCandidateRange * WorldLightCandidateRange;
-            float near2 = WorldLightNearRange * WorldLightNearRange;
-            int drawn = 0;
-            var selLight = WorldEdit.Selection.Light;
-            for (int vi = 0; vi < vis.Count && drawn < 600; vi++)
-            {
-                var e = vis[vi];
-                var arch = e?.Archetype;
-                if (arch == null || Vector3.DistanceSquared(e.Position, camPos) > range2) continue;
-                if (!L.TryGetDefs(arch.Hash, out var defs) || defs == null) continue;
-                var ori = e.Orientation;
-                var scale = e.Scale; if (scale.X <= 0.0f) scale = Vector3.One;
-                for (int i = 0; i < defs.Length; i++)
-                {
-                    var la = defs[i].L;
-                    if (la == null || ReferenceEquals(la, selLight)) continue;
-                    var wpos = ori.Multiply(defs[i].Pos * scale) + e.Position;
-                    if (Vector3.DistanceSquared(wpos, camPos) <= near2) continue;
-                    lineRenderer.AddSphere(wpos, WorldLightMarkerRadius(wpos), HelperBlue, 10);
-                    drawn++;
-                }
-            }
         }
 
         partial void DrawSelection_Light(in WorldSelection s, Vector4 col, bool full, ref bool drawBox)

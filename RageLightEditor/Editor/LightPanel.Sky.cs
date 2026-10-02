@@ -46,7 +46,7 @@ namespace RageLightEditor.Editor
         {
             if (CloudsEnabled)
             {
-                OptSlider("Cloud speed", ref CloudSpeed, 0.0f, 5.0f, "%.2f", "How fast the hat drifts. 1 = the game's.");
+                OptSlider("Cloud speed", ref CloudSpeed, 0.0f, 5.0f, "%.2f", "How fast the hat drifts. 1 = the game's.", def: 1.0f);
                 OptCheck("Weather clouds", ref CloudsFollowWeather,
                          "Pick the hat from the weather's cloud settings (weather.xml -> cloudkeyframes.xml CloudList)\ninstead of the Cloud hat combo.");
                 SameCol();
@@ -71,7 +71,7 @@ namespace RageLightEditor.Editor
             if (ToneMapCodeWalker)
             {
                 OptCheck("Auto exposure", ref AutoExposure, "Adapt the exposure to the frame's average brightness, as the game does.\nOff: the Exposure slider alone.");
-                OptSlider("Bloom", ref RageBloom, 0.0f, 2.0f, "%.2f", "Scale on the glow around bright things. 0 = off, 1 = the reference look.");
+                OptSlider("Bloom", ref RageBloom, 0.0f, 2.0f, "%.2f", "Scale on the glow around bright things. 0 = off, 1 = the reference look.", def: 1.0f);
             }
             float defW = ImGui.CalcTextSize("Default").X + ImGui.GetStyle().FramePadding.X * 2.0f;
             float sp = ImGui.GetStyle().ItemInnerSpacing.X;
@@ -91,13 +91,13 @@ namespace RageLightEditor.Editor
                      "with height falloff, distance haze, sun/moon tinted atmosphere. Thick in w_foggy, a\n" +
                      "faint blue haze in w_clear, and it thins by itself as the camera climbs.");
             if (GameFog)
-                OptSlider("Density", ref FogScale, 0.0f, 4.0f, "%.2f", "Multiplies the cycle's fog and haze densities. 1 = the game's.");
+                OptSlider("Density", ref FogScale, 0.0f, 4.0f, "%.2f", "Multiplies the cycle's fog and haze densities. 1 = the game's.", def: 1.0f);
 
             if (WorldMode)
             {
                 ViewGroup("Sun shadows");
                 OptSlider("Distance", ref SunShadowDistance, 50.0f, 3000.0f, "%.0f m",
-                          "How far from the camera the sun's cascaded shadow maps reach (the game's\nintervals 7/20/65/160/600 m scale to it). Further costs more per frame.");
+                          "How far from the camera the sun's cascaded shadow maps reach (the game's\nintervals 7/20/65/160/600 m scale to it). Further costs more per frame.", def: 600.0f);
             }
         }
 
@@ -107,16 +107,16 @@ namespace RageLightEditor.Editor
                      "HDR: the timecycle's full light and sky intensities (light_dir_mult, sky_hdr),\n" +
                      "divided back out by the auto exposure. Off: the LDR clamps (sun to 1,\n" +
                      "ambient to 0.5, sky_hdr to 1.8).");
-            OptSlider("Sky exposure", ref SkyExposure, 0.25f, 4.0f, "%.2f", "Bias on the sky's sky_hdr scale alone. 1.0 = the game's.");
+            OptSlider("Sky exposure", ref SkyExposure, 0.25f, 4.0f, "%.2f", "Bias on the sky's sky_hdr scale alone. 1.0 = the game's.", def: 1.0f);
             OptSlider("Sky blue", ref SkySaturation_V68, 0.5f, 2.5f, "%.2f",
                       "How much colour the sky keeps overhead. 1.0 is the timecycle's own value, " +
                       "which the tone mapping washes towards grey; above that the zenith goes " +
-                      "deeper blue and the horizon is left alone.");
+                      "deeper blue and the horizon is left alone.", def: 1.35f);
             OptSlider("Shadow softness", ref ShadowSoftness_V68, 0.05f, 1.5f, "%.2f m",
                       "How wide the sun's shadow edge is, in metres of world - the same width in " +
-                      "every cascade, so it no longer jumps as you fly away.");
+                      "every cascade, so it no longer jumps as you fly away.", def: 0.35f);
             if (WorldMode)
-                OptSliderInt("Shadow cascades", ref SunCascadeCount, 1, 4, "%d", "How many cascades the sun's shadow map is split into. 4 = the game's; fewer is faster and coarser.");
+                OptSliderInt("Shadow cascades", ref SunCascadeCount, 1, 4, "%d", "How many cascades the sun's shadow map is split into. 4 = the game's; fewer is faster and coarser.", def: 4);
         }
     }
 }

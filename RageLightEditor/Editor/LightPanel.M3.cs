@@ -75,20 +75,63 @@ namespace RageLightEditor.Editor
             return ch;
         }
 
-        private static bool OptSlider(string label, ref float v, float min, float max, string fmt, string tip = null)
+        private static bool OptSlider(string label, ref float v, float min, float max, string fmt, string tip = null, float def = float.NaN)
         {
-            OptWidth();
-            bool ch = ImGui.SliderFloat(label, ref v, min, max, fmt);
-            Tip(tip);
+            bool ch;
+            if (float.IsNaN(def))
+            {
+                OptWidth();
+                ch = ImGui.SliderFloat(label, ref v, min, max, fmt);
+                Tip(tip);
+            }
+            else
+            {
+                OptDefaultRowWidth_U26(out float sp);
+                ch = ImGui.SliderFloat("##" + label, ref v, min, max, fmt);
+                Tip(tip);
+                ImGui.SameLine(0, sp);
+                if (ImGui.Button("Default##" + label)) { v = def; ch = true; }
+                Tip("Back to " + def.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + ".");
+                ImGui.SameLine(0, sp);
+                ImGui.TextUnformatted(OptVisibleLabel_U26(label));
+            }
             v = Math.Clamp(v, min, max);
             return ch;
         }
 
-        private static bool OptSliderInt(string label, ref int v, int min, int max, string fmt, string tip = null)
+        private static void OptDefaultRowWidth_U26(out float sp)
         {
-            OptWidth();
-            bool ch = ImGui.SliderInt(label, ref v, min, max, fmt);
-            Tip(tip);
+            float defW = ImGui.CalcTextSize("Default").X + ImGui.GetStyle().FramePadding.X * 2.0f;
+            sp = ImGui.GetStyle().ItemInnerSpacing.X;
+            ImGui.SetNextItemWidth(Math.Max(40.0f, ImGui.GetContentRegionAvail().X - OptLabelW - defW - sp));
+        }
+
+        private static string OptVisibleLabel_U26(string label)
+        {
+            int i = label.IndexOf("##", StringComparison.Ordinal);
+            return i >= 0 ? label.Substring(0, i) : label;
+        }
+
+        private static bool OptSliderInt(string label, ref int v, int min, int max, string fmt, string tip = null, int def = int.MinValue)
+        {
+            bool ch;
+            if (def == int.MinValue)
+            {
+                OptWidth();
+                ch = ImGui.SliderInt(label, ref v, min, max, fmt);
+                Tip(tip);
+            }
+            else
+            {
+                OptDefaultRowWidth_U26(out float sp);
+                ch = ImGui.SliderInt("##" + label, ref v, min, max, fmt);
+                Tip(tip);
+                ImGui.SameLine(0, sp);
+                if (ImGui.Button("Default##" + label)) { v = def; ch = true; }
+                Tip("Back to " + def + ".");
+                ImGui.SameLine(0, sp);
+                ImGui.TextUnformatted(OptVisibleLabel_U26(label));
+            }
             v = Math.Clamp(v, min, max);
             return ch;
         }
@@ -113,10 +156,10 @@ namespace RageLightEditor.Editor
             if (!MaterialMode)
             {
                 OptSlider("Light boost", ref LightsMultiplier, 0.0f, 4.0f, "%.2fx",
-                          "Debug multiplier on every light's contribution. 1.0 = game-accurate; anything\nelse is for finding a light, not for judging one.");
+                          "Debug multiplier on every light's contribution. 1.0 = game-accurate; anything\nelse is for finding a light, not for judging one.", def: 1.0f);
             }
             OptSlider("Ambient", ref AmbientLevel, 0.0f, 0.5f, "%.3f",
-                      "The flat preview ambient of a scene with NO timecycle loaded. With a cycle\nloaded the cycle's own ambient is used and this does nothing visible.");
+                      "The flat preview ambient of a scene with NO timecycle loaded. With a cycle\nloaded the cycle's own ambient is used and this does nothing visible.", def: 0.12f);
             DrawBackfaceAndVsync(showCount: true);
             ImGui.TreePop();
         }
@@ -155,9 +198,9 @@ namespace RageLightEditor.Editor
                 }
                 ImGui.Spacing();
                 OptSlider("Radius", ref WorldStreamRadius, 100.0f, 2000.0f, "%.0f m",
-                          "How far out ymaps are opened at all - the memory knob.\nDetail, below, is the quality knob.");
+                          "How far out ymaps are opened at all - the memory knob.\nDetail, below, is the quality knob.", def: 500.0f);
                 OptSlider("Detail", ref WorldLodScale, 0.1f, 2.0f, "%.2f",
-                          "Scales every entity's LOD distance. Below 1 swaps to coarser stand-ins\nsooner; above 1 holds the detailed version further out.");
+                          "Scales every entity's LOD distance. Below 1 swaps to coarser stand-ins\nsooner; above 1 holds the detailed version further out.", def: 1.0f);
                 ImGui.Spacing();
                 if (ImGui.Button("Reload", new Vector2(-1, 0))) RequestWorldReload = true;
                 Tip("Drop every streamed ymap and model and stream the view again\n(also what makes a changed HD textures switch apply to what is already built).");
@@ -181,7 +224,7 @@ namespace RageLightEditor.Editor
                             (WorldRef.HiddenScriptedVariants > 0 ? $"\n\nHiding {WorldRef.HiddenScriptedVariants} right now." : ""));
                     }
                     OptSliderInt("Budget", ref WorldMaxEntities, 5000, 120000, "%d",
-                                 "Ceiling on entities picked in one frame. A SAFETY limit, not a quality one - use Detail for that.");
+                                 "Ceiling on entities picked in one frame. A SAFETY limit, not a quality one - use Detail for that.", def: 40000);
                     ImGui.TreePop();
                 }
             }
@@ -211,7 +254,7 @@ namespace RageLightEditor.Editor
                     DrawRenderExtras_SkyAdvanced();
                     DrawLightingExtras_SkyAdvanced();
                     OptSlider("Light range", ref WorldLightsRange, 50.0f, 5000.0f, "%.0f m",
-                              "How far real lights reach: the props' own lights and the game's LOD lights\n(street and building lights) both light the world out to here, nearest first\nup to the GPU budget. The distant light sprites carry the glow beyond.");
+                              "How far real lights reach: the props' own lights and the game's LOD lights\n(street and building lights) both light the world out to here, nearest first\nup to the GPU budget. The distant light sprites carry the glow beyond.", def: 3000.0f);
                     OptCheck("Timecycle lighting", ref TimecycleEnabled,
                              "Drive the world with the game's global lighting model\n(directional light + natural/artificial hemisphere ambient). Off: flat.");
                     OptCheck("Distant lights", ref ShowDistantLights_V47,
@@ -236,7 +279,7 @@ namespace RageLightEditor.Editor
                 SameCol();
                 OptCheck("Coronas", ref ShowCoronas, "The glow sprite the map's lights draw at their source.");
                 if (WorldShowCollision)
-                    OptSlider("Collision opacity", ref WorldCollisionOpacity, 0.2f, 1.0f, "%.2f", "1 = solid, CodeWalker's look; lower sees through to the model.");
+                    OptSlider("Collision opacity", ref WorldCollisionOpacity, 0.2f, 1.0f, "%.2f", "1 = solid, CodeWalker's look; lower sees through to the model.", def: 1.0f);
                 DrawHelpersExtras_H3();
                 DrawHelpersExtras_Selection();
                 DrawHelpersExtras_I4();

@@ -11,7 +11,7 @@ using GameTexture = CodeWalker.GameFiles.Texture;
 
 namespace RageLightEditor.Rendering
 {
-    public class TextureLoader : IDisposable
+    public partial class TextureLoader : IDisposable
     {
         private readonly Device device;
         private readonly Dictionary<(GameTexture, bool), ShaderResourceView> cache =

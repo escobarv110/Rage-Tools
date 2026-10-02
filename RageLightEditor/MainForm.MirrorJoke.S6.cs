@@ -62,7 +62,7 @@ namespace RageLightEditor
             {
                 PhotoQuad_V2(fit, MirrorPhotoAspect_V2, 0f, out var qr, out var qu);
                 mirrorPhotoRenderer_V2.Draw(context, reflViewProj, mirrorPhotoSrv_V2,
-                                            fit.Centre, qr, qu, new Vector4(1f, 1f, 1f, k), 0.045f);
+                                            fit.Centre, qr * MirrorPhotoScale_U26, qu * MirrorPhotoScale_U26, new Vector4(MirrorPhotoBright_U26, MirrorPhotoBright_U26, MirrorPhotoBright_U26, k), 0f, MirrorPhotoFeather_U26);
             }
             else DrawBoldFinger_T6(context, reflViewProj, fit, k);
             if (screenshotPath != null && !mirrorJokeLogged_S6)

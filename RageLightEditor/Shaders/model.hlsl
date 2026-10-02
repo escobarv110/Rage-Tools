@@ -890,9 +890,10 @@ float4 PSMain(PS_Input input, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
     if (RenderMode == 8)
     {
 
-        float3 wc = float3(0.50, 0.53, 0.58);
+        float3 alb = HasDiffuseTex ? DiffuseTex.Sample(LinearSampler, input.UV0).rgb : MatDiffuse.rgb;
+        float3 wc = lerp(float3(0.62, 0.66, 0.72), saturate(alb * 1.35), 0.55);
 
-        wc *= lerp(1.0, 0.33, saturate((input.Pos.w - 60.0) / 540.0));
+        wc *= lerp(1.0, 0.45, saturate((input.Pos.w - 60.0) / 540.0));
         if (IsSelectedMesh == 1)      wc = lerp(wc, float3(1.00, 0.10, 0.60), 0.75);
         else if (IsSelectedMesh == 2) wc = lerp(wc, float3(0.30, 0.95, 1.00), 0.55);
         else if (IsSelectedMesh == 3) wc = lerp(wc, float3(1.00, 0.60, 0.10), 0.35);

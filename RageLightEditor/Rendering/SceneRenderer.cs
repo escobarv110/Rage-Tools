@@ -448,7 +448,7 @@ namespace RageLightEditor.Rendering
             }
 
             bool wire = Wireframe;
-            bool prepass = !DebugNoDepth && !wire;
+            bool prepass = !DebugNoDepth;
             string profTag = reflectionPass ? "mirror." : "";
             if (prepass)
             {

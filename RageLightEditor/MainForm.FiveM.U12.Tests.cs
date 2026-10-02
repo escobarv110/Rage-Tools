@@ -96,6 +96,7 @@ namespace RageLightEditor
                 SeqTest_Discord_U24(check);
                 SeqTest_GizmoCW_U24(check);
                 SeqTest_U25(check);
+                SeqTest_U26(check);
             }
             catch (Exception ex) { check("fivem: no exception", false, ex.ToString()); }
         }

@@ -899,7 +899,7 @@ namespace RageLightEditor
         {
             selOverlay_U24.Clear();
             selSegs_U25.Clear();
-            if (l4Deferred_U25) { L4Tris.Clear_U25(); l4Deferred_U25 = false; }
+            if (l4Deferred_U25) { L4Tris.Clear_U25(); L4Faces_U26.Clear_U25(); l4Deferred_U25 = false; }
             var mode = SelMode;
             int start = lineRenderer.LineCount;
             foreach (var hb in selHelperBoxesNoDepth) DrawOrientedBox(hb.Pos, hb.Ori, hb.Min, hb.Max, hb.Col);

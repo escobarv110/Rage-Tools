@@ -64,6 +64,8 @@ namespace RageLightEditor
                 camera.Distance = dist;
                 camera.Pitch = 0.22f;
                 camera.Yaw = 0.8f;
+                if (float.TryParse(Environment.GetEnvironmentVariable("RLE_FURSHOT_YAW"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var fy)) camera.Yaw = fy;
+                if (float.TryParse(Environment.GetEnvironmentVariable("RLE_FURSHOT_PITCH"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var fp)) camera.Pitch = fp;
                 camera.SnapSmoothing();
                 camera.Update();
                 screenshotFrames = Math.Max(screenshotFrames, 12);

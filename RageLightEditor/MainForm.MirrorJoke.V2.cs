@@ -9,6 +9,9 @@ namespace RageLightEditor
     public partial class MainForm
     {
         public const string MirrorPhotoFile_V2 = "mirror_photo.png";
+        public const float MirrorPhotoScale_U26 = 0.6f;
+        public const float MirrorPhotoBright_U26 = 1.4f;
+        public const float MirrorPhotoFeather_U26 = 0.7f;
 
         private MirrorPhotoRenderer_V2 mirrorPhotoRenderer_V2;
         private ShaderResourceView mirrorPhotoSrv_V2;
@@ -42,9 +45,9 @@ namespace RageLightEditor
             {
                 var path = MirrorPhotoPath_V2();
                 if (File.Exists(path))
-                    mirrorPhotoSrv_V2 = textureLoader?.LoadPngFile_V2(path, out mirrorPhotoW_V2, out mirrorPhotoH_V2);
+                    mirrorPhotoSrv_V2 = textureLoader?.LoadPngMipped_U26(File.ReadAllBytes(path), out mirrorPhotoW_V2, out mirrorPhotoH_V2);
                 if (mirrorPhotoSrv_V2 == null)
-                    mirrorPhotoSrv_V2 = textureLoader?.LoadEmbeddedPng(MirrorPhotoFile_V2, out mirrorPhotoW_V2, out mirrorPhotoH_V2);
+                    mirrorPhotoSrv_V2 = textureLoader?.LoadEmbeddedPngMipped_U26(MirrorPhotoFile_V2, out mirrorPhotoW_V2, out mirrorPhotoH_V2);
                 if (mirrorPhotoSrv_V2 != null) mirrorPhotoRenderer_V2 = new MirrorPhotoRenderer_V2(device);
             }
             catch (Exception e)

@@ -7,6 +7,8 @@ namespace RageLightEditor.Rendering
     {
         public int VertexCount_U25 => verts.Count;
 
+        public SharpDX.Direct3D11.RasterizerState RasterOverride_U26;
+
         public void Clear_U25() => verts.Clear();
 
         public void MapColours_U25(Func<Vector4, Vector4> f)

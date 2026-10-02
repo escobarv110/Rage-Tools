@@ -441,7 +441,7 @@ namespace RageLightEditor.Rendering
             context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vbuffer, LineVertex.Stride, 0));
             context.OutputMerger.SetBlendState(blend ?? CommonStates.BlendAlpha);
             context.OutputMerger.SetDepthStencilState(depth ?? CommonStates.DepthReadOnly);
-            context.Rasterizer.State = CommonStates.RasterSolid;
+            context.Rasterizer.State = RasterOverride_U26 ?? CommonStates.RasterSolid;
             context.Draw(verts.Count, 0);
 
             verts.Clear();

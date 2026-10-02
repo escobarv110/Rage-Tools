@@ -54,7 +54,7 @@ namespace RageLightEditor.Rendering
         }
 
         public void Draw(DeviceContext context, Matrix viewProj, ShaderResourceView srv,
-                         Vector3 centre, Vector3 right, Vector3 up, Vector4 tint, float border)
+                         Vector3 centre, Vector3 right, Vector3 up, Vector4 tint, float border, float feather = 0f)
         {
             if (srv == null || context == null) return;
 
@@ -77,7 +77,7 @@ namespace RageLightEditor.Rendering
             {
                 ViewProj = Matrix.Transpose(viewProj),
                 Tint = tint,
-                Frame = new Vector4(Math.Clamp(border, 0f, 0.25f), border > 0f ? 1f : 0f, 0, 0),
+                Frame = new Vector4(Math.Clamp(border, 0f, 0.25f), border > 0f ? 1f : 0f, Math.Clamp(feather, 0f, 1f), 0),
             };
             cbuffer.Update(context, ref vars);
 

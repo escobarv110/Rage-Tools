@@ -11,6 +11,10 @@ namespace RageLightEditor
     {
         private TriRenderer l4Tris;
         private TriRenderer L4Tris => l4Tris ??= new TriRenderer(deviceResources.Device);
+        private TriRenderer l4Faces_U26;
+        private TriRenderer L4Faces_U26 => l4Faces_U26 ??= new TriRenderer(deviceResources.Device);
+        public static readonly Vector4 PortalFromGreen_U26 = new Vector4(0.0f, 1.0f, 0.0f, 0.35f);
+        public static readonly Vector4 PortalToRed_U26 = new Vector4(1.0f, 0.0f, 0.0f, 0.35f);
 
         private const float L4EdgePx = 1.5f, L4SelEdgePx = 2.2f, L4TickPx = 2.4f, L4EntityPx = 1.0f;
         private const float L4GhostAlpha = 0.16f, L4GhostSelAlpha = 0.70f, L4RoomFillAlpha = 0.06f, L4PortalFillAlpha = 0.12f, L4PortalSelFillAlpha = 0.24f;
@@ -85,7 +89,7 @@ namespace RageLightEditor
             }
         }
 
-        private void L4Portal(Vector3[] wc, Vector4 col, Vector4 windingCol, bool markWinding, float px, float ghost, float fillAlpha, bool arrow, bool oneWay, float arrowLen = 0.45f)
+        private void L4Portal(Vector3[] wc, Vector4 col, Vector4 windingCol, bool markWinding, float px, float ghost, float fillAlpha, bool arrow, bool oneWay, float arrowLen = 0.45f, float fromSign = 0f)
         {
             int n = wc.Length;
             if (n < 3) return;
@@ -96,7 +100,12 @@ namespace RageLightEditor
             var gfc = L4Alpha(fc, fillAlpha * 0.25f);
             var pc = new Vector3[n];
             for (int i = 0; i < n; i++) pc[i] = L4Pull(wc[i]);
-            if (n == 4) { dt.AddQuad(pc[0], pc[1], pc[2], pc[3], fc); if (ghost > 0.001f) triRenderer.AddQuad(wc[0], wc[1], wc[2], wc[3], gfc); }
+            if (fromSign != 0f)
+            {
+                float k = Math.Clamp(fillAlpha / L4PortalFillAlpha, 0.25f, 2.0f);
+                L4PortalFaces_U26(pc, fromSign, L4Alpha(PortalFromGreen_U26, PortalFromGreen_U26.W * k), L4Alpha(PortalToRed_U26, PortalToRed_U26.W * k));
+            }
+            else if (n == 4) { dt.AddQuad(pc[0], pc[1], pc[2], pc[3], fc); if (ghost > 0.001f) triRenderer.AddQuad(wc[0], wc[1], wc[2], wc[3], gfc); }
             else for (int i = 1; i + 1 < n; i++) { dt.AddTri(pc[0], pc[i], pc[i + 1], fc); if (ghost > 0.001f) triRenderer.AddTri(wc[0], wc[i], wc[i + 1], gfc); }
             if (!arrow) return;
             var c = Vector3.Zero; foreach (var v in wc) c += v; c /= n;
@@ -114,6 +123,25 @@ namespace RageLightEditor
             }
             Arrow(nrm, arrowLen);
             if (!oneWay) Arrow(-nrm, arrowLen * 0.6f);
+        }
+
+        private void L4PortalFaces_U26(Vector3[] pc, float fromSign, Vector4 fromCol, Vector4 toCol)
+        {
+            int n = pc.Length;
+            var f = L4Faces_U26;
+            for (int i = 1; i + 1 < n; i++)
+            {
+                var a = pc[0]; var b = pc[i]; var c = pc[i + 1];
+                bool aligned = Vector3.Dot(Vector3.Cross(b - a, c - a), PortalNormal_U26(pc)) * fromSign > 0f;
+                if (aligned) { f.AddTri(a, b, c, fromCol); f.AddTri(a, c, b, toCol); }
+                else { f.AddTri(a, c, b, fromCol); f.AddTri(a, b, c, toCol); }
+            }
+        }
+
+        private static Vector3 PortalNormal_U26(Vector3[] p)
+        {
+            var nrm = Vector3.Cross(p[1] - p[0], p[2] - p[0]);
+            return nrm.LengthSquared() > 1e-12f ? Vector3.Normalize(nrm) : Vector3.UnitY;
         }
 
         private bool DrawMloCreatorHelpers_L4(MloCreatorPanel ui, MloCreatorSession s)

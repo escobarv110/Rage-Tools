@@ -258,8 +258,11 @@ namespace RageLightEditor.Rendering
                 CullMode = CullMode.None,
                 IsFrontCounterClockwise = true,
                 IsDepthClipEnabled = true,
-                IsMultisampleEnabled = true,
+                IsMultisampleEnabled = false,
                 IsAntialiasedLineEnabled = true,
+                DepthBias = 2000,
+                SlopeScaledDepthBias = 1.0f,
+                DepthBiasClamp = 0.0f,
             });
             RasterWireframeCullBack = new RasterizerState(device, new RasterizerStateDescription
             {
@@ -267,8 +270,11 @@ namespace RageLightEditor.Rendering
                 CullMode = CullMode.Back,
                 IsFrontCounterClockwise = true,
                 IsDepthClipEnabled = true,
-                IsMultisampleEnabled = true,
+                IsMultisampleEnabled = false,
                 IsAntialiasedLineEnabled = true,
+                DepthBias = 2000,
+                SlopeScaledDepthBias = 1.0f,
+                DepthBiasClamp = 0.0f,
             });
 
             RasterSolidCullBack = new RasterizerState(device, new RasterizerStateDescription

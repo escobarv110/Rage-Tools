@@ -7814,7 +7814,7 @@ namespace RageLightEditor
             }
             else if (panel.WorldMode)
             {
-                DrawAreaHelpers_J5();
+                { int areaStart = lineRenderer.LineCount; DrawAreaHelpers_J5(); CaptureLines_U25(areaStart, false, SelBoxPx_U24); }
                 DrawGrassBrush_S5();
             }
             else DrawMloCreatorHelpers_H5();

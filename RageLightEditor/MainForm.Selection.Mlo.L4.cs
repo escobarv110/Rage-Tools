@@ -46,7 +46,8 @@ namespace RageLightEditor
                     L4Portal(wc, pcol, winding, markWinding: !faint, px: isFocus ? L4SelEdgePx : L4EdgePx,
                              ghost: faint ? 0f : (isFocus ? L4GhostSelAlpha : L4GhostAlpha * 1.5f),
                              fillAlpha: faint ? 0.03f : (isFocus ? L4PortalSelFillAlpha : L4PortalFillAlpha),
-                             arrow: !faint, oneWay: (pf & 1u) != 0, arrowLen: 0.4f);
+                             arrow: !faint, oneWay: (pf & 1u) != 0, arrowLen: 0.4f,
+                             fromSign: PortalFromSign_U26(mloa, portal, wc, ToWorld));
                     drawn++;
                     if (isFocus)
                     {
@@ -88,6 +89,25 @@ namespace RageLightEditor
             }
             if (drawn > 0) l4Deferred_U25 = true;
             return true;
+        }
+
+        private static float PortalFromSign_U26(MloArchetype mloa, MCMloPortalDef portal, Vector3[] wc, Func<Vector3, Vector3> toWorld)
+        {
+            if (wc == null || wc.Length < 3 || mloa?.rooms == null) return 1f;
+            var nrm = PortalNormal_U26(wc);
+            var c = Vector3.Zero; foreach (var v in wc) c += v; c /= wc.Length;
+            Vector3? Centre(uint ri)
+            {
+                if (ri == 0 || ri >= mloa.rooms.Length) return null;
+                var r = mloa.rooms[ri];
+                if (r == null || r.BBMax_CW.X <= r.BBMin_CW.X) return null;
+                return toWorld((r.BBMin_CW + r.BBMax_CW) * 0.5f);
+            }
+            var from = Centre(portal._Data.roomFrom);
+            if (from.HasValue) { float d = Vector3.Dot(from.Value - c, nrm); if (Math.Abs(d) > 1e-4f) return Math.Sign(d); }
+            var to = Centre(portal._Data.roomTo);
+            if (to.HasValue) { float d = Vector3.Dot(to.Value - c, nrm); if (Math.Abs(d) > 1e-4f) return -Math.Sign(d); }
+            return 1f;
         }
     }
 }

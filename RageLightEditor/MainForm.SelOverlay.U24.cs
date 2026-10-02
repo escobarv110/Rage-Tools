@@ -64,8 +64,12 @@ namespace RageLightEditor
                 l4Deferred_U25 = false;
                 L4Tris.MapColours_U25(Ldr_U25);
                 L4Tris.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
+                var faces = L4Faces_U26;
+                faces.RasterOverride_U26 = CommonStates.RasterSolidCullBack;
+                faces.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
+                faces.RasterOverride_U26 = null;
             }
-            if (selOverlay_U24.Count == 0 && selSegs_U25.Count == 0) return;
+            if (selOverlay_U24.Count == 0 && selSegs_U25.Count == 0 && LightIconCount_U26 == 0) return;
             bool depth = deviceResources.BeginBackbufferWithDepth_U24();
             foreach (var b in selOverlay_U24) AddSelectionBoxEdges_U24(b.pos, b.ori, b.mn, b.mx);
             foreach (var s in selSegs_U25) if (s.depth) AddSeg_U25(s.a, s.b, s.c, s.px);
@@ -74,6 +78,7 @@ namespace RageLightEditor
                 depth ? CommonStates.DepthReadOnly : CommonStates.DepthDisabled);
             deviceResources.BeginBackbuffer();
             foreach (var s in selSegs_U25) if (!s.depth) AddSeg_U25(s.a, s.b, s.c, s.px);
+            AddLightIcons_U26(triRenderer);
             selSegs_U25.Clear();
             triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
         }

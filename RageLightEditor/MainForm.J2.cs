@@ -13,38 +13,7 @@ namespace RageLightEditor
         private const float WorldLightNearRange = 60.0f;
         private const int WorldLightNearMarkerCap = 800;
 
-        private void DrawWorldLightMarkers_J2()
-        {
-            if (SelMode != WorldSelectionMode.Light || !panel.ShowSelectionHelpers) return;
-            var vis = World.Visible;
-            var L = worldRender.Lights;
-            var camPos = camera.Position;
-            float near2 = WorldLightNearRange * WorldLightNearRange;
-            var selLight = WorldEdit.Selection.Light;
-            var hovLight = worldHoverSel.Light;
-            int drawn = 0;
-            for (int vi = 0; vi < vis.Count && drawn < WorldLightNearMarkerCap; vi++)
-            {
-                var e = vis[vi];
-                var arch = e?.Archetype;
-                if (arch == null) continue;
-                float reach = e.BSRadius + 2.0f;
-                if (Vector3.DistanceSquared(e.Position, camPos) > near2 + reach * reach) continue;
-                if (!L.TryGetDefs(arch.Hash, out var defs) || defs == null) continue;
-                var ori = e.Orientation;
-                var scale = e.Scale; if (scale.X <= 0.0f) scale = Vector3.One;
-                for (int i = 0; i < defs.Length; i++)
-                {
-                    var la = defs[i].L;
-                    if (la == null || ReferenceEquals(la, selLight) || ReferenceEquals(la, hovLight)) continue;
-                    var wpos = ori.Multiply(defs[i].Pos * scale) + e.Position;
-                    if (Vector3.DistanceSquared(wpos, camPos) > near2) continue;
-                    float r = WorldLightMarkerRadius(wpos);
-                    lineRenderer.AddSphere(wpos, r, HelperBlue, 10);
-                    drawn++;
-                }
-            }
-        }
+        private void DrawWorldLightMarkers_J2() => CollectLightIcons_U26();
 
         private void OnProjectClosing_J2(CwProject p)
         {
