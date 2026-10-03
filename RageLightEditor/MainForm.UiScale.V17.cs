@@ -25,6 +25,7 @@ namespace RageLightEditor
             }
             int screenW = System.Windows.Forms.Screen.FromControl(this)?.Bounds.Width ?? 1920;
             panel.UiScaleNote_V17 = Editor.UiScale_V17.Describe(settings.UiScaleV17, DeviceDpi, screenW);
+            panel.UiScaleAuto_U29 = Editor.UiScale_V17.Auto(DeviceDpi, screenW);
 
             bool commit = panel.RequestUiScaleCommit_V45;
             panel.RequestUiScaleCommit_V45 = false;

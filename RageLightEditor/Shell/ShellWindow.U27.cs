@@ -45,6 +45,8 @@ namespace RageLightEditor.Shell
         private string statusKey;
         private int logVersion = -1;
         private WindowState preFullscreen;
+        private LayoutTransformControl scaleHost;
+        private double shellScale = 1.0;
         private bool fullscreen;
 
         private static readonly (Space space, string label)[] TabNames =
@@ -118,7 +120,8 @@ namespace RageLightEditor.Shell
             Put(outputSplitter, 3, 0, 4);
             Put(outputArea, 4, 0, 4);
             Put(statusArea, 5, 0, 4);
-            Window.Content = grid;
+            scaleHost = new LayoutTransformControl { Child = grid };
+            Window.Content = scaleHost;
 
             Window.Closing += (s, e) =>
             {
@@ -171,6 +174,7 @@ namespace RageLightEditor.Shell
             menu.Items.Add(BuildFileMenu());
             menu.Items.Add(BuildEditMenu());
             menu.Items.Add(BuildViewMenu());
+            menu.Items.Add(BuildAppearanceMenu());
             menu.Items.Add(BuildFiveMMenu());
             menu.Items.Add(BuildHelpMenu());
 
@@ -284,7 +288,13 @@ namespace RageLightEditor.Shell
             var row = new DockPanel();
             DockPanel.SetDock(bPanel, Dock.Right);
             row.Children.Add(bPanel);
-            row.Children.Add(bar);
+            row.Children.Add(new ScrollViewer
+            {
+                Content = bar,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,
+                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                VerticalContentAlignment = VerticalAlignment.Center,
+            });
             return new Avalonia.Controls.Border
             {
                 Background = ShellTheme_U27.Panel,
@@ -510,16 +520,34 @@ namespace RageLightEditor.Shell
             Item("Redo material", () => P.ShellCommand_U27("matredo"), () => P.MaterialMode && P.Materials.CanRedo, null, "Ctrl+Shift+Y"));
 
         private MenuItem BuildViewMenu() => Top("View",
-            Item("Appearance...", () => P.ShellPopup_U27 = "appearance"),
             Item("Shortcuts...", () => P.ShellPopup_U27 = "shortcuts"),
             new Separator(),
             Item("Pick palette", () => paletteWanted = !paletteWanted, null, () => paletteWanted),
             Item("Right panel", () => P.ShowRightPanel = !P.ShowRightPanel, null, () => P.ShowRightPanel, "F10"),
-            Item("Output panel", () => SetOutput(!outputWanted), null, () => outputWanted),
-            new Separator(),
-            Item("Interface: Classic", () => P.NewUi_U27 = false, null, () => !P.NewUi_U27, radio: true),
-            Item("Interface: New", () => P.NewUi_U27 = true, null, () => P.NewUi_U27, radio: true),
-            Item("Restart now", () => P.RequestRestart_U27 = true, () => P.InterfaceChangePending_U27));
+            Item("Output panel", () => SetOutput(!outputWanted), null, () => outputWanted));
+
+        private static readonly float[] InterfaceSizes_U29 = { 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f, 2.0f };
+
+        private MenuItem BuildAppearanceMenu()
+        {
+            var size = new MenuItem { Header = "Interface size" };
+            size.Items.Add(Item("Automatic for this screen", () => P.SetInterfaceSizeAuto_U29(), null, () => P.InterfaceSizeAuto_U29, radio: true));
+            size.Items.Add(new Separator());
+            foreach (var v in InterfaceSizes_U29)
+            {
+                float rel = v;
+                size.Items.Add(Item($"{rel * 100:0}%", () => P.SetInterfaceSize_U29(rel), null,
+                    () => !P.InterfaceSizeAuto_U29 && Math.Abs(P.InterfaceSize_U29 - rel) < 0.02f, radio: true));
+            }
+            return Top("Appearance",
+                Item("Classic interface (ImGui)", () => P.NewUi_U27 = false, null, () => !P.NewUi_U27, radio: true),
+                Item("New interface", () => P.NewUi_U27 = true, null, () => P.NewUi_U27, radio: true),
+                Item("Restart now to switch", () => P.RequestRestart_U27 = true, () => P.InterfaceChangePending_U27),
+                new Separator(),
+                size,
+                new Separator(),
+                Item("Colours, font and panel layout...", () => P.ShellPopup_U27 = "appearance"));
+        }
 
         private MenuItem BuildFiveMMenu() => Top("FiveM",
             Item("FiveM live link", () => P.FiveMWindowOpen_U12 = !P.FiveMWindowOpen_U12, null, () => P.FiveMWindowOpen_U12,
@@ -548,6 +576,12 @@ namespace RageLightEditor.Shell
             var p = P;
             if (p == null) return;
 
+            double wantScale = Math.Clamp(p.InterfaceSize_U29, 0.5, 3.0);
+            if (Math.Abs(wantScale - shellScale) > 0.001)
+            {
+                shellScale = wantScale;
+                scaleHost.LayoutTransform = new ScaleTransform(shellScale, shellScale);
+            }
             foreach (var (space, btn) in tabs) btn.IsOn = p.Workspace == space;
 
             bool world = p.WorldMode && !p.NavMode;

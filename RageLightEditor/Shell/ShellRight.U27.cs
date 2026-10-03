@@ -453,7 +453,7 @@ namespace RageLightEditor.Shell
             Grid.SetColumnSpan(viewportArea, native ? 1 : 3);
             p.ShellRightPage_U27 = page;
             p.ShellRightImGui_U27 = rightImGui;
-            p.ShellRightPx_U27 = (float)((rightColumn.Width.Value + 4) * Window.RenderScaling);
+            p.ShellRightPx_U27 = (float)((rightColumn.Width.Value + 4) * Window.RenderScaling * shellScale);
             if (native) SyncInspector(p);
         }
 

@@ -66,6 +66,20 @@ namespace RageLightEditor.Editor
             return list;
         }
 
+        public float UiScaleAuto_U29 = 1.0f;
+
+        public float InterfaceSize_U29 => UiScale_V17.Scale / Math.Max(UiScaleAuto_U29, 0.01f);
+
+        public bool InterfaceSizeAuto_U29 => settings != null && settings.UiScaleV17 <= 0.01f;
+
+        public void SetInterfaceSize_U29(float rel)
+        {
+            RequestUiScale_V17 = Math.Clamp(UiScaleAuto_U29 * rel, UiScale_V17.Min, UiScale_V17.Max);
+            RequestUiScaleCommit_V45 = true;
+        }
+
+        public void SetInterfaceSizeAuto_U29() => RequestUiScaleAuto_V17 = true;
+
         public bool MirrorSurprise_U27 => settings?.MirrorSurprise == true;
 
         public void ShellToolbarLogic_U27()

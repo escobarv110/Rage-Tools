@@ -228,6 +228,17 @@ namespace RageLightEditor.Shell
                     p.ProjectWindow.Visible = false; await Frames(600);
                 }
 
+                bool sizeWasAuto = p.InterfaceSizeAuto_U29;
+                float sizeWas = p.InterfaceSize_U29;
+                p.SetInterfaceSize_U29(1.5f); await Frames(1200);
+                double vpW = viewportArea.Bounds.Width * Window.RenderScaling * shellScale;
+                Check("Appearance > Interface size 150% scales the new window", Math.Abs(shellScale - 1.5) < 0.02 && Math.Abs(p.InterfaceSize_U29 - 1.5f) < 0.02f, $"{shellScale:0.00} / {p.InterfaceSize_U29:0.00}");
+                Check("...and the viewport still fills its slot exactly", Math.Abs(form.ClientSize.Width - vpW) < 3, $"form {form.ClientSize.Width} vs slot {vpW:0}");
+                Snap_U27(Path.Combine(snapDir, "shell_scale150.png"));
+                if (sizeWasAuto) p.SetInterfaceSizeAuto_U29(); else p.SetInterfaceSize_U29(sizeWas);
+                await Frames(1200);
+                Check("...and goes back", Math.Abs(p.InterfaceSize_U29 - sizeWas) < 0.02f, $"{p.InterfaceSize_U29:0.00}");
+
                 bool was = p.NewUi_U27;
                 p.NewUi_U27 = false;
                 Check("choosing Classic is saved", !AppSettings.PeekNewUi_U27() && p.InterfaceChangePending_U27);
