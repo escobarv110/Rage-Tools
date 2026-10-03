@@ -53,7 +53,7 @@ namespace RageLightEditor.Editor
                 ImGui.Spacing();
                 UiTheme.PushTimeSlider();
                 ImGui.SetNextItemWidth(-46);
-                ImGui.SliderFloat("##hourw", ref PreviewHour, 0.0f, 23.99f,
+                UiSlider_U28.Float("##hourw", ref PreviewHour, 0.0f, 23.99f,
                     $"{(int)PreviewHour:00}:{(int)((PreviewHour % 1.0f) * 60):00}");
                 HourScrubbing = ImGui.IsItemActive();
                 UiTheme.PopTimeSlider();
@@ -69,7 +69,7 @@ namespace RageLightEditor.Editor
                     ImGui.SameLine();
                     UiTheme.PushTimeSlider();
                     ImGui.SetNextItemWidth(-1);
-                    ImGui.SliderFloat("##timespeed", ref TimeSpeed, 1.0f, 600.0f, "%.0f min/s");
+                    UiSlider_U28.Float("##timespeed", ref TimeSpeed, 1.0f, 600.0f, "%.0f min/s");
                     UiTheme.PopTimeSlider();
                 }
 
@@ -102,7 +102,7 @@ namespace RageLightEditor.Editor
                                          "still selects.");
                     float wt = settings.WeatherTransitionSeconds;
                     ImGui.SetNextItemWidth(-96);
-                    if (ImGui.SliderFloat("##wtrans", ref wt, 0.0f, 20.0f, wt < 0.05f ? "instant" : "%.1f s"))
+                    if (UiSlider_U28.Float("##wtrans", ref wt, 0.0f, 20.0f, wt < 0.05f ? "instant" : "%.1f s"))
                         settings.WeatherTransitionSeconds = wt;
                     if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                     ImGui.SameLine();

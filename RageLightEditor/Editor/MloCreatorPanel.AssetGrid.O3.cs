@@ -24,7 +24,7 @@ namespace RageLightEditor.Editor
             if (AssetView_O3 != 1) return;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(compact ? 90 : 110);
-            if (ImGui.SliderInt("##o3assetcols", ref AssetColumns_O3, 2, 8, "%d per line"))
+            if (UiSlider_U28.Int("##o3assetcols", ref AssetColumns_O3, 2, 8, "%d per line"))
                 AssetColumns_O3 = Math.Clamp(AssetColumns_O3, 2, 8);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("How many tiles fit on a line. Fewer = bigger pictures.");
         }

@@ -81,13 +81,13 @@ namespace RageLightEditor.Editor
             if (float.IsNaN(def))
             {
                 OptWidth();
-                ch = ImGui.SliderFloat(label, ref v, min, max, fmt);
+                ch = UiSlider_U28.Float(label, ref v, min, max, fmt);
                 Tip(tip);
             }
             else
             {
                 OptDefaultRowWidth_U26(out float sp);
-                ch = ImGui.SliderFloat("##" + label, ref v, min, max, fmt);
+                ch = UiSlider_U28.Float("##" + label, ref v, min, max, fmt);
                 Tip(tip);
                 ImGui.SameLine(0, sp);
                 if (ImGui.Button("Default##" + label)) { v = def; ch = true; }
@@ -118,13 +118,13 @@ namespace RageLightEditor.Editor
             if (def == int.MinValue)
             {
                 OptWidth();
-                ch = ImGui.SliderInt(label, ref v, min, max, fmt);
+                ch = UiSlider_U28.Int(label, ref v, min, max, fmt);
                 Tip(tip);
             }
             else
             {
                 OptDefaultRowWidth_U26(out float sp);
-                ch = ImGui.SliderInt("##" + label, ref v, min, max, fmt);
+                ch = UiSlider_U28.Int("##" + label, ref v, min, max, fmt);
                 Tip(tip);
                 ImGui.SameLine(0, sp);
                 if (ImGui.Button("Default##" + label)) { v = def; ch = true; }

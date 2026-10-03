@@ -80,6 +80,7 @@ namespace RageLightEditor.Editor
             ("Duplicate",   Keys.Control | Keys.D, "Duplicate selected"),
             ("Delete",      Keys.Delete,           "Delete selected"),
             ("Frame",       Keys.F,                "Frame selection"),
+            ("Magnet",      Keys.B,                "Select what is under the mouse and fly to it"),
             ("GizmoSelect", Keys.Q,                "Gizmo: select"),
             ("GizmoMove",   Keys.W,                "Gizmo: move"),
             ("GizmoRotate", Keys.E,                "Gizmo: rotate"),

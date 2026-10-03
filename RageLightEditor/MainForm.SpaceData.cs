@@ -71,6 +71,7 @@ namespace RageLightEditor
             }
 
             sdBatch.Clear();
+            sdNavBatch_U28.Clear();
             if (paths)
             {
                 sd.EnsurePaths();
@@ -106,7 +107,7 @@ namespace RageLightEditor
                 if (sd.NavReady)
                 {
                     sd.GetYnvsNear(camPos, SdNavRange, sdYnvs);
-                    foreach (var y in sdYnvs) sdBatch.Add(y);
+                    foreach (var y in sdYnvs) sdNavBatch_U28.Add(y);
                 }
             }
             if (hmap)
@@ -117,7 +118,8 @@ namespace RageLightEditor
             }
             if (sdBatch.Count > 0)
                 pathBatch.Draw(context, camera.ViewProjMatrix, camPos, sdBatch);
-            pathBatch.EndFrame();
+            navOverlayPending_U28 = sdNavBatch_U28.Count > 0;
+            if (!navOverlayPending_U28) pathBatch.EndFrame();
 
             if (panel.ShowSelectionHelpers)
             {
@@ -272,7 +274,7 @@ namespace RageLightEditor
             }
             if (s.NavPoly != null)
             {
-                DrawNavPolyFill(s.NavPoly, new Vector4(1.0f, 1.0f, 1.0f, 0.2f));
+                QueueNavPolyFill_U28(s.NavPoly);
                 DrawNavPolyOutline(s.NavPoly, col);
                 drawBox = false;
                 return;
@@ -305,30 +307,6 @@ namespace RageLightEditor
                 {
                     DrawOrientedBox(au.OuterPos, au.OuterOri, au.OuterMin, au.OuterMax, SelWhite);
                 }
-            }
-        }
-
-        private void DrawNavPolyFill(YnvPoly poly, Vector4 col)
-        {
-            var ynv = poly?.Ynv;
-            if (ynv?.Vertices == null || ynv.Indices == null) return;
-            int ic = poly._RawData.IndexCount;
-            int startid = poly._RawData.IndexID;
-            int vc = ynv.Vertices.Count;
-            if (startid >= ynv.Indices.Count || startid + ic > ynv.Indices.Count) return;
-            int startind = ynv.Indices[startid];
-            if (startind >= vc) return;
-            var v0 = ynv.Vertices[startind];
-            int tricount = ic - 2;
-            for (int t = 0; t < tricount; t++)
-            {
-                int tid = startid + t;
-                int ind1 = ynv.Indices[tid + 1];
-                int ind2 = ynv.Indices[tid + 2];
-                if (ind1 >= vc || ind2 >= vc) continue;
-                var v1 = ynv.Vertices[ind1]; var v2 = ynv.Vertices[ind2];
-                triRenderer.AddTri(v0, v1, v2, col);
-                triRenderer.AddTri(v0, v2, v1, col);
             }
         }
 

@@ -10,7 +10,8 @@ namespace RageLightEditor
     {
         private static bool SharesView_V21(LightPanel.Space a, LightPanel.Space b) =>
             (a == LightPanel.Space.Cinematic && b == LightPanel.Space.World) ||
-            (a == LightPanel.Space.World && b == LightPanel.Space.Cinematic);
+            (a == LightPanel.Space.World && b == LightPanel.Space.Cinematic) ||
+            LightPanel.SharesView_U28(a, b);
 
         private void SeqTest_SectionCams_V21(Action<string, bool, string> check)
         {
@@ -32,6 +33,7 @@ namespace RageLightEditor
                 camera.SnapSmoothing();
                 camera.Update();
                 parked[s] = camera.Capture();
+                foreach (var g in LightPanel.ViewGroupOf_U28(s)) parked[g] = parked[s];
             }
 
             var moved = new List<string>();
@@ -76,8 +78,8 @@ namespace RageLightEditor
             var lightBack = camera.Capture();
             panel.SwitchWorkspace(LightPanel.Space.Material);
             var matBack = camera.Capture();
-            check("v21 cameras: Lights and Materials keep separate views",
-                  (lightBack.Target - new Vector3(10, 20, 30)).Length() < 0.5f &&
+            check("v21 cameras: Lights and Materials share one view",
+                  (lightBack.Target - matWant.Target).Length() < 0.5f &&
                   (matBack.Target - matWant.Target).Length() < 0.5f,
                   $"lights {lightBack.Target}, materials {matBack.Target}");
 

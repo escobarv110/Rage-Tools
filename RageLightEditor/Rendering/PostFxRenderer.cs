@@ -78,6 +78,8 @@ namespace RageLightEditor.Rendering
         public Vector4 UnderwaterUp;
 
         public Vector4 ExposureGame;
+        public Vector4 MaxBackground;
+        public Vector4 ClearColour;
     }
 
     public class PostFxRenderer : IDisposable
@@ -282,7 +284,7 @@ namespace RageLightEditor.Rendering
             context.PixelShader.SetShaderResource(4, dofSrv);
             context.PixelShader.SetShaderResource(7, lumInA ? lumASrv : lumBSrv);
             context.PixelShader.SetShaderResource(8, bloomReady ? bloomASrv : null);
-            context.PixelShader.SetShaderResource(9, Vars.UnderwaterParams.X > 0.5f ? depthSrv : null);
+            context.PixelShader.SetShaderResource(9, Vars.UnderwaterParams.X > 0.5f || Vars.MaxBackground.W > 0.5f ? depthSrv : null);
             context.Draw(3, 0);
             for (int i = 0; i <= 9; i++) context.PixelShader.SetShaderResource(i, null);
         }

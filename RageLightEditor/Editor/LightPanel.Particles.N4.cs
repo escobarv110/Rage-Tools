@@ -128,7 +128,7 @@ namespace RageLightEditor.Editor
             ImGui.SameLine();
             ImGui.SetNextItemWidth(-1);
             var t = sim.EffectTime;
-            if (ImGui.SliderFloat("##tlscrub", ref t, 0f, sim.Duration, "")) { sim.EffectTime = t; sim.Playing = false; }
+            if (UiSlider_U28.Float("##tlscrub", ref t, 0f, sim.Duration, "")) { sim.EffectTime = t; sim.Playing = false; }
 
             var dl = ImGui.GetWindowDrawList();
             float bx0 = ImGui.GetWindowPos().X + 8;

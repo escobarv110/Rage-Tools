@@ -170,64 +170,78 @@ namespace RageLightEditor
 
         private void MatSceneTest_R2(Action<string, bool, string> check)
         {
-            check("materials: Lights, Materials and MLO each have a scene",
-                  lightScene != null && matScene != null && mloScene != null &&
-                  !ReferenceEquals(lightScene, matScene) && !ReferenceEquals(matScene, mloScene),
-                  $"light {lightScene != null} mat {matScene != null} mlo {mloScene != null}");
-            if (matScene == null || lightScene == null) return;
-
             var wasSpace = panel.Workspace;
+            panel.SwitchWorkspace(LightPanel.Space.Light);
+            var wasCam = camera.Capture();
+            float wasHour = panel.PreviewHour;
+            int wasRender = panel.RenderMode;
             try
             {
                 string dir = Path.Combine(Path.GetTempPath(), "rle_r2_matscene");
                 Directory.CreateDirectory(dir);
                 string src = Path.Combine(dir, "r2_base.ydr");
                 if (!File.Exists(src)) TestSceneGenerator.Run(src);
-                string forMat = Path.Combine(dir, "prop_r2_material_only.ydr");
-                string forLight = Path.Combine(dir, "prop_r2_light_only.ydr");
-                File.Copy(src, forMat, true);
+                string forLight = Path.Combine(dir, "prop_u28_shared.ydr");
                 File.Copy(src, forLight, true);
 
                 panel.SwitchWorkspace(LightPanel.Space.Light);
-                check("materials: the Lights workspace draws the light scene",
-                      ReferenceEquals(scene, lightScene) && ReferenceEquals(panel.ActiveScene, lightScene), "");
-                int lightFiles0 = lightScene.Files.Count, lightLights0 = lightScene.Lights.Count;
-
-                panel.SwitchWorkspace(LightPanel.Space.Material);
-                check("materials: the Materials workspace draws its own scene",
-                      ReferenceEquals(scene, matScene) && ReferenceEquals(panel.ActiveScene, matScene) &&
-                      ReferenceEquals(gizmo.Scene, matScene) && ReferenceEquals(materialPanel.Scene, matScene),
-                      $"scene {(ReferenceEquals(scene, matScene) ? "mat" : "light")} panel {(ReferenceEquals(materialPanel.Scene, matScene) ? "mat" : "other")}");
-                int matFiles0 = matScene.Files.Count;
-                LoadFile(forMat);
-                check("materials: the import landed in the Materials scene",
-                      matScene.Files.Count == matFiles0 + 1 && matScene.Files.Any(f => f.Path == forMat),
-                      $"{matFiles0} -> {matScene.Files.Count} files");
-                check("materials: ...and the Lights workspace's props did not move",
-                      lightScene.Files.Count == lightFiles0 && lightScene.Lights.Count == lightLights0 &&
-                      !lightScene.Files.Any(f => f.Path == forMat),
-                      $"Lights {lightFiles0} -> {lightScene.Files.Count} files, {lightLights0} -> {lightScene.Lights.Count} lights");
-
-                panel.SwitchWorkspace(LightPanel.Space.Light);
-                int matFiles1 = matScene.Files.Count;
                 LoadFile(forLight);
-                check("materials: an import in Lights lands in the light scene",
-                      lightScene.Files.Any(f => f.Path == forLight), $"{lightScene.Files.Count} files");
-                check("materials: ...and the Materials workspace's props did not move",
-                      matScene.Files.Count == matFiles1 && !matScene.Files.Any(f => f.Path == forLight),
-                      $"Materials {matFiles1} -> {matScene.Files.Count} files");
+                var mine = lightScene.Files.FirstOrDefault(f => f.Path == forLight);
+                check("shared view: a prop opened in Lights", mine != null, $"{lightScene.Files.Count} files");
+                camera.Target = new Vector3(4, -3, 1); camera.Distance = 6; camera.Yaw = 0.9f; camera.Pitch = 0.25f;
+                camera.SnapSmoothing(); camera.Update();
+                var lightsCam = camera.Capture();
+                panel.PreviewHour = 17.5f;
+                panel.RenderMode = 1;
 
                 panel.SwitchWorkspace(LightPanel.Space.Material);
-                int matBefore = matScene.Files.Count, lightBefore = lightScene.Files.Count;
-                panel.RequestMatOpenLightProps_R2 = true;
-                ServiceMatScene_R2();
-                check("materials: 'Open the Lights props here' copies them in",
-                      matScene.Files.Count > matBefore && matScene.Files.Any(f => f.Path == forLight),
-                      $"{matBefore} -> {matScene.Files.Count} files");
-                check("materials: ...and still leaves the Lights workspace alone",
-                      lightScene.Files.Count == lightBefore, $"Lights {lightBefore} -> {lightScene.Files.Count}");
+                check("shared view: Materials draws the same scene as Lights",
+                      ReferenceEquals(scene, lightScene) && ReferenceEquals(panel.ActiveScene, lightScene) &&
+                      ReferenceEquals(gizmo.Scene, lightScene) && ReferenceEquals(materialPanel.Scene, lightScene), "");
+                check("shared view: ...so the prop is still there", lightScene.Files.Any(f => f.Path == forLight), "");
+                check("shared view: the camera did not move", camera.Capture().SameAs(lightsCam), $"{camera.Position}");
+                check("shared view: the clock did not change", Math.Abs(panel.PreviewHour - 17.5f) < 0.001f, $"{panel.PreviewHour:0.00}");
+                check("shared view: the render mode did not change", panel.RenderMode == 1, panel.RenderMode.ToString());
+
+                camera.Target = new Vector3(-2, 5, 2); camera.Distance = 3; camera.Yaw = 2.1f; camera.Pitch = 0.3f;
+                camera.SnapSmoothing(); camera.Update();
+                var matCam = camera.Capture();
+                panel.PreviewHour = 6.0f;
+                panel.SwitchWorkspace(LightPanel.Space.World);
+                panel.SwitchWorkspace(LightPanel.Space.Light);
+                check("shared view: Lights picks up where Materials left the camera", camera.Capture().SameAs(matCam), $"{camera.Position}");
+                check("shared view: ...and the clock", Math.Abs(panel.PreviewHour - 6.0f) < 0.001f, $"{panel.PreviewHour:0.00}");
+                panel.RenderMode = 0;
+
+                if (mine != null)
+                {
+                    scene.SelectedIndex = -1; scene.ActiveFile = null; scene.SelectedFiles.Clear();
+                    panel.EntityPicking = false;
+                    camera.Update();
+                    var b = mine.Model.Bounds;
+                    var c = (b.Minimum + b.Maximum) * 0.5f;
+                    var sp = Vector3.Project(c, 0, 0, deviceResources.Width, deviceResources.Height, 0, 1, camera.ViewProjMatrix);
+                    bool ok = MagnetAt_U28((int)sp.X, (int)sp.Y);
+                    camera.SnapSmoothing(); camera.Update();
+                    check("magnet: the key picks what is under the mouse", ok && ReferenceEquals(scene.ActiveFile, mine),
+                          $"ok {ok} active {scene.ActiveFile?.Name ?? "-"} at {sp.X:0},{sp.Y:0}");
+                    var look = camera.GetPickRay(deviceResources.Width / 2, deviceResources.Height / 2, deviceResources.Width, deviceResources.Height);
+                    float off = Vector3.Cross(c - look.Position, look.Direction).Length();
+                    check("magnet: ...and flies to it", off < 0.5f && Vector3.Distance(camera.Position, c) < 40f,
+                          $"centre {c} is {off:0.##} m off the view line, {Vector3.Distance(camera.Position, c):0.#} m away");
+                    bool miss = MagnetAt_U28(2, 2);
+                    check("magnet: empty sky does nothing", !miss, "");
+                }
+                check("magnet: B is the default key", AppSettings.Actions.Any(a => a.Id == "Magnet" && a.Default == System.Windows.Forms.Keys.B), "");
             }
-            finally { panel.SwitchWorkspace(wasSpace); }
+            finally
+            {
+                panel.SwitchWorkspace(LightPanel.Space.Light);
+                camera.Restore(wasCam);
+                panel.PreviewHour = wasHour;
+                panel.RenderMode = wasRender;
+                panel.SwitchWorkspace(wasSpace);
+            }
         }
 
         private static YmapGrassInstanceBatch MakeTestGrass_R2(YmapFile ymap, Vector3 min, Vector3 max, int n)

@@ -104,7 +104,7 @@ namespace RageLightEditor.Editor
             if (ImGui.Checkbox("Loop", ref loop)) clip.Loop = loop;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(120.0f);
-            ImGui.SliderFloat("##animtlspeed", ref a.TimeScale, 0.05f, 3.0f, "%.2fx");
+            UiSlider_U28.Float("##animtlspeed", ref a.TimeScale, 0.05f, 3.0f, "%.2fx");
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("playback speed - a view control. The clip's own frame rate never moves with it.");
 

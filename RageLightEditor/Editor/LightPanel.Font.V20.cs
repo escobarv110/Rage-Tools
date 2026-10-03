@@ -49,7 +49,7 @@ namespace RageLightEditor.Editor
 
             float px = settings.UiFontPxV20 > 0.5f ? settings.UiFontPxV20 : (string.IsNullOrEmpty(current) ? UiScale_V17.ProggyPx : UiScale_V17.BaseFontPx);
             ImGui.SetNextItemWidth(200.0f);
-            if (ImGui.SliderFloat("Text size##v20", ref px, 9.0f, 32.0f, "%.0f px")) settings.UiFontPxV20 = px;
+            if (UiSlider_U28.Float("Text size##v20", ref px, 9.0f, 32.0f, "%.0f px")) settings.UiFontPxV20 = px;
             if (ImGui.IsItemDeactivatedAfterEdit()) RequestUiFontRebuild_V20 = true;
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Text size at 100% interface size. Rebuilt when you let go of the slider.");
             if (ImGui.MenuItem("Default text##v20"))

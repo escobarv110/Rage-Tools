@@ -185,7 +185,11 @@ namespace RageLightEditor
 
                     panel.SwitchWorkspace(a);
 
-                    bool shared = SharesTheMap_Q4(a, b);
+                    bool viewPair = LightPanel.SharesView_U28(a, b);
+                    bool shared = SharesTheMap_Q4(a, b) || viewPair;
+                    if (viewPair && (Math.Abs(panel.PreviewHour - sb.Hour) > 0.001f || panel.RenderMode != sb.RenderMode ||
+                                     panel.ShowGrid != sb.Grid || panel.SelectionMode != sb.SelectionMode))
+                    { sharedFails++; worstOther = $"{a}<->{b} did not carry the clock / shading / grid / picks"; }
                     if (shared)
                     {
                         if (!camera.Capture().SameAs(camB)) { sharedFails++; worstOther = $"{a}<->{b} did not carry the shot"; }
@@ -200,16 +204,16 @@ namespace RageLightEditor
                     if (walkMode != sa.Walk && !shared) { walkFails++; if (worstOther.Length == 0) worstOther = $"{a} walk after {b}"; }
                     if (!shared && Math.Abs(settings.FovDeg - sa.Fov) > 0.001f)
                     { fovFails++; if (worstOther.Length == 0) worstOther = $"{a} fov {settings.FovDeg:0.#} want {sa.Fov:0.#} after {b}"; }
-                    if (Math.Abs(panel.PreviewHour - sa.Hour) > 0.001f)
+                    if (!viewPair && Math.Abs(panel.PreviewHour - sa.Hour) > 0.001f)
                     { hourFails++; if (worstOther.Length == 0) worstOther = $"{a} hour {panel.PreviewHour:0.00} want {sa.Hour:0.00} after {b}"; }
-                    if (a != LightPanel.Space.Cinematic)
+                    if (a != LightPanel.Space.Cinematic && !viewPair)
                     {
                         if (panel.RenderMode != sa.RenderMode)
                         { renderFails++; if (worstOther.Length == 0) worstOther = $"{a} render {panel.RenderMode} want {sa.RenderMode} after {b}"; }
                         if (panel.ShowGrid != sa.Grid || panel.ShowMarkers != sa.Markers)
                         { gridFails++; if (worstOther.Length == 0) worstOther = $"{a} grid/markers after {b}"; }
                     }
-                    if (panel.SelectionMode != sa.SelectionMode)
+                    if (!viewPair && panel.SelectionMode != sa.SelectionMode)
                     { selFails++; if (worstOther.Length == 0) worstOther = $"{a} selection mode {panel.SelectionMode} want {sa.SelectionMode} after {b}"; }
                     if (worldGizmo != null && (int)worldGizmo.Mode != sa.WorldGizmoMode)
                     { gizmoFails++; if (worstOther.Length == 0) worstOther = $"{a} gizmo {worldGizmo.Mode} want {(WorldGizmoMode)sa.WorldGizmoMode} after {b}"; }
@@ -225,7 +229,7 @@ namespace RageLightEditor
             check("q4: and its grid / markers", gridFails == 0, gridFails == 0 ? "ok" : $"{gridFails} leaks, e.g. {worstOther}");
             check("q4: and its selection mode", selFails == 0, selFails == 0 ? "ok" : $"{selFails} leaks, e.g. {worstOther}");
             check("q4: and its gizmo tool", gizmoFails == 0, gizmoFails == 0 ? "ok" : $"{gizmoFails} leaks, e.g. {worstOther}");
-            check("q4: Cinematic and World still share the map on purpose", sharedFails == 0, sharedFails == 0 ? "the shot travels" : worstOther);
+            check("q4: Cinematic and World share the map, and Lights and Materials share one view, on purpose", sharedFails == 0, sharedFails == 0 ? "the shot travels" : worstOther);
 
             {
                 var A = LightPanel.Space.World; var B = LightPanel.Space.Material;
@@ -245,9 +249,10 @@ namespace RageLightEditor
                 var camL = camera.Capture();
                 panel.MaterialMode = true;
                 ApplyStamp_Q4(StampFor_Q4(LightPanel.Space.Material));
+                var camM = camera.Capture();
                 panel.MaterialMode = false;
                 check("q4: the MaterialMode setter goes through the same door",
-                      panel.Workspace == LightPanel.Space.Light && camera.Capture().SameAs(camL),
+                      panel.Workspace == LightPanel.Space.Light && camera.Capture().SameAs(camM),
                       $"{panel.Workspace} {camera.Position}");
             }
             if (panel.Sequence != null && panel.Sequence.Shots.Count > 0)

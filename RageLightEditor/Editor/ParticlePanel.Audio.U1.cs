@@ -61,7 +61,7 @@ namespace RageLightEditor.Editor
             ImGui.SameLine();
             ImGui.SetNextItemWidth(-1);
             float v = bed.Volume;
-            if (ImGui.SliderFloat("##u1bedvol", ref v, 0.0f, 1.0f, "volume %.2f"))
+            if (UiSlider_U28.Float("##u1bedvol", ref v, 0.0f, 1.0f, "volume %.2f"))
             { bed.Volume = v; MarkDirty_U1(); }
 
             string shown = string.IsNullOrEmpty(bed.File) ? "(no file)" : Path.GetFileName(bed.File);
@@ -161,13 +161,13 @@ namespace RageLightEditor.Editor
 
                 float vol = em.Volume, rad = em.Radius, del = em.Delay;
                 ImGui.SetNextItemWidth(-1);
-                if (ImGui.SliderFloat("##u1emvol", ref vol, 0.0f, 1.0f, "volume %.2f")) { em.Volume = vol; MarkDirty_U1(); }
+                if (UiSlider_U28.Float("##u1emvol", ref vol, 0.0f, 1.0f, "volume %.2f")) { em.Volume = vol; MarkDirty_U1(); }
                 ImGui.SetNextItemWidth(-1);
-                if (ImGui.SliderFloat("##u1emrad", ref rad, 1.0f, 200.0f, "falloff %.1f m")) { em.Radius = rad; MarkDirty_U1(); }
+                if (UiSlider_U28.Float("##u1emrad", ref rad, 1.0f, 200.0f, "falloff %.1f m")) { em.Radius = rad; MarkDirty_U1(); }
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("Silent past this distance; loudest at the emitter.");
                 ImGui.SetNextItemWidth(-1);
                 float dmax = Math.Max(1.0f, Sim?.Duration ?? 5.0f);
-                if (ImGui.SliderFloat("##u1emdel", ref del, 0.0f, dmax, "delay %.2f s"))
+                if (UiSlider_U28.Float("##u1emdel", ref del, 0.0f, dmax, "delay %.2f s"))
                 { em.Delay = Math.Clamp(del, 0.0f, dmax); em.Fired = false; MarkDirty_U1(); }
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip($"Seconds into the effect's own {dmax:0.##} s timeline. 0 = with the burst.");

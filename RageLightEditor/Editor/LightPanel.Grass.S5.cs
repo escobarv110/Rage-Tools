@@ -37,7 +37,7 @@ namespace RageLightEditor.Editor
                                      "and a grass ymap you have added to the project - the edited file joins\n" +
                                      "the project either way, so it can be saved.");
                 ImGui.SetNextItemWidth(-90);
-                ImGui.SliderFloat("Radius", ref GrassBrushRadius_S5, 0.5f, 25.0f, "%.1f m");
+                UiSlider_U28.Float("Radius", ref GrassBrushRadius_S5, 0.5f, 25.0f, "%.1f m");
                 if (GrassBrushScope_S5 == 0)
                     ImGui.TextDisabled("Armed: no - pick a scope above.");
                 else

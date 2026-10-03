@@ -21,7 +21,7 @@ namespace RageLightEditor.Editor
 
             ImGui.SetNextItemWidth(-1);
             int cap = nav.StreamCellCap_S4;
-            if (ImGui.SliderInt("##navs4cap", ref cap, 8, 256, "at most %d cells at once")) nav.StreamCellCap_S4 = cap;
+            if (UiSlider_U28.Int("##navs4cap", ref cap, 8, 256, "at most %d cells at once")) nav.StreamCellCap_S4 = cap;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The reach says how far to look; this says how much to hold. Nearest first, so\n" +
                                  "raising the reach without raising this simply centres the same amount of mesh\n" +

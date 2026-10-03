@@ -287,7 +287,6 @@ namespace RageLightEditor
             modelRenderer = new ModelRenderer(deviceResources.Device, textureLoader);
             scene = new Scene(modelRenderer, textureLoader);
             CreateMloScene_L3();
-            CreateMatScene_R2();
             gizmo = new Gizmo(scene) { RotateSnapDeg = settings.RotateSnapDeg };
             worldGizmo = new WorldGizmo { RotateSnapDeg = settings.RotateSnapDeg };
             worldGizmo.EntityChanged = WorldEntityChanged;
@@ -348,7 +347,6 @@ namespace RageLightEditor
                 Imgui = imguiRenderer,
             };
             panel.Materials = materialPanel;
-            panel.MatScene = matScene;
             materialPanel.RequestOpenYtd += DoOpenYtdDialog;
             materialPanel.RequestAddFile += DoAddFileDialog;
             materialPanel.RequestImportTexture += DoImportMaterialTexture;
@@ -720,7 +718,6 @@ namespace RageLightEditor
             postFx?.Dispose();
             scene?.Dispose();
             DisposeMloScene_L3();
-            DisposeMatScene_R2();
             coronaRenderer?.Dispose();
             distantLights_V47?.Dispose();
             DisposeParticles_N4();
@@ -1851,7 +1848,6 @@ namespace RageLightEditor
 
         private string lastYmapPath;
         private string panelDrawError;
-        private bool workspaceDefaultsApplied;
         private bool textureIndexApplied;
 
         private void ApplyWorkspaceDefaults(bool material)
@@ -1862,10 +1858,6 @@ namespace RageLightEditor
                 worldSpawnDone = true;
                 ApplyWorldSpawn_U1();
             }
-            if (!material || workspaceDefaultsApplied) return;
-            workspaceDefaultsApplied = true;
-            panel.PreviewHour = 13.0f;
-            panel.AmbientLevel = 0.28f;
         }
         private bool worldSpawnDone;
         private static readonly SharpDX.Vector3 MazeBankTop = new SharpDX.Vector3(-75.0f, -818.0f, 330.0f);
@@ -2462,8 +2454,6 @@ namespace RageLightEditor
         partial void SeqTest_U5(Action<string, bool, string> check);
         partial void OnWorldTick_U5();
         partial void OnWorldTick_R2();
-        partial void CreateMatScene_R2();
-        partial void DisposeMatScene_R2();
         partial void SeqTest_R2(Action<string, bool, string> check);
         partial void OnAfterWorldDraw_Sky(SharpDX.Direct3D11.DeviceContext context);
         partial void OnAfterWorldDraw_Selection(SharpDX.Direct3D11.DeviceContext context);
@@ -5616,6 +5606,12 @@ namespace RageLightEditor
                 else panel.AskDeleteSelected();
                 return;
             }
+            if (combo == settings.GetBind("Magnet"))
+            {
+                Magnet_U28();
+                e.Handled = true;
+                return;
+            }
             if (combo == settings.GetBind("Frame"))
             {
                 if (FrameWorldSelection_M3()) return;
@@ -6859,6 +6855,8 @@ namespace RageLightEditor
                     if (!ok) fails++;
                 }
 
+                if (SeqOnly_U28(Check, ref fails)) return;
+
                 Check("length", Math.Abs(seq.Length - 5.0f) < 0.001f, $"{seq.Length:0.000}s (1 hold + 2 + 2)");
 
                 seq.Sample(0.0f, out var p0, out var y0, out _, out var f0, out _, out _);
@@ -7049,6 +7047,7 @@ namespace RageLightEditor
                 SeqTest_W2(Check);
                 SeqTest_W3(Check);
                 SeqTest_W4(Check);
+                SeqTest_U28(Check);
 
                 Console.WriteLine(fails == 0 ? "SEQTEST PASSED" : $"SEQTEST FAILED ({fails})");
                 Close();
@@ -7238,6 +7237,7 @@ namespace RageLightEditor
             {
                 var tP0 = clock.Elapsed.TotalSeconds;
                 panel.Draw(deviceResources.Width, deviceResources.Height);
+                DrawViewportWidgets_U28();
                 perfPanelMs = perfPanelMs * 0.9f + (float)((clock.Elapsed.TotalSeconds - tP0) * 1000.0) * 0.1f;
             }
             catch (Exception ex)
@@ -7716,7 +7716,8 @@ namespace RageLightEditor
                     panel.MsaaGranted = deviceResources.SetSampleCount(want);
             }
 
-            deviceResources.BeginFrame(new Color4(0.065f, 0.07f, 0.085f, 1.0f));
+            deviceResources.BeginFrame(ClearHdr_U28);
+            skyDrawn_U28 = false;
             gameFiles?.Tick();
             TickDebugExtract_Render();
 
@@ -7729,6 +7730,7 @@ namespace RageLightEditor
                 {
                     GpuMark_J4("sky", true);
                     var sv = BuildSkyVars(now);
+                    skyDrawn_U28 = true;
                     skyRenderer.Render(context, ref sv);
                     OnAfterSkyDraw_Sky(context, now);
                     GpuMark_J4("sky", false);
@@ -7804,7 +7806,7 @@ namespace RageLightEditor
                 DrawWorldCollision(context);
             }
 
-            if (panel.ShowGridEffective(scene.HasModel) && !panel.WorldMode) DrawGrid();
+            if (panel.ShowGridEffective(scene.HasModel) && !panel.WorldMode) QueueMaxGrid_U28();
             if (!photoMode) DrawSelectedPropOutline();
             if (!panel.WorldMode) DrawLightGizmos();
             if (panel.WorldMode && !photoMode) DrawWorldSelectionBox();
@@ -7976,6 +7978,7 @@ namespace RageLightEditor
             PinExposure_U2();
             bool wantLumReadback = screenshotFrames == 1 && DebugGtaFolder != null;
             UpdateUnderwater_H3(camera, now);
+            SetMaxBackground_U28();
             postFx.Prepare(context, deviceResources.SceneSRV, deviceResources.Width, deviceResources.Height,
                 dt, panel.RageBloom > 0.001f, wantLumReadback);
 
@@ -8360,30 +8363,6 @@ namespace RageLightEditor
                 0.12f, 0.12f, 0.12f,
             };
             return curve[((hour % 24) + 24) % 24];
-        }
-
-        private void DrawGrid()
-        {
-            var minor = new Vector4(0.55f, 0.55f, 0.60f, 0.65f);
-            var major = new Vector4(1.00f, 1.00f, 1.00f, 0.90f);
-            var axisX = new Vector4(1.00f, 0.30f, 0.30f, 1.0f);
-            var axisY = new Vector4(0.30f, 1.00f, 0.30f, 1.0f);
-            const int half = 20;
-            const int interval = 10;
-            for (int i = -half; i <= half; i++)
-            {
-                if (i % interval == 0) continue;
-                lineRenderer.AddLine(new Vector3(i, -half, 0), new Vector3(i, half, 0), minor);
-                lineRenderer.AddLine(new Vector3(-half, i, 0), new Vector3(half, i, 0), minor);
-            }
-            for (int i = -half; i <= half; i += interval)
-            {
-                var cx = i == 0 ? axisY : major;
-                var cy = i == 0 ? axisX : major;
-                lineRenderer.AddLine(new Vector3(i, -half, 0), new Vector3(i, half, 0), cx);
-                lineRenderer.AddLine(new Vector3(-half, i, 0), new Vector3(half, i, 0), cy);
-            }
-            lineRenderer.AddAxes(Vector3.Zero, 1.0f);
         }
 
         private void DrawLightGizmos()

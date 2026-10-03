@@ -115,8 +115,18 @@ namespace RageLightEditor
                     te.BrushRadius = Math.Min(te.BrushRadius * 1.25f, 200.0f);
                     return true;
                 case Keys.F:
+                    if (te.HasMesh && te.PaintEnabled) StartTerrainRadial_U28(1);
+                    else te.RequestFrame = true;
+                    return true;
+                case Keys.Shift | Keys.F:
+                    if (te.HasMesh && te.PaintEnabled) StartTerrainRadial_U28(2);
+                    return true;
+                case Keys.Home:
                     te.RequestFrame = true;
                     return true;
+                case Keys.Escape:
+                    if (terrainRadial_U28 != 0) { CancelTerrainRadial_U28(); return true; }
+                    return false;
                 case Keys.Control | Keys.Z:
                     if (te.History.CanUndo) { te.History.Undo(); te.Status = "Undo"; }
                     return true;
@@ -683,10 +693,13 @@ namespace RageLightEditor
         partial void TerrainMouseDown_R4(int x, int y, bool rightButton, ref bool consumed)
         {
             if (panel == null || !panel.TerrainMode || !TerrainEd.PaintEnabled || !TerrainEd.HasMesh) return;
+            if (terrainRadial_U28 != 0) { if (rightButton) CancelTerrainRadial_U28(); else terrainRadial_U28 = 0; consumed = true; return; }
             if (rightButton) return;
             var ray = camera.GetPickRay(x, y, deviceResources.Width, deviceResources.Height);
             if (!TerrainEd.RayHit(ref ray, out var hit)) return;
-            terrainErasing_S2 = (ModifierKeys & Keys.Alt) != 0;
+            bool invert = (ModifierKeys & (Keys.Alt | Keys.Control)) != 0;
+            terrainErasing_S2 = invert != (TerrainEd.Blend_U28 == TerrainEditor.BrushBlend_U28.Subtract);
+            terrainLazy_U28 = new Vector2(x, y);
             terrainPainting_R4 = true;
             TerrainEd.BeginStrokeAt(TerrainStrokeLayer_S2(), hit);
             consumed = true;
@@ -700,10 +713,12 @@ namespace RageLightEditor
             var ray = camera.GetPickRay(x, y, deviceResources.Width, deviceResources.Height);
             TerrainEd.CursorOnMesh = TerrainEd.RayHit(ref ray, out var hit);
             if (TerrainEd.CursorOnMesh) TerrainEd.CursorPoint = hit;
+            terrainMouse_U28 = new Vector2(x, y);
+            if (TerrainRadialMove_U28(x, y)) return;
             if (!terrainPainting_R4) return;
             if (!leftDown) { TerrainMouseUp_R4(); return; }
-            if (!TerrainEd.CursorOnMesh) return;
-            TerrainEd.StrokeTo(hit, TerrainStrokeLayer_S2());
+            if (!TerrainStabilized_U28(x, y, out var at)) return;
+            TerrainEd.StrokeTo(at, TerrainStrokeLayer_S2());
         }
 
         partial void TerrainMouseUp_R4()
@@ -720,15 +735,7 @@ namespace RageLightEditor
         {
             if (panel == null || !panel.TerrainMode || !TerrainEd.ShowBrush) return;
             if (!TerrainEd.CursorOnMesh || !TerrainEd.HasMesh) return;
-            var c = TerrainEd.CursorPoint;
-            float r = TerrainEd.BrushRadius;
-            var col = terrainErasing_S2 ? new Vector4(1.0f, 0.45f, 0.35f, 1.0f)
-                    : terrainPainting_R4 ? new Vector4(1.0f, 0.85f, 0.35f, 1.0f)
-                    : new Vector4(0.55f, 0.95f, 0.75f, 0.9f);
-            lineRenderer.AddCircle(c, Vector3.UnitX, Vector3.UnitY, r, col, 40);
-            float hard = r * MathUtil.Clamp(TerrainEd.BrushHardness, 0.0f, 0.98f);
-            if (hard > 0.05f) lineRenderer.AddCircle(c, Vector3.UnitX, Vector3.UnitY, hard, col * 0.6f, 32);
-            lineRenderer.AddLine(c, c + Vector3.UnitZ * (r * 0.35f), col);
+            QueueTerrainRing_U28();
         }
 
         private void TerrainFrame_R4()

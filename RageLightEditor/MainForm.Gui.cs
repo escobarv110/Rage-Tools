@@ -70,6 +70,11 @@ namespace RageLightEditor
         {
             workspaceCam[(int)leaving] = camera.Capture();
             workspaceWalk[(int)leaving] = walkMode;
+            foreach (var s in LightPanel.ViewGroupOf_U28(leaving))
+            {
+                workspaceCam[(int)s] = workspaceCam[(int)leaving];
+                workspaceWalk[(int)s] = walkMode;
+            }
             bool sameMap = (leaving == LightPanel.Space.Cinematic && entering == LightPanel.Space.World) ||
                            (leaving == LightPanel.Space.World && entering == LightPanel.Space.Cinematic);
             if (sameMap) return;

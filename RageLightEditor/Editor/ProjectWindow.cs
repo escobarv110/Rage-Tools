@@ -1159,7 +1159,7 @@ namespace RageLightEditor.Editor
             ImGui.SetNextItemWidth(160);
             if (ImGui.InputInt("Mirror Priority", ref mp, 0, 0)) { MloEditor.SetPortalMirrorPriority(mlo, p, (uint)Math.Max(mp, 0)); ch = true; }
             ImGui.SetNextItemWidth(160);
-            if (ImGui.SliderInt("Opacity", ref op, 0, 100)) { MloEditor.SetPortalOpacity(mlo, p, (uint)op); ch = true; }
+            if (UiSlider_U28.Int("Opacity", ref op, 0, 100)) { MloEditor.SetPortalOpacity(mlo, p, (uint)op); ch = true; }
             ImGui.SetNextItemWidth(160);
             if (ImGui.InputInt("Audio Occlusion", ref ao, 0, 0)) { MloEditor.SetPortalAudioOcclusion(mlo, p, (uint)Math.Max(ao, 0)); ch = true; }
             ImGui.TextDisabled("CORNERS");

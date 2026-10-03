@@ -46,12 +46,32 @@ namespace RageLightEditor.Editor
                 Directory.CreateDirectory(Folder);
                 FilePath = Path.Combine(Folder, "rage_tools.log");
                 var previous = Path.Combine(Folder, "rage_tools.previous.log");
-                if (File.Exists(FilePath))
+                FileStream stream = null;
+                try
                 {
-                    if (File.Exists(previous)) File.Delete(previous);
-                    File.Move(FilePath, previous);
+                    if (File.Exists(FilePath))
+                    {
+                        if (File.Exists(previous)) File.Delete(previous);
+                        File.Move(FilePath, previous);
+                    }
+                    stream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+                    foreach (var stale in Directory.GetFiles(Folder, "rage_tools.*.log"))
+                    {
+                        var mid = Path.GetFileNameWithoutExtension(stale).Substring("rage_tools.".Length);
+                        if (int.TryParse(mid, out _)) try { File.Delete(stale); } catch { }
+                    }
                 }
-                file = new StreamWriter(new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), new UTF8Encoding(false)) { AutoFlush = true };
+                catch (IOException)
+                {
+                    FilePath = Path.Combine(Folder, $"rage_tools.{Environment.ProcessId}.log");
+                    stream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    FilePath = Path.Combine(Folder, $"rage_tools.{Environment.ProcessId}.log");
+                    stream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+                }
+                file = new StreamWriter(stream, new UTF8Encoding(false)) { AutoFlush = true };
                 file.WriteLine($"RAGE Tools log started {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             }
             catch { file = null; }

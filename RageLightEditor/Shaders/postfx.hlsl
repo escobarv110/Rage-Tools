@@ -76,6 +76,9 @@ cbuffer PostFxVars : register(b0)
     float4 UnderwaterUp;
 
     float4 ExposureGame;
+
+    float4 MaxBackground;
+    float4 ClearColour;
 }
 
 Texture2D SceneTex : register(t0);
@@ -488,6 +491,13 @@ float4 PSMain(PS_Input input) : SV_TARGET
             float d = GrainNoise(uv * PixelSize.zw, GrainTime * 0.37) - 0.5;
             c = saturate(c + d * Dither * (1.0 / 255.0));
         }
+    }
+
+    if (MaxBackground.w > 0.5)
+    {
+        float3 raw = SceneTex.SampleLevel(PointSampler, uv, 0).rgb;
+        float bz = SceneDepthTex.SampleLevel(PointSampler, uv, 0).r;
+        if (bz <= 0.0 && all(abs(raw - ClearColour.rgb) < 0.002)) c = MaxBackground.rgb;
     }
 
     return float4(c, 1.0);

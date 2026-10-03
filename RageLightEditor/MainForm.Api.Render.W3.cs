@@ -21,6 +21,9 @@ namespace RageLightEditor
             public bool RestoreCamera;
             public Vector3 CamTarget;
             public float CamDistance, CamYaw, CamPitch;
+            public bool Orbit;
+            public Vector3 OrbitCentre;
+            public float OrbitDistance;
         }
 
         private readonly Queue<ApiRenderRequest_W3> apiRenders_W3 = new Queue<ApiRenderRequest_W3>();
@@ -168,9 +171,13 @@ namespace RageLightEditor
                     if (string.IsNullOrWhiteSpace(dir)) dir = Path.Combine(Path.GetTempPath(), "rage_tools_api");
                     Directory.CreateDirectory(dir);
 
-                    bool wasLocked = debugCamLocked;
-                    debugCamLocked = false;
-                    try { FrameModel(); } finally { debugCamLocked = wasLocked; }
+                    var bounds = scene.GetSceneBounds();
+                    var centre = Vector3.Zero; float radius = 1.0f;
+                    if (bounds.HasValue && bounds.Value.Minimum.X < bounds.Value.Maximum.X)
+                    {
+                        centre = (bounds.Value.Minimum + bounds.Value.Maximum) * 0.5f;
+                        radius = Math.Max((bounds.Value.Maximum - bounds.Value.Minimum).Length() * 0.5f, 0.5f);
+                    }
 
                     var job = api.NewJob(m, "api.render.orbit");
                     var paths = new List<string>();
@@ -188,6 +195,9 @@ namespace RageLightEditor
                             RestoreCamera = false,
                             CamYaw = MathUtil.DegreesToRadians(yaw),
                             CamPitch = MathUtil.DegreesToRadians(pitch),
+                            Orbit = true,
+                            OrbitCentre = centre,
+                            OrbitDistance = radius * 2.2f,
                         });
                     }
                     orbitPaths_W3 = paths;
@@ -246,7 +256,13 @@ namespace RageLightEditor
             }
             var r = apiRenders_W3.Dequeue();
 
-            if (r.CamYaw != 0.0f || r.CamPitch != 0.0f)
+            if (r.Orbit)
+            {
+                camera.Target = r.OrbitCentre;
+                camera.Distance = camera.TargetDistance = r.OrbitDistance;
+                camera.MaxDistance = Math.Max(camera.MaxDistance, r.OrbitDistance * 2.0f);
+            }
+            if (r.Orbit || r.CamYaw != 0.0f || r.CamPitch != 0.0f)
             {
                 camera.Yaw = camera.TargetYaw = r.CamYaw;
                 camera.Pitch = camera.TargetPitch = r.CamPitch;

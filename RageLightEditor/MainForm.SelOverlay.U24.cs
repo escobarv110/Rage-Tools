@@ -59,6 +59,8 @@ namespace RageLightEditor
 
         private void DrawSelectionOverlay_U24(SharpDX.Direct3D11.DeviceContext context)
         {
+            DrawGridOverlay_U28(context);
+            DrawNavOverlay_U28(context);
             if (l4Deferred_U25)
             {
                 l4Deferred_U25 = false;
@@ -69,7 +71,7 @@ namespace RageLightEditor
                 faces.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha, CommonStates.DepthDisabled);
                 faces.RasterOverride_U26 = null;
             }
-            if (selOverlay_U24.Count == 0 && selSegs_U25.Count == 0 && LightIconCount_U26 == 0) return;
+            if (selOverlay_U24.Count == 0 && selSegs_U25.Count == 0 && LightIconCount_U26 == 0 && navFill_U28.Count == 0) return;
             bool depth = deviceResources.BeginBackbufferWithDepth_U24();
             foreach (var b in selOverlay_U24) AddSelectionBoxEdges_U24(b.pos, b.ori, b.mn, b.mx);
             foreach (var s in selSegs_U25) if (s.depth) AddSeg_U25(s.a, s.b, s.c, s.px);
@@ -77,6 +79,8 @@ namespace RageLightEditor
             triRenderer.Flush(context, camera.ViewProjMatrix, CommonStates.BlendAlpha,
                 depth ? CommonStates.DepthReadOnly : CommonStates.DepthDisabled);
             deviceResources.BeginBackbuffer();
+            foreach (var t in navFill_U28) { triRenderer.AddTri(t.a, t.b, t.c, NavFill_U28); triRenderer.AddTri(t.a, t.c, t.b, NavFill_U28); }
+            navFill_U28.Clear();
             foreach (var s in selSegs_U25) if (!s.depth) AddSeg_U25(s.a, s.b, s.c, s.px);
             AddLightIcons_U26(triRenderer);
             selSegs_U25.Clear();
@@ -87,7 +91,8 @@ namespace RageLightEditor
         {
             var cp = camera.Position;
             float wa = camera.WorldPerPixel(a), wb = camera.WorldPerPixel(b);
-            int steps = Math.Max(wa, wb) > Math.Min(wa, wb) * 1.3f ? SelBoxEdgeSteps_U24 : 1;
+            float ratio = Math.Max(wa, wb) / Math.Max(Math.Min(wa, wb), 1e-6f);
+            int steps = ratio > 1.3f ? Math.Min(SelBoxEdgeSteps_U24, (int)Math.Ceiling((ratio - 1.0f) * 6.0f)) : 1;
             for (int s = 0; s < steps; s++)
             {
                 var p0 = Vector3.Lerp(a, b, s / (float)steps);

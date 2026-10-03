@@ -102,7 +102,7 @@ namespace RageLightEditor.Editor
             ImGui.Checkbox("Loop", ref sim.Loop);
             ImGui.SameLine();
             ImGui.SetNextItemWidth(120.0f);
-            ImGui.SliderFloat("##ptfxtlspeed", ref sim.TimeScale, 0.05f, 3.0f, "%.2fx");
+            UiSlider_U28.Float("##ptfxtlspeed", ref sim.TimeScale, 0.05f, 3.0f, "%.2fx");
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("playback speed - the simulation step itself never changes");
 
             ImGui.SameLine();

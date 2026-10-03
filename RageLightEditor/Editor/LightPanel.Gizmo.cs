@@ -11,7 +11,7 @@ namespace RageLightEditor.Editor
 
             float size = settings.GizmoSizePx;
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Size", ref size, 40f, 400f, "%.0f px"))
+            if (UiSlider_U28.Float("Size", ref size, 40f, 400f, "%.0f px"))
             {
                 settings.GizmoSizePx = Math.Clamp(size, 40f, 400f);
                 GizmoStyle.ApplySettings(settings);

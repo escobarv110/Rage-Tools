@@ -50,7 +50,7 @@ namespace RageLightEditor.Editor
 
             float uiScale = settings.UiScaleV17 <= 0.01f ? UiScale_V17.Scale : settings.UiScaleV17;
             ImGui.SetNextItemWidth(200.0f);
-            if (ImGui.SliderFloat("Interface size##v19", ref uiScale, UiScale_V17.Min, UiScale_V17.Max, "%.2fx"))
+            if (UiSlider_U28.Float("Interface size##v19", ref uiScale, UiScale_V17.Min, UiScale_V17.Max, "%.2fx"))
                 RequestUiScale_V17 = uiScale;
             if (ImGui.IsItemDeactivatedAfterEdit()) RequestUiScaleCommit_V45 = true;
             if (ImGui.IsItemHovered())

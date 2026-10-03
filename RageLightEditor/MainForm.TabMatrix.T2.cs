@@ -381,7 +381,7 @@ namespace RageLightEditor
             {
                 foreach (var b in spaces)
                 {
-                    if (a == b || SharesTheMap_Q4(a, b)) continue;
+                    if (a == b || SharesTheMap_Q4(a, b) || LightPanel.SharesView_U28(a, b)) continue;
                     panel.SwitchWorkspace(a);
                     StampView_T2(a); StepFrameWriters_T2();
                     var va = CaptureView_T2();

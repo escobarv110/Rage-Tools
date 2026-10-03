@@ -151,7 +151,7 @@ namespace RageLightEditor.Editor
         public bool TimecycleAutoReload = true;
         public string TimecycleStatus = "";
 
-        private Scene scene => SectionScene_S1() ?? (MaterialMode && matScene != null ? matScene : MloMode && mloScene != null ? mloScene : lightScene);
+        private Scene scene => SectionScene_S1() ?? (MloMode && mloScene != null ? mloScene : lightScene);
         private readonly Scene lightScene;
         private readonly Gizmo gizmo;
         private readonly AppSettings settings;
@@ -535,7 +535,7 @@ namespace RageLightEditor.Editor
             if (ImGui.SmallButton("Save as XML...")) RequestSaveModifiers?.Invoke();
 
             ImGui.SetNextItemWidth(-110);
-            ImGui.SliderFloat("##mstr", ref Timecycle.ModifierStrength, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("##mstr", ref Timecycle.ModifierStrength, 0.0f, 1.0f, "%.2f");
             ImGui.SameLine();
             ImGui.TextDisabled("Strength");
             ImGui.Separator();
@@ -1067,7 +1067,6 @@ namespace RageLightEditor.Editor
 
             ImGui.TextDisabled("MATERIALS");
             if (!string.IsNullOrEmpty(Materials.Status)) ImGui.TextDisabled(Materials.Status);
-            DrawMatSceneRow_R2();
 
             float bottomH = Math.Min(Math.Max(240f, displayHeight * 0.38f), displayHeight - 260f);
             if (ImGui.BeginChild("matlisthost", new Vector2(0, -bottomH), ImGuiChildFlags.None))
@@ -1672,8 +1671,6 @@ namespace RageLightEditor.Editor
             }
 
             if (Header("View", true)) DrawViewSection();
-            if (Header("Cinematic" + (RenderMode == 7 ? "  (on)" : "") + "###cinematic", RenderMode == 7))
-                DrawCinematicSection();
             DrawMloCreatorSection_H5();
             if (Header("Import from GTA V")) DrawGameSection();
             if (Header("Timecycle")) DrawTimecycleSection();
@@ -1981,7 +1978,7 @@ namespace RageLightEditor.Editor
 
             ImGui.SetNextItemWidth(-96);
             float tsnap = WorldGizmo.TranslateSnap;
-            if (ImGui.SliderFloat("Move snap##wg", ref tsnap, 0.0f, 5.0f, tsnap <= 0.001f ? "off" : "%.2f m"))
+            if (UiSlider_U28.Float("Move snap##wg", ref tsnap, 0.0f, 5.0f, tsnap <= 0.001f ? "off" : "%.2f m"))
                 WorldGizmo.TranslateSnap = tsnap;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Round each drag to this grid. Hold Shift while dragging to\n" +
@@ -2323,7 +2320,7 @@ namespace RageLightEditor.Editor
 
                     int opacity = (int)MloEditor.GetPortalOpacity(portal);
                     ImGui.SetNextItemWidth(-70);
-                    if (ImGui.SliderInt("Opacity##mp", ref opacity, 0, 100))
+                    if (UiSlider_U28.Int("Opacity##mp", ref opacity, 0, 100))
                     { MloEditor.SetPortalOpacity(mlo, portal, (uint)opacity); ArchEdited = true; }
 
                     int mirror = (int)MloEditor.GetPortalMirrorPriority(portal);
@@ -3229,7 +3226,7 @@ namespace RageLightEditor.Editor
 
             ImGui.SetNextItemWidth(-1);
             float t = PlayTime;
-            if (ImGui.SliderFloat("##playhead", ref t, 0.0f, Math.Max(len, 0.01f),
+            if (UiSlider_U28.Float("##playhead", ref t, 0.0f, Math.Max(len, 0.01f),
                     $"{t:0.00} / {len:0.00} s"))
             {
                 PlayTime = t;
@@ -3307,12 +3304,12 @@ namespace RageLightEditor.Editor
                 ImGui.SetNextItemWidth(-70);
                 if (SelectedShot > 0)
                 {
-                    ImGui.SliderFloat("Travel", ref sh.Duration, 0.1f, 30.0f, "%.1f s");
+                    UiSlider_U28.Float("Travel", ref sh.Duration, 0.1f, 30.0f, "%.1f s");
                     if (ImGui.IsItemHovered())
                         ImGui.SetTooltip("Seconds spent moving here from the shot before it.");
                     ImGui.SetNextItemWidth(-70);
                 }
-                ImGui.SliderFloat("Hold", ref sh.Hold, 0.0f, 20.0f, "%.1f s");
+                UiSlider_U28.Float("Hold", ref sh.Hold, 0.0f, 20.0f, "%.1f s");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Seconds held still on this shot before moving off it.");
                 ImGui.SetNextItemWidth(-70);
@@ -3331,23 +3328,23 @@ namespace RageLightEditor.Editor
                         "Hard in     creeps away, arrives hard\n" +
                         "Hard out    snaps away, drifts in");
                 ImGui.SetNextItemWidth(-70);
-                ImGui.SliderFloat("Ease", ref sh.Ease, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Ease", ref sh.Ease, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How much of the blend shape above to apply. 0 is a straight\n" +
                                      "constant-speed move whatever the style says; 1 is the style\n" +
                                      "in full. It is there so a shot can be given a bit of one.");
                 ImGui.SetNextItemWidth(-70);
-                ImGui.SliderFloat("Shake", ref sh.Shake, 0.0f, 3.0f, "%.2f");
+                UiSlider_U28.Float("Shake", ref sh.Shake, 0.0f, 3.0f, "%.2f");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Handheld sway at this shot, blended along the move like\n" +
                                      "everything else - so a camera can settle as it arrives, or\n" +
                                      "pick up as it moves in. The profile is under SHAKE below.");
                 ImGui.SetNextItemWidth(-70);
-                ImGui.SliderFloat("Lens", ref sh.Fov, 12.0f, 110.0f, "%.0f deg");
+                UiSlider_U28.Float("Lens", ref sh.Fov, 12.0f, 110.0f, "%.0f deg");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Each shot carries its own field of view, so a move can zoom.");
                 ImGui.SetNextItemWidth(-70);
-                ImGui.SliderFloat("Focus", ref sh.Focus, 0.0f, 60.0f,
+                UiSlider_U28.Float("Focus", ref sh.Focus, 0.0f, 60.0f,
                     sh.Focus < 0.05f ? "auto" : "%.1f m");
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Depth-of-field focus for this shot. At zero the autofocus\n" +
@@ -3358,16 +3355,16 @@ namespace RageLightEditor.Editor
             ImGui.Separator();
             ImGui.TextDisabled("SHAKE");
             ImGui.SetNextItemWidth(-70);
-            ImGui.SliderFloat("Sway", ref Sequence.Shake.PositionAmplitude, 0.0f, 0.3f, "%.3f m");
+            UiSlider_U28.Float("Sway", ref Sequence.Shake.PositionAmplitude, 0.0f, 0.3f, "%.3f m");
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How far the camera drifts, in metres, at a shot shake of 1.");
             ImGui.SetNextItemWidth(-70);
-            ImGui.SliderFloat("Tilt", ref Sequence.Shake.RotationAmplitude, 0.0f, 4.0f, "%.2f deg");
+            UiSlider_U28.Float("Tilt", ref Sequence.Shake.RotationAmplitude, 0.0f, 4.0f, "%.2f deg");
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How far it rocks, in degrees, at a shot shake of 1. A little of\n" +
                                  "this reads as handheld far more than sway does.");
             ImGui.SetNextItemWidth(-70);
-            ImGui.SliderFloat("Speed", ref Sequence.Shake.Frequency, 0.1f, 6.0f, "%.2f");
+            UiSlider_U28.Float("Speed", ref Sequence.Shake.Frequency, 0.1f, 6.0f, "%.2f");
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Slow is a shoulder, fast is an engine. Four noise channels at\n" +
                                  "unrelated frequencies are summed, so it never falls into a\n" +
@@ -3380,7 +3377,7 @@ namespace RageLightEditor.Editor
             ImGui.TextDisabled("EXPORT");
             int fps = Sequence.Fps;
             ImGui.SetNextItemWidth(-70);
-            if (ImGui.SliderInt("FPS", ref fps, 12, 60)) Sequence.Fps = Math.Max(1, fps);
+            if (UiSlider_U28.Int("FPS", ref fps, 12, 60)) Sequence.Fps = Math.Max(1, fps);
             ImGui.TextDisabled($"{Sequence.FrameCount} frames at {Sequence.Fps} fps");
 
             ImGui.BeginDisabled(Sequence.Shots.Count < 2);
@@ -3595,7 +3592,7 @@ namespace RageLightEditor.Editor
             ImGui.TextDisabled("Weather");
             float wt = settings.WeatherTransitionSeconds;
             ImGui.SetNextItemWidth(-110);
-            if (ImGui.SliderFloat("##wtrans", ref wt, 0.0f, 20.0f, wt < 0.05f ? "instant" : "%.1f s"))
+            if (UiSlider_U28.Float("##wtrans", ref wt, 0.0f, 20.0f, wt < 0.05f ? "instant" : "%.1f s"))
                 settings.WeatherTransitionSeconds = wt;
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SameLine();
@@ -3612,7 +3609,7 @@ namespace RageLightEditor.Editor
         {
             UiTheme.PushTimeSlider();
             ImGui.SetNextItemWidth(-110);
-            ImGui.SliderFloat("##hourw", ref PreviewHour, 0.0f, 23.99f,
+            UiSlider_U28.Float("##hourw", ref PreviewHour, 0.0f, 23.99f,
                 $"{(int)PreviewHour:00}:{(int)((PreviewHour % 1.0f) * 60):00}");
             HourScrubbing = ImGui.IsItemActive();
             UiTheme.PopTimeSlider();
@@ -3629,7 +3626,7 @@ namespace RageLightEditor.Editor
                 ImGui.SameLine();
                 UiTheme.PushTimeSlider();
                 ImGui.SetNextItemWidth(-1);
-                ImGui.SliderFloat("##timespeed", ref TimeSpeed, 1.0f, 600.0f, "%.0f min/s");
+                UiSlider_U28.Float("##timespeed", ref TimeSpeed, 1.0f, 600.0f, "%.0f min/s");
                 UiTheme.PopTimeSlider();
             }
             if (ImGui.Checkbox("Drag time", ref ControlTimeOfDay))
@@ -3646,7 +3643,7 @@ namespace RageLightEditor.Editor
         private void DrawExposureRow()
         {
             ImGui.SetNextItemWidth(-110);
-            ImGui.SliderFloat("##exposure", ref Exposure, 0.05f, 2.0f, "%.2f");
+            UiSlider_U28.Float("##exposure", ref Exposure, 0.05f, 2.0f, "%.2f");
             ImGui.SameLine();
             ImGui.TextDisabled("Exposure");
             if (ImGui.IsItemHovered())
@@ -3683,7 +3680,7 @@ namespace RageLightEditor.Editor
             {
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(110);
-                ImGui.SliderFloat("##sunstr", ref SunShadowStrength, 0.0f, 1.0f, "strength %.2f");
+                UiSlider_U28.Float("##sunstr", ref SunShadowStrength, 0.0f, 1.0f, "strength %.2f");
             }
 
             DrawExposureRow();
@@ -3740,7 +3737,7 @@ namespace RageLightEditor.Editor
                 if (Timecycle.SelectedModifier >= 0)
                 {
                     ImGui.SetNextItemWidth(-110);
-                    ImGui.SliderFloat("##tcmodstr", ref Timecycle.ModifierStrength, 0.0f, 1.0f, "%.2f");
+                    UiSlider_U28.Float("##tcmodstr", ref Timecycle.ModifierStrength, 0.0f, 1.0f, "%.2f");
                     ImGui.SameLine();
                     ImGui.TextDisabled("Strength");
                     var m = Timecycle.CurrentModifier;
@@ -4697,7 +4694,7 @@ namespace RageLightEditor.Editor
             if (MsaaGranted > 0 && MsaaGranted != CineSampleCount)
                 ImGui.TextDisabled($"This GPU granted {MsaaGranted}x.");
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Sharpen", ref c.Sharpen, 0.0f, 1.0f, "%.2f")) { }
+            if (UiSlider_U28.Float("Sharpen", ref c.Sharpen, 0.0f, 1.0f, "%.2f")) { }
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Unsharp mask over the finished frame. A resolve and the\n" +
@@ -4706,7 +4703,7 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Surfaces");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Flatten bevels", ref c.BevelFlatten, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Flatten bevels", ref c.BevelFlatten, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(
@@ -4721,19 +4718,19 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Occlusion");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Strength##ao", ref c.AoStrength, 0.0f, 1.5f, "%.2f");
+            UiSlider_U28.Float("Strength##ao", ref c.AoStrength, 0.0f, 1.5f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How dark the ray-marched contact shadows go. 0 turns them off.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Reach##ao", ref c.AoRadius, 0.05f, 3.0f, "%.2f m");
+            UiSlider_U28.Float("Reach##ao", ref c.AoRadius, 0.05f, 3.0f, "%.2f m");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How far the rays travel before giving up, in metres.\n" +
                                  "Small values catch only where surfaces meet; large ones\n" +
                                  "darken whole corners of a room.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Quality##ao", ref c.AoQuality, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Quality##ao", ref c.AoQuality, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Rays per pixel, and steps along each. The result is blurred\n" +
@@ -4742,7 +4739,7 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Reflections");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Screen-space", ref c.Ssr, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Screen-space", ref c.Ssr, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(
@@ -4756,7 +4753,7 @@ namespace RageLightEditor.Editor
             if (c.Ssr > 0.001f)
             {
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Spread over angle", ref c.SsrFresnel, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Spread over angle", ref c.SsrFresnel, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("0 = every surface in the room is a mirror, whatever angle it\n" +
@@ -4766,13 +4763,13 @@ namespace RageLightEditor.Editor
                                      "in the file can decide this - turn it down to make the props\n" +
                                      "reflect properly.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Roughness##ssr", ref c.SsrBlur, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Roughness##ssr", ref c.SsrBlur, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How soft the reflection is. Zero is a mirror; anything above\n" +
                                      "it is a polish, and it also cleans up the ray march's noise.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Ambient fallback", ref c.SsrSky, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Ambient fallback", ref c.SsrSky, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("What a ray that finds nothing shows instead of nothing - the\n" +
@@ -4780,10 +4777,10 @@ namespace RageLightEditor.Editor
                                      "the room in the middle of the frame and goes flat matte at\n" +
                                      "the edges looks broken; this is what stops that.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Ray distance", ref c.SsrDistance, 1.0f, 60.0f, "%.0f m");
+                UiSlider_U28.Float("Ray distance", ref c.SsrDistance, 1.0f, 60.0f, "%.0f m");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Thickness", ref c.SsrThickness, 0.02f, 2.0f, "%.2f m");
+                UiSlider_U28.Float("Thickness", ref c.SsrThickness, 0.02f, 2.0f, "%.2f m");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("The depth buffer says where surfaces are, not how solid they\n" +
@@ -4794,7 +4791,7 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Depth of field");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Amount##dof", ref c.Dof, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Amount##dof", ref c.Dof, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("One plane in focus, everything else spread into a disc - the\n" +
@@ -4815,30 +4812,30 @@ namespace RageLightEditor.Editor
                 if (!autoFocus)
                 {
                     ImGui.SetNextItemWidth(-140);
-                    ImGui.SliderFloat("Focus distance", ref c.DofFocus, 0.3f, 120.0f, "%.1f m");
+                    UiSlider_U28.Float("Focus distance", ref c.DofFocus, 0.3f, 120.0f, "%.1f m");
                     if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 }
                 else ImGui.TextDisabled($"Focused at {c.DofFocus:0.0} m");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("In-focus depth", ref c.DofRange, 0.0f, 8.0f, "%.2f m");
+                UiSlider_U28.Float("In-focus depth", ref c.DofRange, 0.0f, 8.0f, "%.2f m");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("A band either side of the focus that stays completely sharp.\n" +
                                      "Without it exactly one distance in the picture is sharp and\n" +
                                      "framing a subject against it is guesswork.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Aperture", ref c.DofAperture, 0.05f, 3.0f, "%.2f");
+                UiSlider_U28.Float("Aperture", ref c.DofAperture, 0.05f, 3.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How fast everything off the focus plane falls apart.\n" +
                                      "Wide open on a real lens, the depth in focus is inches.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Bokeh size", ref c.DofMaxRadius, 2.0f, 32.0f, "%.0f");
+                UiSlider_U28.Float("Bokeh size", ref c.DofMaxRadius, 2.0f, 32.0f, "%.0f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How wide a fully defocused point of light spreads.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Bokeh highlights", ref c.DofBokeh, 0.0f, 6.0f, "%.2f");
+                UiSlider_U28.Float("Bokeh highlights", ref c.DofBokeh, 0.0f, 6.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How hard a bright point is pushed into a disc of its own\n" +
@@ -4846,7 +4843,7 @@ namespace RageLightEditor.Editor
                                      "between blur and bokeh - turn it up and the lamps behind\n" +
                                      "your subject become circles.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Bokeh stretch", ref c.DofStretch, 0.3f, 3.0f, "%.2f");
+                UiSlider_U28.Float("Bokeh stretch", ref c.DofStretch, 0.3f, 3.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Above 1 the bokeh is an OVAL rather than a disc. A spherical\n" +
@@ -4855,7 +4852,7 @@ namespace RageLightEditor.Editor
                                      "which is why anamorphic highlights are the shape they are.\n\n" +
                                      "Below 1 squeezes the other way, which no lens does.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Bokeh swirl", ref c.DofRadial, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Bokeh swirl", ref c.DofRadial, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Rolls the bokeh round towards the corners, so the discs become\n" +
@@ -4865,7 +4862,7 @@ namespace RageLightEditor.Editor
                                      "Nothing happens at the centre of the frame - there is no\n" +
                                      "direction to be radial about there.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Iris blades", ref c.DofBlades, 0.0f, 9.0f,
+                UiSlider_U28.Float("Iris blades", ref c.DofBlades, 0.0f, 9.0f,
                     c.DofBlades < 3.0f ? "round" : "%.0f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
@@ -4876,20 +4873,20 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Bloom");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Intensity##bloom", ref c.Bloom, 0.0f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Intensity##bloom", ref c.Bloom, 0.0f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Threshold##bloom", ref c.BloomThreshold, 0.2f, 4.0f, "%.2f");
+            UiSlider_U28.Float("Threshold##bloom", ref c.BloomThreshold, 0.2f, 4.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Brightness a pixel has to reach before it glows.\n" +
                                  "Lower it and the whole image blooms; raise it and only\n" +
                                  "genuine light sources do.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Spread##bloom", ref c.BloomSpread, 0.2f, 3.0f, "%.2f");
+            UiSlider_U28.Float("Spread##bloom", ref c.BloomSpread, 0.2f, 3.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Anamorphic", ref c.BloomAnamorphic, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Anamorphic", ref c.BloomAnamorphic, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Stretches the glow sideways, the way a spherical lens does.\n" +
@@ -4897,7 +4894,7 @@ namespace RageLightEditor.Editor
                                  "recognisable thing about how film renders one.");
             ViewGroup("Halation");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Strength##halation", ref c.Halation, 0.0f, 1.5f, "%.2f");
+            UiSlider_U28.Float("Strength##halation", ref c.Halation, 0.0f, 1.5f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The warm ring film puts around a bright window: light that got\n" +
@@ -4916,7 +4913,7 @@ namespace RageLightEditor.Editor
                     ImGui.SetTooltip("Red-orange is what colour film does. Cyan is what a bleached\n" +
                                      "print does. Anything else is yours.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Threshold##halation", ref c.HalationThreshold, 0.0f, 3.0f, "%.2f");
+                UiSlider_U28.Float("Threshold##halation", ref c.HalationThreshold, 0.0f, 3.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How bright a thing has to be before it halos at all. Its own,\n" +
@@ -4924,20 +4921,20 @@ namespace RageLightEditor.Editor
                                      "brightest parts of a frame do, and letting everything that\n" +
                                      "blooms also halo turns the warm ring into a warm cast.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Falloff##halation", ref c.HalationSoftness, 0.01f, 2.0f, "%.2f");
+                UiSlider_U28.Float("Falloff##halation", ref c.HalationSoftness, 0.01f, 2.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How gradually it comes on across that threshold. A hard cut\n" +
                                      "draws a visible outline around whatever crossed the line.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Tint amount##halation", ref c.HalationSaturation, 0.0f, 2.0f, "%.2f");
+                UiSlider_U28.Float("Tint amount##halation", ref c.HalationSaturation, 0.0f, 2.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("0 leaves the halo white - a plain second bloom. 1 is the\n" +
                                      "colour above as set. Past 1 pushes beyond it, which no film\n" +
                                      "ever did and which occasionally looks right anyway.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Spread##halation", ref c.HalationSpread, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Spread##halation", ref c.HalationSpread, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How far past the bloom the halo reaches. It is WIDER than the\n" +
@@ -4947,31 +4944,31 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Grade");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Contrast", ref c.Contrast, 0.5f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Contrast", ref c.Contrast, 0.5f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Saturation", ref c.Saturation, 0.0f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Saturation", ref c.Saturation, 0.0f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Temperature", ref c.Temperature, -1.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Temperature", ref c.Temperature, -1.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Cool to warm, along the blue-orange axis.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Tint##grade", ref c.Tint, -1.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Tint##grade", ref c.Tint, -1.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Green to magenta - what corrects the cast\n" +
                                                         "fluorescent light leaves on a scene.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Lift", ref c.Lift, -0.25f, 0.25f, "%.3f");
+            UiSlider_U28.Float("Lift", ref c.Lift, -0.25f, 0.25f, "%.3f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The shadows moved without touching the highlights. Lifting them\n" +
                                  "slightly is what gives a print its milky black.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Gain", ref c.Gain, 0.5f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Gain", ref c.Gain, 0.5f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Bleach bypass", ref c.Bleach, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Bleach bypass", ref c.Bleach, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The print developed with the silver left in: hard contrast,\n" +
@@ -4980,19 +4977,19 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Vignette");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Amount##vignette", ref c.Vignette, 0.0f, 1.5f, "%.2f");
+            UiSlider_U28.Float("Amount##vignette", ref c.Vignette, 0.0f, 1.5f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (c.Vignette > 0.001f)
             {
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Roundness##vignette", ref c.VignetteRoundness, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Roundness##vignette", ref c.VignetteRoundness, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("0 follows the shape of the frame, which on a wide window\n" +
                                      "means an ellipse. 1 stays a circle, which is what the lens\n" +
                                      "itself actually does.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Softness##vignette", ref c.VignetteSoftness, 0.1f, 2.0f, "%.2f");
+                UiSlider_U28.Float("Softness##vignette", ref c.VignetteSoftness, 0.1f, 2.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How abruptly the corners give way. Low is a wide gentle\n" +
@@ -5001,25 +4998,25 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Grain");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Amount##grain", ref c.Grain, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Amount##grain", ref c.Grain, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (c.Grain > 0.001f)
             {
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Size##grain", ref c.GrainSize, 0.5f, 8.0f, "%.1f px");
+                UiSlider_U28.Float("Size##grain", ref c.GrainSize, 0.5f, 8.0f, "%.1f px");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Screen pixels per grain. Grain belongs to the film stock, not\n" +
                                      "to the resolution - which is why this is in pixels and why a\n" +
                                      "one-pixel grain vanishes entirely in an 8K render.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Colour##grain", ref c.GrainColour, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Colour##grain", ref c.GrainColour, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("0 = monochrome silver, as black and white stock. 1 = each\n" +
                                      "channel drawn separately, as colour dye clouds.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("In shadows", ref c.GrainShadow, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("In shadows", ref c.GrainShadow, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How much more grain there is in the dark than in the light.\n" +
@@ -5029,13 +5026,13 @@ namespace RageLightEditor.Editor
 
             ViewGroup("Lens & frame");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Chromatic aberration", ref c.ChromAberration, 0.0f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Chromatic aberration", ref c.ChromAberration, 0.0f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("A lens does not bring every wavelength to the same point, and\n" +
                                  "the error grows towards the corners. Radial, not a flat shift.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Edge smear", ref c.EdgeBlur, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Edge smear", ref c.EdgeBlur, 0.0f, 1.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("An anamorphic lens does not resolve its corners the way it\n" +
@@ -5044,27 +5041,27 @@ namespace RageLightEditor.Editor
             if (c.EdgeBlur > 0.001f)
             {
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Smear starts at", ref c.EdgeBlurStart, 0.0f, 0.95f, "%.2f");
+                UiSlider_U28.Float("Smear starts at", ref c.EdgeBlurStart, 0.0f, 0.95f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Distance from the centre, 0..1. Nothing inside it is touched,\n" +
                                      "so the subject stays sharp and only the frame gives way.");
                 ImGui.SetNextItemWidth(-140);
-                ImGui.SliderFloat("Horizontal bias", ref c.EdgeBlurElongation, 0.0f, 1.0f, "%.2f");
+                UiSlider_U28.Float("Horizontal bias", ref c.EdgeBlurElongation, 0.0f, 1.0f, "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("0 is purely radial. 1 drags the smear towards horizontal,\n" +
                                      "which is the asymmetry a spherical anamorphic actually has.");
             }
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Letterbox", ref c.Letterbox, 0.0f, 0.2f,
+            UiSlider_U28.Float("Letterbox", ref c.Letterbox, 0.0f, 0.2f,
                 c.Letterbox < 0.0005f ? "off" : "%.3f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Bar height as a fraction of the frame. 0.105 is about 2.39:1\n" +
                                  "on a 16:9 window - composition, not an effect.");
             ImGui.SetNextItemWidth(-140);
-            ImGui.SliderFloat("Dither", ref c.Dither, 0.0f, 2.0f, "%.2f");
+            UiSlider_U28.Float("Dither", ref c.Dither, 0.0f, 2.0f, "%.2f");
             if (ImGui.IsItemDeactivatedAfterEdit()) settings.Save();
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Under a single code value of noise, added last. An 8-bit image\n" +
@@ -5262,10 +5259,6 @@ namespace RageLightEditor.Editor
         {
             ViewGroup("Camera");
             DrawShadingCombo();
-
-            if (RenderMode == 7)
-                ImGui.TextDisabled("Cinematic settings are in their own section below.");
-
             DrawCameraKnobs();
         }
 
@@ -5274,8 +5267,8 @@ namespace RageLightEditor.Editor
             ImGui.SetNextItemWidth(-140);
             if (MaterialMode)
             {
-                var modes = new[] { 0, 7, 1, 2, 5, 6, 8, VertexColourModeFirst };
-                var labels = new[] { "RAGE", "Cinematic", "Unlit", "Normals", "Lighting only", "Specular only", "Wireframe", "Vertex colours" };
+                var modes = new[] { 0, 1, 2, 5, 6, 8, VertexColourModeFirst };
+                var labels = new[] { "RAGE", "Unlit", "Normals", "Lighting only", "Specular only", "Wireframe", "Vertex colours" };
                 int sel = Array.IndexOf(modes, ShadingComboMode_O2(RenderMode));
                 if (sel < 0) sel = 0;
                 if (ImGui.Combo("Shading", ref sel, labels, labels.Length)) RenderMode = modes[sel];
@@ -5284,8 +5277,7 @@ namespace RageLightEditor.Editor
             }
             else
             {
-                var modes = new[] { 0, 7, 1, 2, 8, VertexColourModeFirst };
-                var labels = new[] { "RAGE", "Cinematic", "Unlit", "Normals", "Wireframe", "Vertex colours" };
+                var (modes, labels) = ShadingChoices_U28();
                 int sel = Array.IndexOf(modes, ShadingComboMode_O2(RenderMode));
                 if (sel < 0) sel = 0;
                 if (ImGui.Combo("Shading", ref sel, labels, labels.Length)) RenderMode = modes[sel];
@@ -5300,7 +5292,7 @@ namespace RageLightEditor.Editor
             {
                 float snap = settings.RotateSnapDeg;
                 ImGui.SetNextItemWidth(-140);
-                if (ImGui.SliderFloat("Rotate snap", ref snap, 0.0f, 45.0f, snap < 0.01f ? "off" : "%.0f deg"))
+                if (UiSlider_U28.Float("Rotate snap", ref snap, 0.0f, 45.0f, snap < 0.01f ? "off" : "%.0f deg"))
                 {
                     settings.RotateSnapDeg = snap;
                     gizmo.RotateSnapDeg = snap;
@@ -5310,7 +5302,7 @@ namespace RageLightEditor.Editor
 
             float sens = settings.CameraSensitivity;
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Sensitivity", ref sens, 0.001f, 0.02f, "%.4f"))
+            if (UiSlider_U28.Float("Sensitivity", ref sens, 0.001f, 0.02f, "%.4f"))
                 settings.CameraSensitivity = sens;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Radians of turn per pixel of mouse movement.\nThe default is 0.005.");
@@ -5318,7 +5310,7 @@ namespace RageLightEditor.Editor
 
             float smooth = settings.CameraSmoothing;
             ImGui.SetNextItemWidth(-140);
-            if (ImGui.SliderFloat("Smoothing", ref smooth, 0.0f, 60.0f, smooth < 0.5f ? "off" : "%.0f /s"))
+            if (UiSlider_U28.Float("Smoothing", ref smooth, 0.0f, 60.0f, smooth < 0.5f ? "off" : "%.0f /s"))
                 settings.CameraSmoothing = smooth < 0.5f ? 0.0f : smooth;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How fast the view catches up with the mouse and the wheel.\n" +
@@ -5333,7 +5325,7 @@ namespace RageLightEditor.Editor
         {
             float fov = settings.FovDeg;
             ImGui.SetNextItemWidth(width);
-            if (ImGui.SliderFloat("FOV", ref fov, Rendering.Camera.MinFovDeg, Rendering.Camera.MaxFovDeg, "%.0f deg"))
+            if (UiSlider_U28.Float("FOV", ref fov, Rendering.Camera.MinFovDeg, Rendering.Camera.MaxFovDeg, "%.0f deg"))
                 settings.FovDeg = Math.Clamp(fov, Rendering.Camera.MinFovDeg, Rendering.Camera.MaxFovDeg);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Vertical field of view. Lower zooms in like a long lens (10 = 6x closer\n" +
@@ -5552,12 +5544,12 @@ namespace RageLightEditor.Editor
             if (l.Type == LightType.Spot && Header("Cone", true))
             {
                 float inner = l.ConeInnerAngle;
-                bool ch = ImGui.SliderFloat("Inner angle", ref inner, 0.0f, 90.0f, "%.2f");
+                bool ch = UiSlider_U28.Float("Inner angle", ref inner, 0.0f, 90.0f, "%.2f");
                 UndoOnActivate();
                 if (ch) { l.ConeInnerAngle = inner; MarkDirty(true); }
 
                 float outer = l.ConeOuterAngle;
-                ch = ImGui.SliderFloat("Outer angle", ref outer, 0.0f, 90.0f, "%.2f");
+                ch = UiSlider_U28.Float("Outer angle", ref outer, 0.0f, 90.0f, "%.2f");
                 UndoOnActivate();
                 if (ch) { l.ConeOuterAngle = outer; MarkDirty(true); }
                 ImGui.TextDisabled("Half-angles; game clamps ~90.");
@@ -5657,7 +5649,7 @@ namespace RageLightEditor.Editor
             if (Header("Shadows & fades", true))
             {
                 int sb = l.ShadowBlur;
-                bool ch = ImGui.SliderInt("Shadow blur", ref sb, 0, 255);
+                bool ch = UiSlider_U28.Int("Shadow blur", ref sb, 0, 255);
                 UndoOnActivate();
                 if (ch) { l.ShadowBlur = (byte)sb; MarkDirty(true); }
 
@@ -5667,22 +5659,22 @@ namespace RageLightEditor.Editor
                 if (ch) { l.ShadowNearClip = snc; MarkDirty(true); }
 
                 int lfd = l.LightFadeDistance;
-                ch = ImGui.SliderInt("Light fade", ref lfd, 0, 255, l.LightFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = UiSlider_U28.Int("Light fade", ref lfd, 0, 255, l.LightFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.LightFadeDistance = (byte)lfd; MarkDirty(true); }
 
                 int sfd = l.ShadowFadeDistance;
-                ch = ImGui.SliderInt("Shadow fade", ref sfd, 0, 255, l.ShadowFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = UiSlider_U28.Int("Shadow fade", ref sfd, 0, 255, l.ShadowFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.ShadowFadeDistance = (byte)sfd; MarkDirty(true); }
 
                 int spfd = l.SpecularFadeDistance;
-                ch = ImGui.SliderInt("Specular fade", ref spfd, 0, 255, l.SpecularFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = UiSlider_U28.Int("Specular fade", ref spfd, 0, 255, l.SpecularFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.SpecularFadeDistance = (byte)spfd; MarkDirty(true); }
 
                 int vfd = l.VolumetricFadeDistance;
-                ch = ImGui.SliderInt("Volume fade", ref vfd, 0, 255, l.VolumetricFadeDistance == 0 ? "0 (default)" : "%d");
+                ch = UiSlider_U28.Int("Volume fade", ref vfd, 0, 255, l.VolumetricFadeDistance == 0 ? "0 (default)" : "%d");
                 UndoOnActivate();
                 if (ch) { l.VolumetricFadeDistance = (byte)vfd; MarkDirty(true); }
             }

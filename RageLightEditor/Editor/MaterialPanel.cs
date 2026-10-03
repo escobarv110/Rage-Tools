@@ -985,9 +985,9 @@ namespace RageLightEditor.Editor
                 case MatParamKind.Float:
                     float f = n.X;
                     changed = info.Log
-                        ? ImGui.SliderFloat("##v", ref f, info.Min, info.Max, "%.2f",
+                        ? UiSlider_U28.Float("##v", ref f, info.Min, info.Max, "%.2f",
                             ImGuiSliderFlags.Logarithmic)
-                        : ImGui.SliderFloat("##v", ref f, info.Min, info.Max);
+                        : UiSlider_U28.Float("##v", ref f, info.Min, info.Max);
                     activated = ImGui.IsItemActivated();
                     n.X = f;
                     break;

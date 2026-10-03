@@ -161,7 +161,7 @@ namespace RageLightEditor.Editor
             if (Header("More"))
             {
                 ImGui.SetNextItemWidth(-1);
-                ImGui.SliderFloat("##navq2radius", ref nav.LoadRadius, 75.0f, 3000.0f, "the mesh reaches %.0f m");
+                UiSlider_U28.Float("##navq2radius", ref nav.LoadRadius, 75.0f, 3000.0f, "the mesh reaches %.0f m");
                 NavStreamControls_S4();
                 ImGui.SetNextItemWidth(-1);
                 if (ImGui.InputTextWithHint("##navq2byname", "navmesh[54][20]  (enter opens it from the archives)",
@@ -262,7 +262,7 @@ namespace RageLightEditor.Editor
                 ImGui.Checkbox("Hint bar", ref nav.ShowLegend);
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("The line along the bottom saying what a click does.");
                 ImGui.SetNextItemWidth(-1);
-                any |= ImGui.SliderFloat("##navq2alpha", ref nav.FillAlpha, 0.1f, 1.0f, "fill %.2f");
+                any |= UiSlider_U28.Float("##navq2alpha", ref nav.FillAlpha, 0.1f, 1.0f, "fill %.2f");
                 if (any) nav.LayerVersion++;
             }
 
@@ -484,9 +484,9 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("What a floor inside an MLO carries. Off: pavement, which is what open ground carries.");
             ImGui.SetNextItemWidth(-1);
-            ImGui.SliderFloat("##navq2gendens", ref nav.GenDensity, 0.25f, 4.0f, "grid %.2f m");
+            UiSlider_U28.Float("##navq2gendens", ref nav.GenDensity, 0.25f, 4.0f, "grid %.2f m");
             ImGui.SetNextItemWidth(-1);
-            ImGui.SliderFloat("##navq2genslope", ref nav.GenSlopeLimit, 5.0f, 70.0f, "slope limit %.0f deg");
+            UiSlider_U28.Float("##navq2genslope", ref nav.GenSlopeLimit, 5.0f, 70.0f, "slope limit %.0f deg");
             if (ImGui.Button("Generate", new Vector2(-1, 0))) nav.RequestGenerate = true;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Needs the world collision loaded - turn Collision on in the World workspace's\n" +
@@ -539,7 +539,7 @@ namespace RageLightEditor.Editor
 
             float dir = pt.Direction * 57.29578f;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##navq2ptang", ref dir, 0.0f, 360.0f, "faces %.0f deg"))
+            if (UiSlider_U28.Float("##navq2ptang", ref dir, 0.0f, 360.0f, "faces %.0f deg"))
                 nav.SetField(WorldHistory, doc, pt, "Turn nav point", pt.Angle, NavAngleByte_Q2(dir), v => pt.Angle = v);
 
             int type = pt.Type;
@@ -571,7 +571,7 @@ namespace RageLightEditor.Editor
 
             float dir = po.Direction * 57.29578f;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##navq2poang", ref dir, 0.0f, 360.0f, "faces %.0f deg"))
+            if (UiSlider_U28.Float("##navq2poang", ref dir, 0.0f, 360.0f, "faces %.0f deg"))
                 nav.SetField(WorldHistory, doc, po, "Turn portal", po.Angle, NavAngleByte_Q2(dir), v => po.Angle = v);
 
             int type = po.Type;

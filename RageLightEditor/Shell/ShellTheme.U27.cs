@@ -113,6 +113,8 @@ namespace RageLightEditor.Shell
         public const string Sliders = "M4,6 H20 M4,12 H20 M4,18 H20 M8,4 V8 M15,10 V14 M10,16 V20";
         public const string File = "M6,3 H14 L19,8 V21 H6 Z M14,3 V8 H19";
         public const string House = "M5.5,10 L12,4.5 L18.5,10 V20 H5.5 Z M3,11.5 L12,4 L21,11.5 M10,20 V14 H14 V20";
+        public const string Close = "M7,7 L17,17 M17,7 L7,17";
+        public const string PanelRight = "M4,5 H20 V19 H4 Z M14.5,5 V19";
         public const string Output = "M4,5 H20 V19 H4 Z M7,9 L10,12 L7,15 M12,15 H16";
 
         public static readonly string[] Modes =

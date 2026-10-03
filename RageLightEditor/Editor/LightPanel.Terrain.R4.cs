@@ -264,17 +264,19 @@ namespace RageLightEditor.Editor
 
             float r = te.BrushRadius;
             if (ImGui.DragFloat("Size", ref r, 0.1f, 0.05f, 200.0f, "%.2f m")) te.BrushRadius = Math.Max(r, 0.05f);
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("The radius on the ground, in metres.  [ and ] change it.");
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("The radius on the ground, in metres.  F then move the mouse to resize it, or [ and ].");
             float h = te.BrushHardness;
-            if (ImGui.SliderFloat("Hardness", ref h, 0.0f, 0.98f, "%.2f")) te.BrushHardness = h;
+            if (UiSlider_U28.Float("Hardness", ref h, 0.0f, 0.98f, "%.2f")) te.BrushHardness = h;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How much of the brush is at full strength before the falloff starts.\n" +
                                  "0 is a soft gradient from the centre; near 1 is a hard-edged disc.");
             float s = te.BrushStrength;
-            if (ImGui.SliderFloat("Strength", ref s, 0.02f, 1.0f, "%.2f")) te.BrushStrength = s;
+            if (UiSlider_U28.Float("Strength", ref s, 0.02f, 1.0f, "%.2f")) te.BrushStrength = s;
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("How far one dab drags a vertex toward the layer. Low values build up\n" +
                                  "as you go over the same ground twice, which is how you get a soft join.");
+
+            DrawTerrainBrushU28();
 
             bool ring = te.ShowBrush;
             if (ImGui.Checkbox("Show the brush ring", ref ring)) te.ShowBrush = ring;

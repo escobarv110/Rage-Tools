@@ -43,7 +43,7 @@ namespace RageLightEditor
 
                 var sc = SceneFor_L3(LightPanel.Space.Animation);
                 Check("u6: the Animations section has a scene of its own",
-                      sc != null && !ReferenceEquals(sc, lightScene) && !ReferenceEquals(sc, matScene) &&
+                      sc != null && !ReferenceEquals(sc, lightScene) &&
                       !ReferenceEquals(sc, mloScene) && !ReferenceEquals(sc, SceneFor_L3(LightPanel.Space.Terrain)),
                       sc == null ? "null" : "own");
                 bool camOk;

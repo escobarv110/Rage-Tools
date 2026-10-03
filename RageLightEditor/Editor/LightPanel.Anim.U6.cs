@@ -250,7 +250,7 @@ namespace RageLightEditor.Editor
                 }
                 int fps = clip.Fps;
                 ImGui.SetNextItemWidth(-110);
-                if (ImGui.SliderInt("Frame rate", ref fps, 5, 60)) clip.Fps = Math.Max(fps, 1);
+                if (UiSlider_U28.Int("Frame rate", ref fps, 5, 60)) clip.Fps = Math.Max(fps, 1);
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("How densely the export samples the curves. The game's own clips are 30.\n" +
                                      "It changes the FILE, not the animation: the curves are the truth.");

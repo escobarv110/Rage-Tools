@@ -74,7 +74,9 @@ namespace RageLightEditor.Shell
                 Check("world tools hidden outside World", !worldTools.IsVisible && !paletteArea.IsVisible);
                 Tab(Space.World).PerformClick(); await Frames();
                 Check("tab switches back to World", p.Workspace == Space.World, p.Workspace.ToString());
-                Check("world tools shown in World", worldTools.IsVisible && paletteArea.IsVisible);
+                Check("world tools shown in World, pick palette closed until asked for", worldTools.IsVisible && !paletteArea.IsVisible);
+                bPicks.PerformClick(); await Frames();
+                Check("the Picks button opens the palette", paletteArea.IsVisible && bPicks.IsOn);
                 Check("World tab is lit", Tab(Space.World).IsOn && !Tab(Space.Light).IsOn);
 
                 var g = p.WorldGizmo;
@@ -119,6 +121,9 @@ namespace RageLightEditor.Shell
                 Check("palette picks Light", p.SelectionMode == lightMode && p.EditLightActive && bEditLight.IsOn);
                 Tile(0).PerformClick(); await Frames();
                 Check("palette picks Entity", p.SelectionMode == 0 && !bEditLight.IsOn);
+                Check("the Picks button names the current pick", (bPicks.Text ?? "").EndsWith("Entity"), bPicks.Text);
+                bPicks.PerformClick(); await Frames();
+                Check("...and closes the palette again", !paletteArea.IsVisible);
                 Check("unavailable modes not offered", Tile(Array.IndexOf(LightPanel.SelectionModeNames, "Archetype Extension")) == null);
 
                 int refreshed = 0;
@@ -202,6 +207,25 @@ namespace RageLightEditor.Shell
                     Snap_U27(Path.Combine(snapDir, "shell_project.png"));
                     bProject.PerformClick(); await Frames(600);
                     Check("project button closes it again", p.ShellRightPage_U27 == 0);
+                }
+
+                bPanel.PerformClick(); await Frames(600);
+                Check("the panel button closes the right panel", !p.ShowRightPanel && rightColumn.Width.Value == 0 && !rightHeader.IsVisible && !p.ShellRightImGui_U27);
+                bPanel.PerformClick(); await Frames(600);
+                Check("...and brings it back", p.ShowRightPanel && rightColumn.Width.Value > 0 && rightHeader.IsVisible);
+                double outH = outputRow.Height.Value;
+                SetOutput(false); await Frames();
+                Check("hiding the output frees its row", outputRow.Height.Value == 0 && !outputSplitter.IsVisible);
+                SetOutput(true); await Frames();
+                Check("showing it gives the same height back", Math.Abs(outputRow.Height.Value - outH) < 0.5 && outputSplitter.IsVisible, outputRow.Height.Value.ToString());
+                if (p.ProjectWindow != null)
+                {
+                    p.SetProjectInOwnWindow_U28(true); await Frames(1500);
+                    Check("the project can open in its own window", p.ProjectWindow.Detached && !p.ProjectWindow.ShowsDocked);
+                    Snap_U27(Path.Combine(snapDir, "shell_projwin.png"));
+                    p.SetProjectInOwnWindow_U28(false); await Frames(1000);
+                    Check("...and come back into the panel", !p.ProjectWindow.Detached && p.ProjectWindow.ShowsDocked);
+                    p.ProjectWindow.Visible = false; await Frames(600);
                 }
 
                 bool was = p.NewUi_U27;

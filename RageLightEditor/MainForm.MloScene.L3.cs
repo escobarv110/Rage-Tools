@@ -40,7 +40,7 @@ namespace RageLightEditor
             sceneOccludersVersion = -1;
         }
 
-        private Scene SceneFor_L3(LightPanel.Space space) => SectionScene_S1(space) ?? MatSceneFor_R2(space == LightPanel.Space.Material) ?? (space == LightPanel.Space.Mlo && mloScene != null ? mloScene : lightScene);
+        private Scene SceneFor_L3(LightPanel.Space space) => SectionScene_S1(space) ?? (space == LightPanel.Space.Mlo && mloScene != null ? mloScene : lightScene);
 
         private void UpdateMloLightGizmoEnabled_L3(MloCreatorPanel ui)
         {

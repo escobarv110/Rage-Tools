@@ -19,7 +19,6 @@ namespace RageLightEditor
         {
             ServiceSelProbe_R2();
             StepSelProbe_R2();
-            ServiceMatScene_R2();
             ServiceAreaGrass_R2();
         }
 

@@ -99,9 +99,13 @@ namespace RageLightEditor.Editor
                     float dist2 = d.LengthSquared();
                     if (dist2 > r * r) continue;
                     float x = (float)Math.Sqrt(dist2) / r;
-                    float f = x <= hard ? 1.0f : 1.0f - (x - hard) / (1.0f - hard);
-                    f = f * f * (3.0f - 2.0f * f);
+                    float f = Falloff_U28At(x, hard);
                     if (f <= 0.0005f) continue;
+                    if (Blend_U28 == BrushBlend_U28.Add || Blend_U28 == BrushBlend_U28.Blur)
+                    {
+                        if (BlendVertex_U28(part, i, f, strength, target)) { any = true; touched++; }
+                        continue;
+                    }
 
                     Vector4 basis;
                     float k;

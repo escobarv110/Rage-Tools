@@ -173,13 +173,11 @@ namespace RageLightEditor.Editor
                     ImGui.EndChild();
                     break;
                 case ShellPageProject_U27:
-                    if (pw == null) ImGui.TextWrapped("The world is not up yet.");
+                    if (pw == null) { ImGui.TextWrapped("The world is not up yet."); break; }
+                    DrawProjectPlacement_U28(pw);
+                    if (pw.Detached) ImGui.TextWrapped("The project is open in its own window.");
                     else if (pw.ShowsDocked) { pw.Minimized = false; pw.DrawEmbedded(); }
-                    else
-                    {
-                        ImGui.TextWrapped("The project is open in its own window.");
-                        if (ImGui.Button("Put it back here", new Vector2(-1, 0))) { pw.Docked = true; pw.Visible = true; }
-                    }
+                    else ImGui.TextWrapped("The project is floating over the viewport.");
                     break;
                 case ShellPageAssets_U27:
                     ImGui.BeginChild("##shassets", new Vector2(0, 0));
@@ -198,6 +196,27 @@ namespace RageLightEditor.Editor
                     break;
             }
             ImGui.End();
+        }
+
+        public bool ProjectInOwnWindow_U28 => ProjectWindow?.Detached == true;
+
+        public void SetProjectInOwnWindow_U28(bool own)
+        {
+            var pw = ProjectWindow;
+            if (pw == null) return;
+            if (own) { pw.Visible = true; pw.RequestDetach = true; }
+            else { if (pw.Detached) pw.RequestAttach = true; pw.Docked = true; pw.Visible = true; }
+        }
+
+        private void DrawProjectPlacement_U28(ProjectWindow pw)
+        {
+            ImGui.TextDisabled("Show the project");
+            ImGui.SameLine();
+            if (ImGui.RadioButton("In this panel##u28pp", !pw.Detached)) SetProjectInOwnWindow_U28(false);
+            ImGui.SameLine();
+            if (ImGui.RadioButton("In its own window##u28pp", pw.Detached)) SetProjectInOwnWindow_U28(true);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("A separate window you can move to another monitor, like CodeWalker's project window.");
+            ImGui.Separator();
         }
 
         private void DrawShellPopups_U27()

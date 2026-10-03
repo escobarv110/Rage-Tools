@@ -159,10 +159,10 @@ namespace RageLightEditor.Editor
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Every vertex of the mesh under the cursor, not only those within the radius.");
             ImGui.SameLine();
             ImGui.SetNextItemWidth(110);
-            ImGui.SliderFloat("Vertex size##l4vs", ref VertexSizePx, 1.5f, 8.0f, "%.1f px");
+            UiSlider_U28.Float("Vertex size##l4vs", ref VertexSizePx, 1.5f, 8.0f, "%.1f px");
             ImGui.SameLine();
             ImGui.SetNextItemWidth(90);
-            ImGui.SliderFloat("Radius##l4vr", ref VertexRadius, 1.0f, 30.0f, "%.0f m");
+            UiSlider_U28.Float("Radius##l4vr", ref VertexRadius, 1.0f, 30.0f, "%.0f m");
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("How far around the cursor's hit the vertices are shown (every mesh within it).");
             if (SnapActive) ImGui.TextDisabled($"{SnapDotsDrawn} vertices of {SnapMeshesDrawn} mesh{(SnapMeshesDrawn == 1 ? "" : "es")} in view");
             ImGui.Separator();

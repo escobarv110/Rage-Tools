@@ -218,6 +218,8 @@ namespace RageLightEditor
                 var sc = CurrentScene;
                 if (sc != null && sc.Files.Count > 0 && deviceResources != null)
                 {
+                    camera.Yaw = camera.TargetYaw = 0.6f;
+                    camera.Pitch = camera.TargetPitch = 0.35f;
                     FrameModel();
                     camera.SnapSmoothing();
                     camera.Update();

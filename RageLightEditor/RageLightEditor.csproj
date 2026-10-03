@@ -66,6 +66,7 @@
     <EmbeddedResource Include="Shaders\postfx.hlsl"><LogicalName>postfx.hlsl</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Shaders\lightshaft.hlsl"><LogicalName>lightshaft.hlsl</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Shaders\lightvolume.hlsl"><LogicalName>lightvolume.hlsl</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Shaders\grid_u28.hlsl"><LogicalName>grid_u28.hlsl</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Shaders\cinematic.hlsl"><LogicalName>cinematic.hlsl</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Shaders\particle.hlsl"><LogicalName>particle.hlsl</LogicalName></EmbeddedResource>
     <!-- WS-N4: the effect catalogue behind the Particles workspace's library (asset -> effects).

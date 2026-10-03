@@ -111,7 +111,7 @@ namespace RageLightEditor.Editor
 
             var dur = eff.Rule.DurationMax;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##ptfxdur", ref dur, 0.25f, 30.0f, "length %.2f s"))
+            if (UiSlider_U28.Float("##ptfxdur", ref dur, 0.25f, 30.0f, "length %.2f s"))
             {
                 eff.Rule.DurationMin = eff.Rule.DurationMax = Math.Max(0.25f, dur);
                 TouchFromTimeline(true);

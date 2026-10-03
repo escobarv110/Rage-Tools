@@ -388,7 +388,7 @@ namespace RageLightEditor.Editor
             {
                 ImGui.SameLine(0, 12);
                 ImGui.SetNextItemWidth(180);
-                ImGui.SliderFloat("##ytdcell", ref YtdCell_V44, 64f, 320f, "cell %.0f px");
+                UiSlider_U28.Float("##ytdcell", ref YtdCell_V44, 64f, 320f, "cell %.0f px");
                 ImGui.SameLine(0, 12);
                 ImGui.TextDisabled($"{list.Count} texture(s)");
                 DrawYtdGrid_V44(list);
@@ -709,9 +709,9 @@ namespace RageLightEditor.Editor
                                  "The file's own lights: what the prop carries, at its own origin - what\n" +
                                  "the light workspace would show. Flat ambient: no directional light at all.");
             ImGui.SetNextItemWidth(-120);
-            ImGui.SliderFloat("Ambient", ref AmbientLevel, 0.0f, 1.0f, "%.2f");
+            UiSlider_U28.Float("Ambient", ref AmbientLevel, 0.0f, 1.0f, "%.2f");
             ImGui.SetNextItemWidth(-120);
-            ImGui.SliderFloat("Exposure", ref Exposure, 0.1f, 4.0f, "%.2f");
+            UiSlider_U28.Float("Exposure", ref Exposure, 0.1f, 4.0f, "%.2f");
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Overall brightness. This window has no sky and no auto exposure -\n" +
                                  "on purpose, so the same prop looks the same whatever hour the\n" +

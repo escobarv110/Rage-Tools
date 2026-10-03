@@ -422,7 +422,7 @@ namespace RageLightEditor.Shell
         {
             if (rightColumn == null) return;
             var p = P;
-            bool owns = p != null && p.ShellOwnsRight_U27;
+            bool owns = p != null && p.ShellOwnsRight_U27 && p.ShowRightPanel;
             rightHeader.IsVisible = owns && !fullscreen;
             rightSplitter.IsVisible = owns && !fullscreen;
             rightColumn.Width = owns && !fullscreen ? (rightColumn.Width.IsAbsolute && rightColumn.Width.Value > 0 ? rightColumn.Width : new GridLength(340)) : new GridLength(0);

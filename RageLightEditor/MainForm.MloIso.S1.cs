@@ -70,7 +70,7 @@ namespace RageLightEditor
         private string IsoCount_S1(LightPanel.Space sp, HashSet<RenderMesh> mine, HashSet<LoadedFile> mineFiles, out int mineHere)
         {
             var sc = CurrentScene;
-            string which = ReferenceEquals(sc, lightScene) ? "lightScene" : ReferenceEquals(sc, mloScene) ? "mloScene" : ReferenceEquals(sc, matScene) ? "matScene" : "own";
+            string which = ReferenceEquals(sc, lightScene) ? "lightScene" : ReferenceEquals(sc, mloScene) ? "mloScene" : "own";
             var draw = IsoDrawList_S1(sp).ToList();
             int meshes = draw.Sum(m => m?.Meshes?.Count ?? 0);
             mineHere = draw.Sum(m => m?.Meshes?.Count(x => mine.Contains(x)) ?? 0);

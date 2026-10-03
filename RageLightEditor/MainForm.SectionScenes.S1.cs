@@ -36,7 +36,6 @@ namespace RageLightEditor
         private System.Collections.Generic.IEnumerable<Scene> AllScenes_S1()
         {
             if (lightScene != null) yield return lightScene;
-            if (matScene != null) yield return matScene;
             if (mloScene != null) yield return mloScene;
             foreach (var s in SectionScenes_S1) yield return s;
         }
@@ -63,13 +62,14 @@ namespace RageLightEditor
                 {
                     var sc = SceneFor_L3(sp);
                     check($"section scenes: {sp} has its own scene",
-                          sc != null && !ReferenceEquals(sc, lightScene) && !ReferenceEquals(sc, matScene) && !ReferenceEquals(sc, mloScene),
-                          $"{sp} -> {(ReferenceEquals(sc, lightScene) ? "lightScene" : ReferenceEquals(sc, matScene) ? "matScene" : ReferenceEquals(sc, mloScene) ? "mloScene" : "own")}");
+                          sc != null && !ReferenceEquals(sc, lightScene) && !ReferenceEquals(sc, mloScene),
+                          $"{sp} -> {(ReferenceEquals(sc, lightScene) ? "lightScene" : ReferenceEquals(sc, mloScene) ? "mloScene" : "own")}");
                 }
-                var all = new[] { LightPanel.Space.Light, LightPanel.Space.Material, LightPanel.Space.Mlo,
+                var all = new[] { LightPanel.Space.Light, LightPanel.Space.Mlo,
                                   LightPanel.Space.Terrain, LightPanel.Space.Particles, LightPanel.Space.NavMesh, LightPanel.Space.Archive };
                 var seen = all.Select(SceneFor_L3).ToList();
-                check("section scenes: the seven owning sections have seven distinct scenes",
+                check("section scenes: Materials shares the Lights scene", ReferenceEquals(SceneFor_L3(LightPanel.Space.Material), lightScene), "");
+                check("section scenes: the six owning sections have six distinct scenes",
                       seen.Distinct().Count() == all.Length, string.Join(", ", all.Zip(seen, (a, b) => $"{a}={b?.GetHashCode()}")));
                 check("section scenes: Cinematic films the Lights scene on purpose",
                       ReferenceEquals(SceneFor_L3(LightPanel.Space.Cinematic), lightScene), "");

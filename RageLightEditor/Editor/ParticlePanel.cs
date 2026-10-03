@@ -296,11 +296,11 @@ namespace RageLightEditor.Editor
             ImGui.SameLine();
             ImGui.Checkbox("Loop", ref Sim.Loop);
             ImGui.SetNextItemWidth(-1);
-            ImGui.SliderFloat("##ptfxspeed", ref Sim.TimeScale, 0.05f, 3.0f, "speed %.2fx");
+            UiSlider_U28.Float("##ptfxspeed", ref Sim.TimeScale, 0.05f, 3.0f, "speed %.2fx");
 
             var t = Sim.EffectTime;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##ptfxscrub", ref t, 0f, Sim.Duration, "t = %.2f s of " + Sim.Duration.ToString("0.##")))
+            if (UiSlider_U28.Float("##ptfxscrub", ref t, 0f, Sim.Duration, "t = %.2f s of " + Sim.Duration.ToString("0.##")))
             {
                 Sim.Playing = false;
                 Sim.SeekTo(t);
@@ -318,7 +318,7 @@ namespace RageLightEditor.Editor
 
             var scale = Sim.EffectScale;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##ptfxscale", ref scale, 0.05f, 10.0f, "scale %.2f"))
+            if (UiSlider_U28.Float("##ptfxscale", ref scale, 0.05f, 10.0f, "scale %.2f"))
                 Sim.EffectScale = Math.Max(0.01f, scale);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("The whole-effect scale a particle extension carries: domains,\n" +
@@ -333,7 +333,7 @@ namespace RageLightEditor.Editor
 
             var pss = PtfxSimulator.PreviewSizeScale;
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.SliderFloat("##ptfxpreviewsize", ref pss, 0.1f, 4.0f, "sprite size x%.2f"))
+            if (UiSlider_U28.Float("##ptfxpreviewsize", ref pss, 0.1f, 4.0f, "sprite size x%.2f"))
                 PtfxSimulator.PreviewSizeScale = Math.Max(0.01f, pss);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("A zoom on the billboards, for judging a sprite up close.\n" +
