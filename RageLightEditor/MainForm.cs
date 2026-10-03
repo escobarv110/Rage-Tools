@@ -7238,6 +7238,7 @@ namespace RageLightEditor
                 var tP0 = clock.Elapsed.TotalSeconds;
                 panel.Draw(deviceResources.Width, deviceResources.Height);
                 DrawViewportWidgets_U28();
+                SyncImGuiCursor_U29();
                 perfPanelMs = perfPanelMs * 0.9f + (float)((clock.Elapsed.TotalSeconds - tP0) * 1000.0) * 0.1f;
             }
             catch (Exception ex)

@@ -67,6 +67,14 @@ namespace RageLightEditor.Editor
         }
 
         public float UiScaleAuto_U29 = 1.0f;
+        public float ShellRightDragPx_U29;
+        public bool ShellRightDragDone_U29;
+
+        public float ShellRightWidth_U29
+        {
+            get => settings != null && settings.ShellRightWidthU29 > 1.0f ? settings.ShellRightWidthU29 : 340.0f;
+            set { if (settings != null && Math.Abs(settings.ShellRightWidthU29 - value) > 0.5f) { settings.ShellRightWidthU29 = value; settings.Save(); } }
+        }
 
         public float InterfaceSize_U29 => UiScale_V17.Scale / Math.Max(UiScaleAuto_U29, 0.01f);
 
@@ -210,6 +218,36 @@ namespace RageLightEditor.Editor
                     break;
             }
             ImGui.End();
+            DrawShellRightEdge_U29(displayWidth, displayHeight, w);
+        }
+
+        private void DrawShellRightEdge_U29(float displayWidth, float displayHeight, float w)
+        {
+            const float grip = 8.0f;
+            float x = displayWidth - w - grip * 0.5f;
+            ImGui.SetNextWindowPos(new Vector2(x, 0), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(grip, displayHeight), ImGuiCond.Always);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(1, 1));
+            var flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings |
+                        ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove;
+            if (ImGui.Begin("##shellrightedge_u29", flags))
+            {
+                ImGui.SetCursorScreenPos(new Vector2(x, 0));
+                ImGui.InvisibleButton("##shellrightgrip", new Vector2(grip, displayHeight));
+                bool hot = ImGui.IsItemHovered() || ImGui.IsItemActive();
+                if (hot)
+                {
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                    ImGui.GetWindowDrawList().AddLine(new Vector2(displayWidth - w, 0), new Vector2(displayWidth - w, displayHeight),
+                        ImGui.GetColorU32(new Vector4(0.23f, 0.51f, 0.96f, 1f)), 2.0f);
+                }
+                if (ImGui.IsItemActive())
+                    ShellRightDragPx_U29 = Math.Clamp(displayWidth - ImGui.GetIO().MousePos.X, 200.0f, Math.Max(220.0f, displayWidth - 200.0f));
+                if (ImGui.IsItemDeactivated()) ShellRightDragDone_U29 = true;
+            }
+            ImGui.End();
+            ImGui.PopStyleVar(2);
         }
 
         public bool ProjectInOwnWindow_U28 => ProjectWindow?.Detached == true;

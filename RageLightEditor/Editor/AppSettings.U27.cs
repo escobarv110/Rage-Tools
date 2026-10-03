@@ -5,6 +5,7 @@ namespace RageLightEditor.Editor
     public partial class AppSettings
     {
         public bool NewUiU27 { get; set; }
+        public float ShellRightWidthU29 { get; set; }
 
         public static bool PeekNewUi_U27()
         {

@@ -38,6 +38,7 @@ namespace RageLightEditor.Shell
         private readonly List<ShellButton_U27> pageTabs = new List<ShellButton_U27>();
         private int page;
         private bool rightImGui;
+        private bool splitterDragging, rightWidthLoaded;
 
         private ShellButton_U27 subMap, subLights, propTab, detailTab;
         private Control mapPane, lightsPane, propsPane, detailsPane;
@@ -81,12 +82,23 @@ namespace RageLightEditor.Shell
                 Child = tabsGrid,
             };
 
-            rightSplitter = new GridSplitter
+            var splitter = new GridSplitter
             {
-                Width = 4,
+                Width = 6,
                 Background = ShellTheme_U27.Window,
                 ResizeDirection = GridResizeDirection.Columns,
+                Cursor = new Cursor(StandardCursorType.SizeWestEast),
             };
+            splitter.PointerEntered += (s, e) => splitter.Background = ShellTheme_U27.Accent;
+            splitter.PointerExited += (s, e) => { if (!splitterDragging) splitter.Background = ShellTheme_U27.Window; };
+            splitter.DragStarted += (s, e) => splitterDragging = true;
+            splitter.DragCompleted += (s, e) =>
+            {
+                splitterDragging = false;
+                splitter.Background = ShellTheme_U27.Window;
+                if (rightColumn.ActualWidth > 50 && P != null) P.ShellRightWidth_U29 = (float)rightColumn.ActualWidth;
+            };
+            rightSplitter = splitter;
 
             subMap = SubTab("Map");
             subLights = SubTab("Lights");
@@ -425,7 +437,25 @@ namespace RageLightEditor.Shell
             bool owns = p != null && p.ShellOwnsRight_U27 && p.ShowRightPanel;
             rightHeader.IsVisible = owns && !fullscreen;
             rightSplitter.IsVisible = owns && !fullscreen;
-            rightColumn.Width = owns && !fullscreen ? (rightColumn.Width.IsAbsolute && rightColumn.Width.Value > 0 ? rightColumn.Width : new GridLength(340)) : new GridLength(0);
+            if (owns && !fullscreen)
+            {
+                if (!splitterDragging)
+                {
+                    double w = !rightWidthLoaded ? p.ShellRightWidth_U29
+                             : rightColumn.Width.IsAbsolute && rightColumn.Width.Value > 0 ? rightColumn.Width.Value : rightColumn.ActualWidth;
+                    rightWidthLoaded = true;
+                    if (p.ShellRightDragPx_U29 > 0)
+                    {
+                        w = p.ShellRightDragPx_U29 / (Window.RenderScaling * shellScale) - rightSplitter.Bounds.Width;
+                        p.ShellRightDragPx_U29 = 0;
+                    }
+                    if (w < 50) w = p.ShellRightWidth_U29;
+                    w = Math.Clamp(w, 240, 1000);
+                    if (!rightColumn.Width.IsAbsolute || Math.Abs(rightColumn.Width.Value - w) > 0.5) rightColumn.Width = new GridLength(w);
+                    if (p.ShellRightDragDone_U29) { p.ShellRightDragDone_U29 = false; p.ShellRightWidth_U29 = (float)w; }
+                }
+            }
+            else rightColumn.Width = new GridLength(0);
             if (!owns || fullscreen)
             {
                 rightBody.IsVisible = false;
@@ -453,7 +483,7 @@ namespace RageLightEditor.Shell
             Grid.SetColumnSpan(viewportArea, native ? 1 : 3);
             p.ShellRightPage_U27 = page;
             p.ShellRightImGui_U27 = rightImGui;
-            p.ShellRightPx_U27 = (float)((rightColumn.Width.Value + 4) * Window.RenderScaling * shellScale);
+            p.ShellRightPx_U27 = (float)((rightColumn.Width.Value + rightSplitter.Bounds.Width) * Window.RenderScaling * shellScale);
             if (native) SyncInspector(p);
         }
 

@@ -228,6 +228,19 @@ namespace RageLightEditor.Shell
                     p.ProjectWindow.Visible = false; await Frames(600);
                 }
 
+                double widthWas = rightColumn.Width.Value;
+                pageTabs[LightPanel.ShellPageInspector_U27].PerformClick(); await Frames(400);
+                rightColumn.Width = new GridLength(520); await Frames(600);
+                Check("a dragged right panel keeps its width", Math.Abs(rightColumn.Width.Value - 520) < 1, rightColumn.Width.Value.ToString("0"));
+                Check("...and the ImGui pages follow it", Math.Abs(p.ShellRightPx_U27 - (520 + rightSplitter.Bounds.Width) * Window.RenderScaling * shellScale) < 2, p.ShellRightPx_U27.ToString("0"));
+                pageTabs[LightPanel.ShellPageOptions_U27].PerformClick(); await Frames(400);
+                p.ShellRightDragPx_U29 = (float)(430 * Window.RenderScaling * shellScale); p.ShellRightDragDone_U29 = true; await Frames(600);
+                double dragged = rightColumn.Width.Value;
+                Check("the edge of an ImGui page drags the panel too", Math.Abs(dragged - (430 - rightSplitter.Bounds.Width)) < 2, dragged.ToString("0"));
+                Check("...and the width is remembered", Math.Abs(p.ShellRightWidth_U29 - dragged) < 1, p.ShellRightWidth_U29.ToString("0"));
+                rightColumn.Width = new GridLength(widthWas); p.ShellRightWidth_U29 = (float)widthWas;
+                pageTabs[LightPanel.ShellPageInspector_U27].PerformClick(); await Frames(400);
+
                 bool sizeWasAuto = p.InterfaceSizeAuto_U29;
                 float sizeWas = p.InterfaceSize_U29;
                 p.SetInterfaceSize_U29(1.5f); await Frames(1200);
