@@ -2379,9 +2379,8 @@ namespace RageLightEditor.Editor
             if (Project.Ymaps.Count > 0 && ImGui.Button("Generate manifest", new Vector2(-1, 0)))
                 RequestManifest = true;
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Writes _manifest.ymf.xml, which OpenIV converts to the packed .ymf.\n" +
-                                 "XML because it is the form the packing tools read and\n" +
-                                 "the one you can check by eye.");
+                ImGui.SetTooltip("Writes a ready-to-use binary _manifest.ymf - put it straight into your RPF.\n" +
+                                 "Ymaps that place an interior are marked INTERIOR_DATA, as in the game's own manifests.");
 
             if (!string.IsNullOrEmpty(Project.LastStatus))
             {
@@ -4570,12 +4569,14 @@ namespace RageLightEditor.Editor
 
             if (ImGui.BeginMenu("Help"))
             {
+                DrawVersionItems_U30();
                 if (ImGui.MenuItem("Tutorial")) openTutorial = true;
                 DrawMirrorJokeMenuItem_S6();
                 DrawHelpLogItems_U21();
                 ImGui.EndMenu();
             }
             DrawLogBadge_U21();
+            DrawUpdateBadge_U30();
 
             DrawBridgeMenu_U12();
 
@@ -5809,16 +5810,17 @@ namespace RageLightEditor.Editor
             if (ImGui.BeginTabItem("Flags"))
             {
                 uint flags = l.Flags;
-                string fhex = flags.ToString("X8");
-                if (ImGui.InputText("Hex flags", ref fhex, 16, ImGuiInputTextFlags.CharsHexadecimal | ImGuiInputTextFlags.EnterReturnsTrue))
+                string fnum = flags.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                if (ImGui.InputText("Flags", ref fnum, 16, ImGuiInputTextFlags.CharsDecimal | ImGuiInputTextFlags.EnterReturnsTrue))
                 {
-                    if (uint.TryParse(fhex, System.Globalization.NumberStyles.HexNumber, null, out var nf))
+                    if (uint.TryParse(fnum, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var nf))
                     {
                         scene.PushUndo();
                         l.Flags = nf;
                         scene.Dirty = true;
                     }
                 }
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("The light's flags as one number, the way CodeWalker shows them (for example 900).\nPress Enter to apply. The boxes below are the same flags one by one.");
 
                 ImGui.Columns(2, "flagcols", false);
                 foreach (var fd in LightDefs.Flags)

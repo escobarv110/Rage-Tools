@@ -119,57 +119,62 @@ namespace RageLightEditor.Editor
         {
             try
             {
-                var xml = BuildManifest(out int skipped, out int ytypCount);
+                var deps = ManifestDeps_U30(out int skipped, out int ytypCount);
                 Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path) ?? ".");
-                File.WriteAllText(path, xml, new UTF8Encoding(false));
+                if (path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                    File.WriteAllText(path, ManifestWriter_U30.BuildXml(deps), new UTF8Encoding(false));
+                else
+                {
+                    var data = ManifestWriter_U30.Build(deps, out var error);
+                    if (data == null) { LastStatus = "manifest failed: " + error; AppLog_U21.Error("_manifest.ymf: " + error); return null; }
+                    File.WriteAllBytes(path, data);
+                }
                 LastStatus = $"wrote {System.IO.Path.GetFileName(path)} " +
-                             $"({Ymaps.Count - skipped} ymap(s), {ytypCount} ytyp(s))" +
+                             $"({deps.Count} ymap(s), {ytypCount} ytyp(s), {deps.Count(d => d.Interior)} interior)" +
                              (skipped > 0 ? $" - {skipped} unnamed ymap(s) LEFT OUT" : "");
                 return path;
             }
             catch (Exception ex) { LastStatus = "manifest failed: " + ex.Message; return null; }
         }
 
-        public string BuildManifest(out int skipped, out int ytypCount)
+        public string BuildManifest(out int skipped, out int ytypCount) =>
+            ManifestWriter_U30.BuildXml(ManifestDeps_U30(out skipped, out ytypCount));
+
+        public List<ManifestWriter_U30.Dep> ManifestDeps_U30(out int skipped, out int ytypCount)
         {
+            var ytyps = new List<(string name, HashSet<uint> archetypes)>();
+            foreach (var e in Ytyps)
             {
-                var sb = new StringBuilder();
-                sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sb.AppendLine("<CPackFileMetaData>");
-
-                var ytypNames = Ytyps.Where(e => e.Ytyp != null)
-                                     .Select(e => NameOfYtyp(e))
-                                     .Where(n => !string.IsNullOrEmpty(n))
-                                     .Distinct(StringComparer.OrdinalIgnoreCase)
-                                     .ToList();
-
-                sb.AppendLine("  <imapDependencies_2>");
-                skipped = 0;
-                foreach (var e in Ymaps)
-                {
-                    var y = e.Ymap;
-                    var nm = NameOfYmap(e);
-                    if (string.IsNullOrEmpty(nm)) { skipped++; continue; }
-                    sb.AppendLine("    <Item>");
-                    sb.AppendLine($"      <imapName>{Esc(nm)}</imapName>");
-                    var parent = y == null ? "" : y.CMapData.parent.ToString();
-                    if (parent == "0" || parent == "0x00000000") parent = "";
-                    sb.AppendLine($"      <manifestFlags/>");
-                    sb.AppendLine("      <itypDepArray>");
-                    foreach (var t in ytypNames) sb.AppendLine($"        <Item>{Esc(t)}</Item>");
-                    sb.AppendLine("      </itypDepArray>");
-                    if (!string.IsNullOrEmpty(parent))
-                        sb.AppendLine($"      <parentImap>{Esc(parent)}</parentImap>");
-                    sb.AppendLine("    </Item>");
-                }
-                sb.AppendLine("  </imapDependencies_2>");
-
-                sb.AppendLine("  <itypDependencies_2/>");
-
-                sb.AppendLine("</CPackFileMetaData>");
-                ytypCount = ytypNames.Count;
-                return sb.ToString();
+                if (e.Ytyp == null) continue;
+                var nm = NameOfYtyp(e);
+                if (string.IsNullOrEmpty(nm)) continue;
+                var set = new HashSet<uint>();
+                foreach (var a in e.Ytyp.AllArchetypes ?? System.Array.Empty<CodeWalker.GameFiles.Archetype>())
+                    if (a != null) set.Add(a.Hash);
+                ytyps.Add((nm, set));
             }
+            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var deps = new List<ManifestWriter_U30.Dep>();
+            skipped = 0;
+            foreach (var e in Ymaps)
+            {
+                var nm = NameOfYmap(e);
+                if (string.IsNullOrEmpty(nm)) { skipped++; continue; }
+                var y = e.Ymap;
+                var dep = new ManifestWriter_U30.Dep
+                {
+                    Ymap = nm,
+                    Interior = y != null && ((y.CMloInstanceDefs?.Length ?? 0) > 0 || (y.MloEntities?.Length ?? 0) > 0),
+                };
+                var hashes = new HashSet<uint>();
+                if (y?.AllEntities != null) foreach (var en in y.AllEntities) if (en != null) hashes.Add(en._CEntityDef.archetypeName.Hash);
+                if (y?.CMloInstanceDefs != null) foreach (var m in y.CMloInstanceDefs) hashes.Add(m.CEntityDef.archetypeName.Hash);
+                foreach (var (tn, set) in ytyps)
+                    if (set.Overlaps(hashes)) { dep.Ytyps.Add(tn); used.Add(tn); }
+                deps.Add(dep);
+            }
+            ytypCount = used.Count;
+            return deps;
         }
 
         private static string NameOfYmap(Entry e)

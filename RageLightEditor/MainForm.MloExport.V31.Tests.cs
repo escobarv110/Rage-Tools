@@ -35,6 +35,19 @@ namespace RageLightEditor
                       r.Ok ? string.Join(", ", r.Written) : "failed: " + r.Error);
                 if (!r.Ok) return;
 
+                var mfPath = Path.Combine(dir, "_manifest.ymf");
+                var mfBytes = File.Exists(mfPath) ? File.ReadAllBytes(mfPath) : Array.Empty<byte>();
+                bool pso = mfBytes.Length > 4 && mfBytes[0] == (byte)'P' && mfBytes[1] == (byte)'S' && mfBytes[2] == (byte)'I' && mfBytes[3] == (byte)'N';
+                check("u30 manifest: _manifest.ymf is a real binary PSO file, not XML text", pso, mfBytes.Length + " bytes");
+                var mf = pso ? Editor.ManifestWriter_U30.Read(mfBytes) : null;
+                var dep = mf?.imapDependencies2?.FirstOrDefault();
+                check("u30 manifest: the interior ymap is marked INTERIOR_DATA, like the game's manifests",
+                      dep != null && Editor.ManifestWriter_U30.InteriorFlags(mf).FirstOrDefault(), dep?.ToString() ?? "no dependency");
+                check("u30 manifest: ...and depends on the interior's .ytyp",
+                      dep?.itypDepArray != null && dep.itypDepArray.Any(h => h.Hash == JenkHash.GenHash(Path.GetFileNameWithoutExtension(Directory.GetFiles(dir, "*.ytyp").First()).ToLowerInvariant())), "");
+                check("u30 manifest: it reads back as XML the way CodeWalker and OpenIV show it",
+                      mf != null && (MetaXml.GetXml(mf, out _) ?? "").Contains("<manifestFlags>INTERIOR_DATA</manifestFlags>"), "");
+
                 var ymapPath = Directory.GetFiles(dir, "*.ymap").FirstOrDefault();
                 check("v31 mlo: a .ymap was written", ymapPath != null, ymapPath ?? "none");
                 if (ymapPath == null) return;
@@ -64,12 +77,12 @@ namespace RageLightEditor
                       arch != null && arch._BaseArchetypeDef.physicsDictionary.Hash == JenkHash.GenHash("rle_v31_interior"),
                       arch == null ? "no MLO archetype" : "physicsDictionary " + arch._BaseArchetypeDef.physicsDictionary);
 
-                var man = File.ReadAllText(Directory.GetFiles(dir, "*_manifest*").First());
                 var ymapStem = Path.GetFileNameWithoutExtension(ymapPath);
+                var manDep = Editor.ManifestWriter_U30.Read(File.ReadAllBytes(Path.Combine(dir, "_manifest.ymf"))).imapDependencies2?.FirstOrDefault();
                 check("v31 mlo: the manifest says this .ymap depends on this .ytyp - the line that makes it load",
-                      man.Contains("<imapName>" + ymapStem + "</imapName>") &&
-                      man.Contains("<Item>rle_v31_interior</Item>"),
-                      man.Contains("imapDependencies_2") ? "imapDependencies_2 with the itypDepArray" : "no dependency block");
+                      manDep != null && manDep.Dep.imapName.Hash == JenkHash.GenHash(ymapStem) &&
+                      (manDep.itypDepArray?.Any(h => h.Hash == JenkHash.GenHash("rle_v31_interior")) ?? false),
+                      manDep?.ToString() ?? "no dependency block");
 
                 var shellYdr = Path.Combine(dir, "rle_v31_shell.ydr");
                 File.WriteAllBytes(shellYdr, new byte[16]);

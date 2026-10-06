@@ -178,15 +178,26 @@ namespace RageLightEditor.Shell
             menu.Items.Add(BuildFiveMMenu());
             menu.Items.Add(BuildHelpMenu());
 
-            var brand = new TextBlock
+            var brandName = new TextBlock
             {
                 Text = "RAGE Tools",
                 FontWeight = FontWeight.SemiBold,
                 FontSize = 14,
                 Foreground = Brushes.White,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(14, 0, 10, 0),
             };
+            var brandVersion = new TextBlock
+            {
+                Text = AppVersion_U30.Version,
+                FontSize = 11,
+                Foreground = ShellTheme_U27.Faint,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(6, 2, 0, 0),
+            };
+            var brand = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(14, 0, 10, 0), VerticalAlignment = VerticalAlignment.Center };
+            brand.Children.Add(brandName);
+            brand.Children.Add(brandVersion);
+            ToolTip.SetTip(brand, AppVersion_U30.Title);
 
             var tabStrip = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 0, Margin = new Thickness(12, 0, 0, 0) };
             foreach (var (space, label) in TabNames)
@@ -357,7 +368,7 @@ namespace RageLightEditor.Shell
         private RowDefinition outputRow;
         private GridSplitter outputSplitter;
         private GridLength outputHeight = new GridLength(150);
-        private ShellButton_U27 bPicks, bPanel;
+        private ShellButton_U27 bPicks, bPanel, bUpdate;
 
         private void SetOutput(bool on)
         {
@@ -439,6 +450,10 @@ namespace RageLightEditor.Shell
             DockPanel.SetDock(statusRight, Dock.Right);
             dp.Children.Add(statusLeft);
             dp.Children.Add(bOutput);
+            bUpdate = new ShellButton_U27(null, "Update", "A newer version is out - click to open its download page") { Height = 24, Padding = new Thickness(8, 0), OnColour = ShellTheme_U27.Ok, IsOn = true, IsVisible = false };
+            bUpdate.Click += () => UpdateCheck_U30.OpenDownloadPage();
+            DockPanel.SetDock(bUpdate, Dock.Right);
+            dp.Children.Add(bUpdate);
             dp.Children.Add(statusRight);
             return new Avalonia.Controls.Border
             {
@@ -563,6 +578,12 @@ namespace RageLightEditor.Shell
                 dynHeader: () => P.MloCreator != null && P.MloCreator.BridgeEnabled ? $"Stop the local API  (port {P.MloCreator.BridgePort})" : "Start the local API for scripts"));
 
         private MenuItem BuildHelpMenu() => Top("Help",
+            Item(AppVersion_U30.Title, () => { }, () => false),
+            Item("Download the new version", () => UpdateCheck_U30.OpenDownloadPage(), () => UpdateCheck_U30.UpdateAvailable,
+                dynHeader: () => UpdateCheck_U30.UpdateAvailable ? $"Download version {UpdateCheck_U30.Latest}" : "No update - this is the latest you checked for"),
+            Item("Check for updates", () => UpdateCheck_U30.Start(), () => !UpdateCheck_U30.Checking,
+                dynHeader: () => UpdateCheck_U30.Checking ? "Checking for updates..." : "Check for updates"),
+            new Separator(),
             Item("Tutorial", () => P.ShellCommand_U27("tutorial")),
             Item("Mirror surprise", () => P.ShellCommand_U27("mirrorjoke"), null, () => P.MirrorSurprise_U27),
             new Separator(),
@@ -642,6 +663,9 @@ namespace RageLightEditor.Shell
 
             SyncRight();
             SyncLog();
+            bool upd = UpdateCheck_U30.UpdateAvailable;
+            if (bUpdate.IsVisible != upd) bUpdate.IsVisible = upd;
+            if (upd) bUpdate.Text = "Update " + UpdateCheck_U30.Latest;
         }
 
         private static string TabLabel(Space s)

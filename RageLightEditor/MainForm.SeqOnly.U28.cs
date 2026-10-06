@@ -21,6 +21,13 @@ namespace RageLightEditor
                     case "U28": SeqTest_U28(check); break;
                     case "W3": SeqTest_W3(check); break;
                     case "U21": SeqTest_Log_U21(check); break;
+                    case "YMF": YmfProbe_U30(check); break;
+                    case "V31": SeqTest_MloExport_V31(check); break;
+                    case "UPD":
+                        Editor.UpdateCheck_U30.Start();
+                        for (int i = 0; i < 100 && !Editor.UpdateCheck_U30.Checked; i++) System.Threading.Thread.Sleep(100);
+                        check("update check: GitHub answers", Editor.UpdateCheck_U30.Checked && Editor.UpdateCheck_U30.Error == null, Editor.UpdateCheck_U30.Summary + " | latest " + Editor.UpdateCheck_U30.Latest);
+                        break;
                 }
             }
             Console.WriteLine(fails == 0 ? "SEQTEST PASSED" : $"SEQTEST FAILED ({fails})");

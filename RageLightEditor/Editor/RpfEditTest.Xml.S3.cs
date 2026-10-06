@@ -131,6 +131,33 @@ namespace RageLightEditor.Editor
                         res.Ok && xmlDir.Files.Any(f => f.NameLower == "wss3_from_xml.ytyp.xml"),
                         res.Message);
 
+            var dep = new ManifestWriter_U30.Dep { Ymap = "u30_int_placement", Interior = true };
+            dep.Ytyps.Add("u30_int");
+            var mfDir = Path.Combine(root, "u30mf");
+            Directory.CreateDirectory(mfDir);
+            var mfXmlPath = Path.Combine(mfDir, "_manifest.ymf.xml");
+            File.WriteAllText(mfXmlPath, ManifestWriter_U30.BuildXml(new[] { dep }), new UTF8Encoding(false));
+            RpfEdit.NewFolder(true, ex, target, "mf");
+            var mfRpfDir = rpf.Root.Directories.First(d => d.NameLower == "mf");
+            res = RpfEdit.ImportFiles(true, ex, new RpfEdit.Target(mfRpfDir, null), new[] { mfXmlPath }, false);
+            var mfEntry = mfRpfDir.Files.FirstOrDefault(f => f.NameLower == "_manifest.ymf");
+            var mfData = mfEntry != null ? ArchiveBrowser.Extract(mfEntry) : null;
+            fails.Check("XML import: a _manifest.ymf.xml goes into the RPF as a real _manifest.ymf",
+                        res.Ok && mfData != null && mfData.Length > 4 && mfData[0] == (byte)'P' && mfData[1] == (byte)'S',
+                        res.Message + " | " + string.Join(",", mfRpfDir.Files.Select(f => f.Name)));
+            var mfBack = mfData != null ? ManifestWriter_U30.Read(mfData) : null;
+            fails.Check("XML import: ...that keeps INTERIOR_DATA and its ytyp",
+                        mfBack != null && ManifestWriter_U30.InteriorFlags(mfBack).FirstOrDefault() &&
+                        (mfBack.imapDependencies2?.FirstOrDefault()?.itypDepArray?.Any(h => h.Hash == JenkHash.GenHash("u30_int")) ?? false),
+                        mfBack?.imapDependencies2?.FirstOrDefault()?.ToString() ?? "unreadable");
+            var mfBinPath = Path.Combine(mfDir, "_manifest.ymf");
+            File.WriteAllBytes(mfBinPath, ManifestWriter_U30.Build(new[] { dep }, out _));
+            RpfEdit.NewFolder(true, ex, target, "mf2");
+            var mf2 = rpf.Root.Directories.First(d => d.NameLower == "mf2");
+            res = RpfEdit.ImportFiles(true, ex, new RpfEdit.Target(mf2, null), new[] { mfBinPath }, false);
+            fails.Check("XML import: a binary _manifest.ymf goes in as it is",
+                        res.Ok && mf2.Files.Any(f => f.NameLower == "_manifest.ymf"), res.Message);
+
             var reopened = new RpfFile(arcPath, "wss3_xml_test.rpf");
             reopened.ScanStructure(null, null);
             var rdir = reopened.Root?.Directories?.FirstOrDefault(d => d.NameLower == "xml");

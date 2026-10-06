@@ -45,7 +45,9 @@ namespace RageLightEditor.Editor
                 r.Written.Add(Path.GetFileName(ymapPath));
 
                 var manifestPath = Path.Combine(folder, "_manifest.ymf");
-                File.WriteAllText(manifestPath, BuildManifestXml_V31(ymapStem, ytypStem), new UTF8Encoding(false));
+                var manifest = ManifestWriter_U30.Build(ManifestDeps_U30(ymapStem, ytypStem), out var manifestError);
+                if (manifest == null) { r.Error = "the _manifest.ymf could not be built: " + manifestError; return r; }
+                File.WriteAllBytes(manifestPath, manifest);
                 r.Written.Add(Path.GetFileName(manifestPath));
 
                 var shellName = string.IsNullOrWhiteSpace(ShellName) ? name : ShellName.Trim().ToLowerInvariant();
@@ -66,27 +68,11 @@ namespace RageLightEditor.Editor
             catch (Exception ex) { r.Error = ex.Message; r.ErrorDetail_U21 = ex.ToString(); return r; }
         }
 
-        public string BuildManifestXml_V31(string ymapStem, string ytypStem)
+        public static ManifestWriter_U30.Dep[] ManifestDeps_U30(string ymapStem, string ytypStem)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            sb.AppendLine("<CPackFileMetaData>");
-            sb.AppendLine("  <MapDataGroups/>");
-            sb.AppendLine("  <HDTxdBindingArray/>");
-            sb.AppendLine("  <imapDependencies/>");
-            sb.AppendLine("  <imapDependencies_2>");
-            sb.AppendLine("    <Item>");
-            sb.AppendLine($"      <imapName>{ymapStem}</imapName>");
-            sb.AppendLine("      <manifestFlags/>");
-            sb.AppendLine("      <itypDepArray>");
-            sb.AppendLine($"        <Item>{ytypStem}</Item>");
-            sb.AppendLine("      </itypDepArray>");
-            sb.AppendLine("    </Item>");
-            sb.AppendLine("  </imapDependencies_2>");
-            sb.AppendLine("  <itypDependencies_2/>");
-            sb.AppendLine("  <Interiors/>");
-            sb.AppendLine("</CPackFileMetaData>");
-            return sb.ToString();
+            var d = new ManifestWriter_U30.Dep { Ymap = ymapStem, Interior = true };
+            d.Ytyps.Add(ytypStem);
+            return new[] { d };
         }
     }
 }

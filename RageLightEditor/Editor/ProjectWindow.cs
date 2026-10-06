@@ -541,7 +541,7 @@ namespace RageLightEditor.Editor
 
         private void DrawManifestPage()
         {
-            ImGui.TextDisabled("MANIFEST  (_manifest.ymf.xml)");
+            ImGui.TextDisabled("MANIFEST  (_manifest.ymf)");
             ImGui.TextWrapped("What the game needs to know which ytyps each ymap of the project depends on. " +
                               "Generated from the project as it is now; regenerate after adding files.");
             if (ImGui.Button("Save As...")) RequestSaveManifest = true;

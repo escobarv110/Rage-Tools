@@ -764,14 +764,21 @@ namespace RageLightEditor.Editor
         public void SaveManifestText()
         {
             if (string.IsNullOrEmpty(win.ManifestText)) return;
-            using var dlg = new SaveFileDialog { Filter = "Manifest XML|_manifest.ymf.xml", FileName = "_manifest.ymf.xml" };
+            using var dlg = new SaveFileDialog { Filter = "Manifest, ready for the RPF (*.ymf)|*.ymf|Manifest XML (*.ymf.xml)|*.ymf.xml", FileName = "_manifest.ymf" };
             if (dlg.ShowDialog(owner()) != DialogResult.OK) return;
             try
             {
-                File.WriteAllText(dlg.FileName, win.ManifestText, new System.Text.UTF8Encoding(false));
+                if (dlg.FileName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                    File.WriteAllText(dlg.FileName, win.ManifestText, new System.Text.UTF8Encoding(false));
+                else
+                {
+                    var data = ManifestWriter_U30.ToBinary(win.ManifestText);
+                    if (ManifestWriter_U30.Read(data).Pso == null) { win.Status = "the manifest did not convert to a .ymf"; return; }
+                    File.WriteAllBytes(dlg.FileName, data);
+                }
                 win.Status = "wrote " + Path.GetFileName(dlg.FileName);
             }
-            catch (Exception ex) { win.Status = "could not write: " + ex.Message; }
+            catch (Exception ex) { win.Status = "could not write: " + ex.Message; AppLog_U21.Error("_manifest.ymf", ex); }
         }
 
         public void ImportMenyooXml()

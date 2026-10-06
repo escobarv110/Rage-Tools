@@ -212,14 +212,14 @@ namespace RageLightEditor
             set
             {
                 appMode = value;
-                Text = AppInfo.Name;
+                Text = Editor.AppVersion_U30.Title;
             }
         }
         private AppMode appMode = AppMode.Light;
 
         public MainForm(IEnumerable<string> openFiles = null, string screenshot = null)
         {
-            Text = AppInfo.Name;
+            Text = Editor.AppVersion_U30.Title;
             Icon = AppIcon.Load();
             AppIcon.Attach(this);
             {
@@ -257,6 +257,7 @@ namespace RageLightEditor
         {
             timeBeginPeriod(1);
             deviceResources = new DeviceResources(Handle, ClientSize.Width, ClientSize.Height);
+            if (!IsHeadless && !DebugSeqTest && Environment.GetEnvironmentVariable("RLE_NOUPDATECHECK") != "1") Editor.UpdateCheck_U30.Start();
             CommonStates.Create(deviceResources.Device);
 
             ImGui.CreateContext();
@@ -776,7 +777,7 @@ namespace RageLightEditor
                 bool firstYdd = !scene.HasModel;
                 if (scene.LoadYddFile_V38(path, additive: scene.HasModel))
                 {
-                    Text = $"{AppInfo.Name} - {scene.FileName}";
+                    Text = $"{Editor.AppVersion_U30.Title} - {scene.FileName}";
                     if (firstYdd) FrameModel();
                 }
                 return;
@@ -789,7 +790,7 @@ namespace RageLightEditor
             bool first = !scene.HasModel;
             if (scene.LoadModelFile(path, additive: scene.HasModel))
             {
-                Text = $"{AppInfo.Name} - {scene.FileName}";
+                Text = $"{Editor.AppVersion_U30.Title} - {scene.FileName}";
                 if (first) FrameModel();
             }
         }
@@ -812,7 +813,7 @@ namespace RageLightEditor
             lastYtypPath = null;
             project = null;
             panel.ProjectName = "";
-            Text = AppInfo.Name;
+            Text = Editor.AppVersion_U30.Title;
         }
 
         private void DoOpenProjectDialog()
@@ -891,7 +892,7 @@ namespace RageLightEditor
 
             project = p;
             panel.ProjectName = Path.GetFileNameWithoutExtension(path);
-            Text = AppInfo.Name + " - " + panel.ProjectName;
+            Text = Editor.AppVersion_U30.Title + " - " + panel.ProjectName;
             if (missing.Count > 0)
             {
                 scene.LoadError = $"{missing.Count} file(s) in the project no longer exist: " +
@@ -950,7 +951,7 @@ namespace RageLightEditor
             p.Save(path);
             project = p;
             panel.ProjectName = Path.GetFileNameWithoutExtension(path);
-            Text = AppInfo.Name + " - " + panel.ProjectName;
+            Text = Editor.AppVersion_U30.Title + " - " + panel.ProjectName;
         }
 
         private bool ConfirmDiscard(string question)
@@ -1059,7 +1060,7 @@ namespace RageLightEditor
                 {
                     scene.SaveOneAs(f, dlg.FileName);
                     AfterSaveFiveM_U12(dlg.FileName);
-                    Text = $"{AppInfo.Name} - {Path.GetFileName(dlg.FileName)}";
+                    Text = $"{Editor.AppVersion_U30.Title} - {Path.GetFileName(dlg.FileName)}";
                     panel.MloStatus = "Saved " + Path.GetFileName(dlg.FileName);
                 }
                 catch (Exception ex)
@@ -1094,7 +1095,7 @@ namespace RageLightEditor
                     if (first) { scene.LoadModelFile(f, additive: false); first = false; }
                     else { scene.LoadModelFile(f, additive: true); }
                 }
-                Text = $"{AppInfo.Name} - {scene.FileName}";
+                Text = $"{Editor.AppVersion_U30.Title} - {scene.FileName}";
                 FrameModel();
             }
         }
@@ -3512,7 +3513,7 @@ namespace RageLightEditor
 
                         var anyYmap = World.Nodes.FirstOrDefault(n => n.Ymap != null)?.Ymap;
                         if (anyYmap != null) proj.AddYmap(anyYmap, anyYmap.Name, true);
-                        var mf = proj.SaveManifest(System.IO.Path.Combine(outDir, "_manifest.ymf.xml"));
+                        var mf = proj.SaveManifest(System.IO.Path.Combine(outDir, "_manifest.ymf"));
                         Check("the manifest was written", mf != null && System.IO.File.Exists(mf),
                               proj.LastStatus);
                         if (mf != null)
@@ -3966,7 +3967,7 @@ namespace RageLightEditor
             {
                 panel.RequestManifest = false;
                 if (string.IsNullOrEmpty(WorldEdit.OutputFolder)) panel.RequestWorldChooseOutput = true;
-                else proj.SaveManifest(System.IO.Path.Combine(WorldEdit.OutputFolder, "_manifest.ymf.xml"));
+                else proj.SaveManifest(System.IO.Path.Combine(WorldEdit.OutputFolder, "_manifest.ymf"));
             }
         }
 
@@ -5222,7 +5223,7 @@ namespace RageLightEditor
                 {
                     scene.LoadModelFile(f, additive: true);
                 }
-                Text = $"{AppInfo.Name} - {scene.FileName}";
+                Text = $"{Editor.AppVersion_U30.Title} - {scene.FileName}";
             }
         }
 
@@ -7195,6 +7196,7 @@ namespace RageLightEditor
                 if (ymaps.Length > 0) ImportYmap(ymaps);
             }
             ServiceIsoTest_S1();
+            ServiceYmfProbe_U30();
             ServiceRClickProbe_T1();
 
             ApplyWalk(dt);

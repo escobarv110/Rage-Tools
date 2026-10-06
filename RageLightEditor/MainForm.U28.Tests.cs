@@ -14,6 +14,16 @@ namespace RageLightEditor
             SliderTypingTest_U28(check);
             NamedViewsTest_U28(check);
             TerrainBrushTest_U28(check);
+            VersionTest_U30(check);
+        }
+
+        private static void VersionTest_U30(Action<string, bool, string> check)
+        {
+            check("version: the tool knows its own version", AppVersion_U30.Version.StartsWith("2.") && AppVersion_U30.Title.StartsWith("RAGE Tools 2."), AppVersion_U30.Title);
+            check("version: newer releases compare as newer",
+                  UpdateCheck_U30.Compare("2.6.0", "2.5.0") > 0 && UpdateCheck_U30.Compare("v2.5.1", "2.5.0") > 0 &&
+                  UpdateCheck_U30.Compare("2.5.0", "2.5.0") == 0 && UpdateCheck_U30.Compare("2.4.9", "2.5.0") < 0 &&
+                  UpdateCheck_U30.Compare("10.0.0", "9.9.9") > 0, "");
         }
 
         private void TerrainBrushTest_U28(Action<string, bool, string> check)

@@ -33,6 +33,20 @@ namespace RageLightEditor.Editor
                 catch (Exception ex) { why = ex.Message; return null; }
             }
 
+            if (lower.EndsWith(".ymf.xml", StringComparison.Ordinal))
+            {
+                try
+                {
+                    var ymf = ManifestWriter_U30.ToBinary(File.ReadAllText(path));
+                    var was0 = name;
+                    name = name.Substring(0, name.Length - 4);
+                    converted++;
+                    Note_S3($"{was0} converted back to {name} ({ymf.Length:N0} bytes manifest)");
+                    return ymf;
+                }
+                catch (Exception ex) { why = "the manifest XML could not be converted: " + ex.Message; return null; }
+            }
+
             var mformat = XmlMeta.GetXMLFormat(lower, out _);
             if (mformat == MetaFormat.XML)
             {
