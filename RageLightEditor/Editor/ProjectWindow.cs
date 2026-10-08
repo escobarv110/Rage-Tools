@@ -712,8 +712,7 @@ namespace RageLightEditor.Editor
                 if (!uint.TryParse(entArchEdit, out _)) JenkIndex.Ensure(entArchEdit);
                 if (e.archetypeName.Hash != hash)
                 {
-                    ent._CEntityDef.archetypeName = new MetaHash(hash);
-                    ent.SetArchetype(Project?.FindArchetype(new MetaHash(hash), ArchetypeCache) ?? ArchetypeCache?.GetArchetype(hash));
+                    SetEntityArchetype_U31(ent, hash);
                     changed = true;
                 }
             }
@@ -859,7 +858,12 @@ namespace RageLightEditor.Editor
             {
                 uint hash = uint.TryParse(defArchEdit, out var h) ? h : JenkHash.GenHash(defArchEdit);
                 if (!uint.TryParse(defArchEdit, out _)) JenkIndex.Ensure(defArchEdit);
-                if (d.archetypeName.Hash != hash) { me._Data.archetypeName = new MetaHash(hash); changed = true; }
+                if (d.archetypeName.Hash != hash)
+                {
+                    var live = SetMloDefArchetype_U31(me, hash);
+                    if (live != null) EntityChangedInPage = live;
+                    changed = true;
+                }
             }
             ImGui.SameLine(); ImGui.TextDisabled("# " + d.archetypeName.Hash);
             int guid = unchecked((int)d.guid);

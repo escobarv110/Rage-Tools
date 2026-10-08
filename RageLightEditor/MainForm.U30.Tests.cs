@@ -11,6 +11,79 @@ namespace RageLightEditor
         {
             CollisionModeTest_U30(check);
             InteriorProjectPropTest_U30(check);
+            MloDupArchetypeTest_U31(check);
+        }
+
+        private void MloDupArchetypeTest_U31(Action<string, bool, string> check)
+        {
+            var projWas = ProjWin?.Project;
+            var findWas = ProjWin?.FindMloInstance;
+            try
+            {
+                var ytyp = new YtypFile { Name = "rle_u31_int.ytyp" };
+                var mlo = new MloArchetype();
+                var mdef = new CMloArchetypeDef();
+                uint intHash = JenkHash.GenHash("rle_u31_int");
+                mdef._BaseArchetypeDef.name = intHash; mdef._BaseArchetypeDef.assetName = intHash;
+                mdef._BaseArchetypeDef.assetType = rage__fwArchetypeDef__eAssetType.ASSET_TYPE_ASSETLESS;
+                mdef._BaseArchetypeDef.bbMin = new Vector3(-4, -4, -1); mdef._BaseArchetypeDef.bbMax = new Vector3(4, 4, 4);
+                mlo.Init(ytyp, ref mdef);
+                ytyp.AllArchetypes = new Archetype[] { mlo };
+                MloEditor.AddRoom(mlo, "limbo");
+                MloEditor.AddRoom(mlo, "shop");
+                var shell = new YmapEntityDef();
+                var sdef = new CEntityDef { archetypeName = intHash, position = new Vector3(50, 60, 20), rotation = new Vector4(0, 0, 0, 1), scaleXY = 1, scaleZ = 1, lodDist = 200 };
+                shell.CEntityDef = sdef; shell.Position = sdef.position; shell.Orientation = Quaternion.Identity; shell.Scale = Vector3.One; shell.IsMlo = true;
+                shell.SetArchetype(mlo);
+                var props = ArchetypeBuilder.BuildYtyp("rle_u31_props", new[]
+                {
+                    new ArchetypeDef { Name = "rle_u31_bench", TextureDict = "rle_u31_bench", BbMin = new Vector3(-0.5f), BbMax = new Vector3(0.5f), BsRadius = 0.9f },
+                    new ArchetypeDef { Name = "rle_u31_chair", TextureDict = "rle_u31_chair", BbMin = new Vector3(-0.5f), BbMax = new Vector3(0.5f), BsRadius = 0.9f },
+                });
+                ProjWin.Project = new CwProject { Name = "u31" };
+                ProjWin.Project.AddYtypFile(props);
+                ProjWin.FindMloInstance = m => ReferenceEquals(m, mlo) ? shell.MloInstance : null;
+
+                uint bench = JenkHash.GenHash("rle_u31_bench"), chair = JenkHash.GenHash("rle_u31_chair");
+                var t = new MloTarget_U21 { Owner = shell, Room = 1, Portal = -1, EntSet = -1, Why = "test" };
+                var src = AddMloEntity_U21(t, bench, null, new Vector3(51, 61, 21));
+                int before = mlo.entities?.Length ?? 0;
+                WorldEdit.Select(src);
+                WorldDuplicateSelected();
+                var dup = WorldEdit.Selected;
+                var dupDef = shell.MloInstance.TryGetArchetypeEntity(dup);
+                check("interior duplicate: Duplicate copies a prop inside a room",
+                      dup != null && !ReferenceEquals(dup, src) && dup.MloParent == shell && (mlo.entities?.Length ?? 0) == before + 1 && mlo.GetEntityRoom(dupDef)?.Index == 1,
+                      $"{before} -> {mlo.entities?.Length ?? 0} entities, room {mlo.GetEntityRoom(dupDef)?.Index}, {WorldEdit.LastStatus}");
+
+                ProjWin.SetEntityArchetype_U31(dup, chair);
+                var srcDef = shell.MloInstance.TryGetArchetypeEntity(src);
+                check("interior duplicate: changing the copy's archetype changes the drawn prop",
+                      dup.Archetype?.Name == "rle_u31_chair", dup.Archetype?.Name ?? "no archetype");
+                check("interior duplicate: ...and the interior's own entry, so it is saved",
+                      dupDef?._Data.archetypeName.Hash == chair && srcDef?._Data.archetypeName.Hash == bench && src.Archetype?.Name == "rle_u31_bench",
+                      $"copy {dupDef?._Data.archetypeName}, original {srcDef?._Data.archetypeName}");
+
+                var back = new YtypFile();
+                back.Load(ytyp.Save());
+                var saved = (back.AllArchetypes?[0] as MloArchetype)?.entities;
+                check("interior duplicate: the saved .ytyp has the original AND the changed copy",
+                      saved != null && saved.Length == before + 1 && saved[before - 1]._Data.archetypeName.Hash == bench && saved[before]._Data.archetypeName.Hash == chair,
+                      saved == null ? "no entities" : string.Join(", ", Array.ConvertAll(saved, s => s._Data.archetypeName.ToString())));
+
+                var live = ProjWin.SetMloDefArchetype_U31(dupDef, bench);
+                check("interior duplicate: changing it from the interior's entity page changes the drawn prop too",
+                      ReferenceEquals(live, dup) && dup.Archetype?.Name == "rle_u31_bench" && dup._CEntityDef.archetypeName.Hash == bench,
+                      dup.Archetype?.Name ?? "no archetype");
+
+                WorldEdit.Select(dup);
+                TryWorldUndo();
+                check("interior duplicate: undo removes the copy",
+                      (mlo.entities?.Length ?? 0) == before && shell.MloInstance.TryGetArchetypeEntity(dup) == null,
+                      $"{mlo.entities?.Length ?? 0} entities");
+            }
+            catch (Exception ex) { check("interior duplicate: the test ran", false, ex.ToString()); }
+            finally { if (ProjWin != null) { ProjWin.Project = projWas; ProjWin.FindMloInstance = findWas; } WorldEdit.Deselect(); }
         }
 
         private void InteriorProjectPropTest_U30(Action<string, bool, string> check)

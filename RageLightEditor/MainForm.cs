@@ -4296,6 +4296,7 @@ namespace RageLightEditor
         private void WorldDuplicateSelected()
         {
             var src = WorldEdit.Selected;
+            if (src?.MloParent != null) { WorldDuplicateMloChild_U31(src); return; }
             if (src?.Ymap == null) { WorldEdit.LastStatus = "nothing selected to duplicate"; return; }
 
             float step = Math.Max(src.BSRadius * 1.2f, 1.0f);
