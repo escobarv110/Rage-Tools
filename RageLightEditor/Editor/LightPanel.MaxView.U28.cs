@@ -9,11 +9,9 @@ namespace RageLightEditor.Editor
         public (int[] modes, string[] labels) ShadingChoices_U28()
         {
             if (MaterialMode)
-                return (new[] { 0, 1, 2, 5, 6, 8, VertexColourModeFirst },
-                        new[] { "RAGE", "Unlit", "Normals", "Lighting only", "Specular only", "Wireframe", "Vertex colours" });
-            return CineMode
-                ? (new[] { 0, 7, 1, 2, 8, VertexColourModeFirst }, new[] { "RAGE", "Cinematic", "Unlit", "Normals", "Wireframe", "Vertex colours" })
-                : (new[] { 0, 1, 2, 8, VertexColourModeFirst }, new[] { "RAGE", "Unlit", "Normals", "Wireframe", "Vertex colours" });
+                return (new[] { 0, 7, 1, 2, 5, 6, 8, VertexColourModeFirst },
+                        new[] { "RAGE", "Cinematic", "Unlit", "Normals", "Lighting only", "Specular only", "Wireframe", "Vertex colours" });
+            return (new[] { 0, 7, 1, 2, 8, VertexColourModeFirst }, new[] { "RAGE", "Cinematic", "Unlit", "Normals", "Wireframe", "Vertex colours" });
         }
 
         public string ShadingName_U28()

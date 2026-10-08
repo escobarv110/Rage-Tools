@@ -12,6 +12,34 @@ namespace RageLightEditor
             CollisionModeTest_U30(check);
             InteriorProjectPropTest_U30(check);
             MloDupArchetypeTest_U31(check);
+            CinematicEverywhereTest_U31(check);
+        }
+
+        private void CinematicEverywhereTest_U31(Action<string, bool, string> check)
+        {
+            var wasSpace = panel.Workspace;
+            try
+            {
+                var missing = new System.Collections.Generic.List<string>();
+                foreach (LightPanel.Space s in Enum.GetValues(typeof(LightPanel.Space)))
+                {
+                    panel.SwitchWorkspace(s);
+                    if (Array.IndexOf(panel.ShadingChoices_U28().modes, 7) < 0) missing.Add(s.ToString());
+                }
+                check("cinematic: offered in the shading list on every page", missing.Count == 0, missing.Count == 0 ? "all pages" : "missing on " + string.Join(", ", missing));
+                foreach (var s in new[] { LightPanel.Space.Light, LightPanel.Space.Material, LightPanel.Space.World })
+                {
+                    panel.SwitchWorkspace(s);
+                    panel.RenderMode = 7;
+                    panel.SwitchWorkspace(LightPanel.Space.Cinematic);
+                    panel.SwitchWorkspace(LightPanel.Space.Particles);
+                    panel.SwitchWorkspace(s);
+                    check($"cinematic: {s} keeps Cinematic after visiting other pages", panel.RenderMode == 7, "render mode " + panel.RenderMode);
+                    panel.RenderMode = 0;
+                }
+            }
+            catch (Exception ex) { check("cinematic: the test ran", false, ex.ToString()); }
+            finally { panel.SwitchWorkspace(wasSpace); }
         }
 
         private void MloDupArchetypeTest_U31(Action<string, bool, string> check)

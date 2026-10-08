@@ -30,7 +30,6 @@ namespace RageLightEditor.Editor
             if (space == Space.Cinematic) EnterCineWorkspace();
             else if (was == Space.Cinematic) LeaveCineWorkspace();
             RestoreSectionView_Q4(space);
-            if (space != Space.Cinematic && RenderMode == 7) RenderMode = 0;
         }
 
         private void SaveSectionView_Q4(Space s)

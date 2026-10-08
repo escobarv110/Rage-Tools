@@ -1671,6 +1671,8 @@ namespace RageLightEditor.Editor
             }
 
             if (Header("View", true)) DrawViewSection();
+            if (Header("Cinematic" + (RenderMode == 7 ? "  (on)" : "") + "###cinematic", RenderMode == 7))
+                DrawCinematicSection();
             DrawMloCreatorSection_H5();
             if (Header("Import from GTA V")) DrawGameSection();
             if (Header("Timecycle")) DrawTimecycleSection();
@@ -5251,6 +5253,9 @@ namespace RageLightEditor.Editor
         {
             ViewGroup("Camera");
             DrawShadingCombo();
+
+            if (RenderMode == 7 && !CineMode && !MloMode)
+                ImGui.TextDisabled("Cinematic settings are in their own section below.");
             DrawCameraKnobs();
         }
 
