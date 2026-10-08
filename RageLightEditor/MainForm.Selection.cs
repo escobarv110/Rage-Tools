@@ -214,7 +214,7 @@ namespace RageLightEditor
                 {
                     if (!panel.WorldShowCollision) { panel.WorldShowCollision = true; selCollisionForced = true; }
                 }
-                else if (selCollisionForced)
+                else
                 {
                     panel.WorldShowCollision = false;
                     selCollisionForced = false;

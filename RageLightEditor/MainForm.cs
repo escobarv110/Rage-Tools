@@ -4472,7 +4472,7 @@ namespace RageLightEditor
             string shortName = Path.GetFileNameWithoutExtension(e.Name);
             uint hash = JenkHash.GenHash(shortName.ToLowerInvariant());
             JenkIndex.Ensure(shortName.ToLowerInvariant());
-            var arch = gameFiles?.Cache?.GetArchetype(hash);
+            var arch = ProjWin?.Project?.FindArchetype(new MetaHash(hash), gameFiles?.Cache) ?? gameFiles?.Cache?.GetArchetype(hash);
             if (arch == null)
             {
                 panel.MloStatus = $"No archetype is named {shortName}, so nothing can place it - add one in a ytyp first";
@@ -7049,6 +7049,7 @@ namespace RageLightEditor
                 SeqTest_W3(Check);
                 SeqTest_W4(Check);
                 SeqTest_U28(Check);
+                SeqTest_U30(Check);
 
                 Console.WriteLine(fails == 0 ? "SEQTEST PASSED" : $"SEQTEST FAILED ({fails})");
                 Close();
@@ -7197,6 +7198,7 @@ namespace RageLightEditor
             }
             ServiceIsoTest_S1();
             ServiceYmfProbe_U30();
+            ServiceMloAddProbe_U30();
             ServiceRClickProbe_T1();
 
             ApplyWalk(dt);

@@ -21,6 +21,7 @@ namespace RageLightEditor
                     case "U28": SeqTest_U28(check); break;
                     case "W3": SeqTest_W3(check); break;
                     case "U21": SeqTest_Log_U21(check); break;
+                    case "U30": SeqTest_U30(check); break;
                     case "YMF": YmfProbe_U30(check); break;
                     case "V31": SeqTest_MloExport_V31(check); break;
                     case "UPD":
@@ -36,5 +37,6 @@ namespace RageLightEditor
         }
 
         partial void SeqTest_U28(Action<string, bool, string> check);
+        partial void SeqTest_U30(Action<string, bool, string> check);
     }
 }

@@ -92,13 +92,6 @@ namespace RageLightEditor.Editor
 
         public void ShellToolbarLogic_U27()
         {
-            bool collMode = SelectionModeEnum == WorldSelectionMode.Collision;
-            if (collMode != lastCollisionMode_U22)
-            {
-                if (collMode) { collisionShownBefore_U22 = WorldShowCollision; WorldShowCollision = true; }
-                else WorldShowCollision = collisionShownBefore_U22;
-                lastCollisionMode_U22 = collMode;
-            }
             if (WorldGizmo != null)
             {
                 float snapNow = RotateSnapSteps_U5.Clamp(WorldGizmo.RotateSnapDeg);

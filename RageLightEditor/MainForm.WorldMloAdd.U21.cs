@@ -95,11 +95,16 @@ namespace RageLightEditor
             }
             else cent = NewMloEntityDef_U21(archetypeHash, archetype?.LodDist ?? 100.0f, local, Quaternion.Identity);
 
+            var resolved = archetype ?? ProjWin?.Project?.FindArchetype(cent.archetypeName, gameFiles?.Cache) ?? gameFiles?.Cache?.GetArchetype(cent.archetypeName);
+            LastMloAddWarning_U30 = resolved == null
+                ? $"{(uint.TryParse(cent.archetypeName.ToString(), out _) ? "This prop (#" + cent.archetypeName.Hash + ")" : cent.archetypeName.ToString())} is not in the game or in your project's .ytyp files, so it can't be drawn - add the .ytyp that defines it to the project"
+                : null;
+            if (LastMloAddWarning_U30 != null) AppLog_U21.Warn(LastMloAddWarning_U30);
             var ment = new MCEntityDef(ref cent, mlo);
             var e = new YmapEntityDef(t.Owner, ment, mlo.entities?.Length ?? 0);
             if (!mlo.AddEntity(e, t.Room, t.Portal, t.EntSet)) return null;
             inst.AddEntity(e);
-            e.SetArchetype(archetype ?? gameFiles?.Cache?.GetArchetype(cent.archetypeName));
+            e.SetArchetype(resolved);
             inst.UpdateEntity(e);
             if (mlo.Ytyp != null) mlo.Ytyp.HasChanged = true;
             WorldEntityChanged(e);
@@ -112,6 +117,8 @@ namespace RageLightEditor
                     () => { if (live != null) { RemoveMloChild_U5(live); if (ReferenceEquals(WorldEdit.Selected, live)) WorldEdit.Deselect(); } }));
             return e;
         }
+
+        public string LastMloAddWarning_U30 { get; private set; }
 
         public static string MloTargetText_U21(MloTarget_U21 t)
         {
@@ -129,14 +136,14 @@ namespace RageLightEditor
             var t = ResolveMloTarget_U21(spawn);
             if (!t.Valid) return false;
             uint hash = copy?.Archetype?.Hash ?? copy?._CEntityDef.archetypeName.Hash ?? JenkHash.GenHash("v_ind_chickensx3");
-            var arch = copy?.Archetype ?? gameFiles?.Cache?.GetArchetype(hash);
+            var arch = copy?.Archetype ?? ProjWin?.Project?.FindArchetype(new MetaHash(hash), gameFiles?.Cache) ?? gameFiles?.Cache?.GetArchetype(hash);
             CEntityDef? tpl = copy != null ? copy._CEntityDef : (CEntityDef?)null;
             if (copy != null && copy.Ymap != null) tpl = null;
             var e = AddMloEntity_U21(t, hash, arch, spawn, tpl);
             if (e == null) { ProjWin.Status = "could not add an entity to " + MloTargetText_U21(t); return true; }
             ProjWin.Select(e);
             WorldEdit.Select(e);
-            ProjWin.Status = "new entity in " + MloTargetText_U21(t) + " (" + t.Why + ")";
+            ProjWin.Status = LastMloAddWarning_U30 ?? ("new entity in " + MloTargetText_U21(t) + " (" + t.Why + ")");
             WorldEdit.LastStatus = ProjWin.Status;
             return true;
         }

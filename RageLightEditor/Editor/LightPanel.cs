@@ -1767,7 +1767,6 @@ namespace RageLightEditor.Editor
             true,
         };
         public int SelectionMode;
-        private bool lastCollisionMode_U22, collisionShownBefore_U22;
         public bool MouseSelectEnabled = true;
         public string SelectionModeName => SelectionModeNames[Math.Clamp(SelectionMode, 0, SelectionModeNames.Length - 1)];
 
@@ -2506,14 +2505,6 @@ namespace RageLightEditor.Editor
                                               : "Nothing to redo");
 
             if (!worldToolbarWraps_U5) Sep();
-
-            bool collMode = SelectionModeEnum == WorldSelectionMode.Collision;
-            if (collMode != lastCollisionMode_U22)
-            {
-                if (collMode) { collisionShownBefore_U22 = WorldShowCollision; WorldShowCollision = true; }
-                else WorldShowCollision = collisionShownBefore_U22;
-                lastCollisionMode_U22 = collMode;
-            }
 
             float cw = W("Picks: Entity");
             for (int i = 0; i < SelectionModeNames.Length; i++)
