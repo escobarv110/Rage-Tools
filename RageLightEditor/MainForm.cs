@@ -305,6 +305,7 @@ namespace RageLightEditor
             World.WalkStarting = worldRender.WalkStarted;
 
             projCtl = new ProjectController(ProjWin, () => this, () => gameFiles?.Cache);
+            ProjWin.ArchetypeCacheSource = () => gameFiles?.Cache;
             ProjWin.FindMloInstance = mlo =>
             {
                 if (mlo == null) return null;

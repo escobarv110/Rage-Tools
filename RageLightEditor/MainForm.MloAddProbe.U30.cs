@@ -9,6 +9,7 @@ namespace RageLightEditor
     {
         private int mloAddProbeStage_U30, mloAddProbeFrames_U30;
         private YmapEntityDef mloAddProbeEnt_U30;
+        private YmapEntityDef[] mloAddProbeReplaced_U31;
 
         private void ServiceMloAddProbe_U30()
         {
@@ -41,7 +42,7 @@ namespace RageLightEditor
                 var world = owner.Position + Vector3.Transform(localCentre, owner.Orientation);
                 uint hash = JenkHash.GenHash(spec == "1" || spec == "custom" ? "prop_chair_01a" : spec.ToLowerInvariant());
                 var arch = gameFiles?.Cache?.GetArchetype(hash);
-                if (spec == "custom")
+                if (spec == "custom" || spec == "replace")
                 {
                     var def = new Editor.ArchetypeDef { Name = "rle_u30_custom_prop", TextureDict = "rle_u30_custom_prop", BbMin = new Vector3(-0.5f), BbMax = new Vector3(0.5f), BsRadius = 0.9f };
                     var y = Editor.ArchetypeBuilder.BuildYtyp("rle_u30_custom", new[] { def });
@@ -64,6 +65,32 @@ namespace RageLightEditor
                 bool visible = e != null && World.Visible.Contains(e);
                 bool drawn = e != null && worldRender.LiveInstances.Any(kv => ReferenceEquals(kv.Key, e) && kv.Value != null && kv.Value.Count > 0);
                 Console.WriteLine($"MLOADDPROBE result: archetype {(e?.Archetype?.Name ?? "null")}, in visible list {visible}, drawn {drawn}, position {e?.Position}, warning {LastMloAddWarning_U30 ?? "none"}");
+                mloAddProbeStage_U30 = -1;
+                if (spec != "replace" || e == null) return;
+                uint game = JenkHash.GenHash("prop_chair_01a");
+                WorldEdit.Select(e);
+                WorldDuplicateSelected();
+                var dup = WorldEdit.Selected;
+                ProjWin.SetEntityArchetype_U31(dup, game);
+                WorldEntityChanged(dup);
+                ProjWin.Status = null;
+                bool made = ProjectNewEntityInInterior_U21(null);
+                var added = WorldEdit.Selected;
+                ProjWin.SetEntityArchetype_U31(added, game);
+                WorldEntityChanged(added);
+                mloAddProbeReplaced_U31 = new[] { dup, added };
+                Console.WriteLine($"MLOADDPROBE replace: duplicate {dup?._CEntityDef.archetypeName} -> {dup?.Archetype?.Name ?? "NOT RESOLVED"}, + entity made {made} -> {added?.Archetype?.Name ?? "NOT RESOLVED"}");
+                mloAddProbeStage_U30 = 2; mloAddProbeFrames_U30 = 0;
+                return;
+            }
+            if (mloAddProbeStage_U30 == 2 && mloAddProbeFrames_U30 > 120)
+            {
+                foreach (var e in mloAddProbeReplaced_U31)
+                {
+                    bool drawn = e != null && worldRender.LiveInstances.Any(kv => ReferenceEquals(kv.Key, e) && kv.Value != null && kv.Value.Count > 0);
+                    var def = e?.MloParent?.MloInstance?.TryGetArchetypeEntity(e);
+                    Console.WriteLine($"MLOADDPROBE replaced: archetype {e?.Archetype?.Name ?? "null"}, interior entry {def?._Data.archetypeName}, drawn {drawn}");
+                }
                 mloAddProbeStage_U30 = -1;
             }
         }

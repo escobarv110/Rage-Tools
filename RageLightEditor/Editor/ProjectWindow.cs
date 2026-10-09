@@ -824,7 +824,8 @@ namespace RageLightEditor.Editor
             }
         }
 
-        public GameFileCache ArchetypeCache;
+        public Func<GameFileCache> ArchetypeCacheSource;
+        public GameFileCache ArchetypeCache => ArchetypeCacheSource?.Invoke();
 
         private MCEntityDef defEditsFor; private string defArchEdit = "";
 
